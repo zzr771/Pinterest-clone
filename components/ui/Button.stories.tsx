@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import Image from "next/image"
-import searchIcon from "../../public/assets/search.svg"
+import { FaSearch } from "react-icons/fa"
 
 import Button from "./Button"
 
 const meta = {
-  title: "Example/Button",
+  title: "ui/Button",
   component: Button,
   parameters: {
     layout: "centered",
@@ -24,10 +23,11 @@ export const Primary: Story = {
     hover: false,
     shadow: false,
     text: "Home",
+    click: () => {},
   },
 }
 export const Icon: Story = {
   args: {
-    children: <Image src={searchIcon} alt="search" width={24} height={24} />,
+    children: <FaSearch className="text-gray-font-3" />,
   },
 }

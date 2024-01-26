@@ -11,18 +11,21 @@ const config: Config = {
       red: "#E60023",
       black: "#111111",
       white: "#FFFFFF",
+      transparent: "transparent",
     },
     extend: {
       colors: {
         "gray-bg": {
           0: "rgba(255, 255, 255, 0.9)",
           1: "#EFEFEF",
-          2: "#F0F0F0", // nav button hover bg
-          3: "#E9E9E9", // also as most buttons hover bg
+          2: "#F0F0F0",
+          3: "#F5F5F5",
+          4: "#E9E9E9", // also as most buttons hover bg
         },
         "gray-font": {
-          1: "#878787",
-          2: "#5F5F5F",
+          1: "#333365",
+          2: "#878787",
+          3: "#5F5F5F",
         },
       },
       backgroundImage: {
@@ -37,6 +40,9 @@ const config: Config = {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(0.7)" },
         },
+      },
+      screens: {
+        "3xl": "1700px",
       },
     },
   },

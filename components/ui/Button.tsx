@@ -6,6 +6,7 @@ interface Props {
   rounded?: boolean
   text?: string // either text or children must be passed in
   children?: React.ReactNode
+  click: (param: any) => void
 }
 
 export default function Button({
@@ -16,6 +17,7 @@ export default function Button({
   rounded = false,
   text,
   children,
+  click,
 }: Props) {
   let sizeClass = ""
   switch (size) {
@@ -45,7 +47,7 @@ export default function Button({
       bgColorClass = "bg-gray-bg-0"
       break
     case "gray":
-      bgColorClass = "bg-gray-bg-3"
+      bgColorClass = "bg-gray-bg-4"
       break
   }
 
@@ -61,7 +63,7 @@ export default function Button({
 
   let hoverClass = ""
   if (hover) {
-    hoverClass = "hover:bg-gray-bg-3"
+    hoverClass = "hover:bg-gray-bg-4"
   }
 
   let roundedClass = ""
@@ -72,7 +74,14 @@ export default function Button({
   return (
     <button
       type="button"
-      className={`flex items-center justify-center rounded-full font-sans font-semibold cursor-pointer ${sizeClass} ${textColorClass} ${bgColorClass} ${shadowClass} ${hoverClass} ${roundedClass}`}>
+      onClick={click}
+      className={`flex items-center justify-center rounded-full font-semibold cursor-pointer
+      ${sizeClass} 
+      ${textColorClass}
+      ${bgColorClass}
+      ${shadowClass}
+      ${hoverClass}
+      ${roundedClass}`}>
       {text || children}
     </button>
   )

@@ -1,16 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react"
-
-import Button from "./Button"
+import SearchSuggestion from "./SearchSuggestion"
 
 const meta = {
-  title: "Example/Button",
-  component: Button,
+  title: "ui/SearchSuggestion",
+  component: SearchSuggestion,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
   argTypes: {},
-} satisfies Meta<typeof Button>
+} satisfies Meta<typeof SearchSuggestion>
 
 export default meta
 type Story = StoryObj<typeof meta>
