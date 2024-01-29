@@ -30,10 +30,10 @@ export default function SearchSuggestion() {
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-semibold text-base">Recent searches</h3>
-          <div className="flex gap-2 mt-5">
+          <div className="flex flex-wrap gap-2 mt-5">
             {recentSearches.map((item: string) => (
               <div
-                className="flex gap-2 items-center bg-gray-bg-4 rounded-full py-1 px-3 cursor-pointer hover:bg-[#DADADA]"
+                className="flex gap-2 items-center bg-gray-bg-4 rounded-full py-1 px-3 cursor-pointer hover:bg-[#DADADA] whitespace-nowrap"
                 key={item}
                 onClick={() => searchClickedTerm(item)}>
                 <span>{item}</span>
@@ -49,10 +49,10 @@ export default function SearchSuggestion() {
       )}
 
       <h3 className="font-semibold text-base mt-7">Ideas for you</h3>
-      <div className="grid grid-cols-3 3xl:grid-cols-4 gap-2 mt-5">
+      <div className="grid grid-cols-3 w3:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
-            image="/assets/searchSuggestionCardImage.jpg"
+            image="/test/searchSuggestionCardImage.jpg"
             title="Office inspiration"
             id=""
             key={item}
@@ -61,10 +61,10 @@ export default function SearchSuggestion() {
       </div>
 
       <h3 className="font-semibold text-base mt-7">Popular on Pinterest</h3>
-      <div className="grid grid-cols-3 3xl:grid-cols-4 gap-2 mt-5">
+      <div className="grid grid-cols-3 w3:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
-            image="/assets/searchSuggestionCardImage.jpg"
+            image="/test/searchSuggestionCardImage.jpg"
             title="Office inspiration"
             id=""
             key={item}

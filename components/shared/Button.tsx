@@ -25,10 +25,10 @@ export default function Button({
       sizeClass = "h-6"
       break
     case "normal":
-      sizeClass = "px-4 h-12 text-base"
+      sizeClass = rounded ? "h-12 text-base" : "px-4 h-12 text-base"
       break
     case "small":
-      sizeClass = "px-3 h-8 text-sm"
+      sizeClass = rounded ? "h-8 text-sm" : "px-3 h-8 text-sm"
       break
     case "large":
       sizeClass = "h-14"

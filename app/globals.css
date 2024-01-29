@@ -26,4 +26,20 @@ body {
   .blue-shadow {
     box-shadow: rgba(0, 132, 255, 0.5) 0px 0px 0px 4px;
   }
+  .nav-float-bottom {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 3.75rem;
+    padding: 0 0.5rem;
+    border-radius: 9999px;
+  }
+  .nav-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4rem;
+  }
 }

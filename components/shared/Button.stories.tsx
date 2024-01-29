@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { FaSearch } from "react-icons/fa"
 
-import Button from "./Button"
+import Button from "../shared/Button"
 
 const meta = {
-  title: "ui/Button",
+  title: "shared/Button",
   component: Button,
   parameters: {
     layout: "centered",

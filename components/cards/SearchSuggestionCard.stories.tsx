@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>
 export const Primary: Story = {
   args: {
     title: "Office inspiration",
-    image: "/assets/searchSuggestionCardImage.jpg",
+    image: "/test/searchSuggestionCardImage.jpg",
     id: "",
   },
 }

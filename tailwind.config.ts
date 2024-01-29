@@ -11,7 +11,7 @@ const config: Config = {
       red: "#E60023",
       black: "#111111",
       white: "#FFFFFF",
-      transparent: "transparent",
+      transparent: "transparent", // 4.16 9.10  4.54
     },
     extend: {
       colors: {
@@ -42,7 +42,9 @@ const config: Config = {
         },
       },
       screens: {
-        "3xl": "1700px",
+        w1: "820px",
+        w2: "912px",
+        w3: "1700px",
       },
     },
   },

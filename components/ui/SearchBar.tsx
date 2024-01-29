@@ -67,7 +67,7 @@ export default function SearchBar() {
     <div
       ref={searchBarContainer}
       onClick={handleClick}
-      className={`relative flex items-center min-w-72 gap-[8px] h-[48px] pl-[16px] text-base 
+      className={`relative flex flex-1 items-center min-w-72 h-[48px] pl-[16px] mx-2 gap-[8px] text-base 
       rounded-full 
       bg-gray-bg-1 
       hover:bg-gray-bg-4 
