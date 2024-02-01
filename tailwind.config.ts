@@ -15,6 +15,7 @@ const config: Config = {
     },
     extend: {
       colors: {
+        "red-dark": "#AD081B",
         "gray-bg": {
           0: "rgba(255, 255, 255, 0.9)",
           1: "#EFEFEF",
@@ -42,9 +43,11 @@ const config: Config = {
         },
       },
       screens: {
-        w1: "820px",
-        w2: "912px",
-        w3: "1700px",
+        w1: "540px",
+        w2: "768px",
+        w3: "820px",
+        w4: "912px",
+        w5: "1700px",
       },
     },
   },

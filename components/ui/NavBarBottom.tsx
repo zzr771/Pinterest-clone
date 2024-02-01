@@ -1,9 +1,14 @@
 import { useState } from "react"
 import { FaSearch, FaUser } from "react-icons/fa"
 import { AiFillMessage, AiFillHome } from "react-icons/ai"
+import { useSelector } from "react-redux"
 
 export default function NavBarBottom() {
+  const screenSize = useSelector((state: any) => state.screenSize.screenSize)
+
   const [activeBtn, setActiveBtn] = useState("Home")
+
+  if (screenSize >= 820) return null
 
   return (
     <div className="sm:nav-float-bottom nav-bottom bg-white">

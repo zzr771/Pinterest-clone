@@ -49,10 +49,10 @@ export default function SearchSuggestion() {
       )}
 
       <h3 className="font-semibold text-base mt-7">Ideas for you</h3>
-      <div className="grid grid-cols-3 w3:grid-cols-4 gap-2 mt-5">
+      <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
-            image="/test/searchSuggestionCardImage.jpg"
+            image="/assets/test/searchSuggestionCardImage.jpg"
             title="Office inspiration"
             id=""
             key={item}
@@ -61,10 +61,10 @@ export default function SearchSuggestion() {
       </div>
 
       <h3 className="font-semibold text-base mt-7">Popular on Pinterest</h3>
-      <div className="grid grid-cols-3 w3:grid-cols-4 gap-2 mt-5">
+      <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
-            image="/test/searchSuggestionCardImage.jpg"
+            image="/assets/test/searchSuggestionCardImage.jpg"
             title="Office inspiration"
             id=""
             key={item}

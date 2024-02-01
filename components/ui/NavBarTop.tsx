@@ -3,9 +3,14 @@ import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
+import { useSelector } from "react-redux"
 
 export default function NavBarTop() {
+  const screenSize = useSelector((state: any) => state.screenSize.screenSize)
+
   const [activeBtn, setActiveBtn] = useState("Home")
+
+  if (screenSize < 820) return null
 
   return (
     <div className="flex items-center bg-white h-20 py-1 px-4">
@@ -22,7 +27,7 @@ export default function NavBarTop() {
       {/* Button Group: Home Explore Create */}
       <div className="flex items-center">
         <Button text="Home" click={() => {}} bgColor={activeBtn === "Home" ? "black" : "transparent"} />
-        <div className="flex items-center max-w2:hidden">
+        <div className="flex items-center max-w4:hidden">
           <Button
             text="Explore"
             click={() => {}}
@@ -30,7 +35,7 @@ export default function NavBarTop() {
           />
           <Button text="Create" click={() => {}} bgColor={activeBtn === "Create" ? "black" : "transparent"} />
         </div>
-        <FaChevronDown className="h-3 w-3 ml-2 w1:max-w2:block hidden text-black" />
+        <FaChevronDown className="h-3 w-3 ml-2 w3:max-w4:block hidden text-black" />
       </div>
 
       <SearchBar />

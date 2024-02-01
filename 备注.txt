@@ -17,25 +17,37 @@
 
 sm	640px	
 md	768px
-w1  820
-w2  912
+w3  820
+w4  912
 lg	1024px	
 xl	1280px	
 2xl	1536px
-w3  1700
+w5  1700
 
+/*
+  Use two-dimension arrays to simulate waterfull layout.
+  
+  All cards are positioned in one common container, rather than each column has its
+  own container.
+
+  Use 'transform: translate()' and change its value to realize transition effect, 
+    whick will trigger hardware acceleration. 
+*/
 PinCard:
 screen(px)  card(px)    columns
-  1024         236         4
+  1024         236         4      左右padding 8px，下padding 16px
   912          236         3
-  820          236         3
-  768          244         3
-  540          257         2
-  430          202         2
-  414          194         2
-  390          182         2
+  820  w3      236         3
+
+  768  w2      244         3      padding 4px，下面加标题，作者头像，三个点，高度76px。卡片上不再有按钮。卡片容器有8px的左右padding
+  540  w1      257         2
+  430          202         2      
+  414          194         2      
+  390          182         2      
   375          174         2
   280          127         2
+
+屏幕宽度大于820，card定宽，屏幕宽度小于820，card宽度自适应 (33%, 50%)。
 
 NavBar：
 1024px 按钮没有收缩

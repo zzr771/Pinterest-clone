@@ -96,7 +96,7 @@ export default function SearchBar() {
       )}
 
       {isFocused && (
-        <div className="absolute top-[52px] left-0 w-full">
+        <div className="absolute top-[52px] left-0 w-full z-10">
           <SearchSuggestion />
         </div>
       )}
