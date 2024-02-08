@@ -1,19 +1,20 @@
+"use client"
 import { useState } from "react"
 import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
-import { useSelector } from "react-redux"
+import { useAppSelector } from "@/lib/store/hook"
 
 export default function NavBarTop() {
-  const screenSize = useSelector((state: any) => state.screenSize.screenSize)
+  const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
 
   const [activeBtn, setActiveBtn] = useState("Home")
 
   if (screenSize < 820) return null
 
   return (
-    <div className="flex items-center bg-white h-20 py-1 px-4">
+    <section className="nav-top items-center bg-white h-20 py-1 px-4 w3:flex hidden">
       {/* Pinterest icon */}
       <Button
         hover={true}
@@ -68,6 +69,6 @@ export default function NavBarTop() {
           <FaUser className="text-gray-font-3 w-6 h-6" />
         </Button>
       </div>
-    </div>
+    </section>
   )
 }

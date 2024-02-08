@@ -1,38 +1,23 @@
-"use client"
-
 /*
-  Dynamically import NavBars to prevent 'Warning: Expected server HTML to contain a matching <div> in <div>.'
-
-  On the server side, the server doesn't know the screen size, thus doesn't know which nav bar is shown
-  (NavBarBottom or NavBarTop). This causes a DOM tree difference between client and server sides, which
-  will give the above warning.
+  Which navBar to load depends on the screen size which cannot be known on server side.
+  To prevent the DOM difference between the server and client sides, use dynamic import.
 */
 import dynamic from "next/dynamic"
-const NavBarBottom = dynamic(() => import("@/components/ui/NavBarBottom"), { ssr: false })
 const NavBarTop = dynamic(() => import("@/components/ui/NavBarTop"), { ssr: false })
-const PinCard = dynamic(() => import("@/components/cards/PinCard"), { ssr: false })
-import useScreenResize from "@/lib/useScreenResize"
+const NavBarBottom = dynamic(() => import("@/components/ui/NavBarBottom"), { ssr: false })
+
+import ScreenReziseMonitor from "@/components/shared/ScreenReziseMonitor"
+import WaterFall from "@/components/ui/WaterFall"
 
 export default function Home() {
-  useScreenResize()
-
   return (
     <main className="min-h-screen">
-      <NavBarBottom />
+      <ScreenReziseMonitor />
       <NavBarTop />
-      <PinCard
-        pinId="2"
-        image="/assets/test/PinCard/3.jpg"
-        imageSize={{
-          width: 236,
-          height: 464,
-        }}
-        title="Witness the most amazing scenaries in Alps"
-        author={{
-          name: "Dodi's Personalized Trip Schedule",
-          avatar: "/assets/test/avatar.jpg",
-        }}
-      />
+      <NavBarBottom />
+      <section className="w3:mt-20">
+        <WaterFall />
+      </section>
     </main>
   )
 }

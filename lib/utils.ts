@@ -1,15 +1,16 @@
-export function calculateCardSize(imageSize: { width: number; height: number }) {
+export function getImageDisplaySize(imageSize: { width: number; height: number }) {
   const ratio = imageSize.height / imageSize.width
   const containerPadding = 16
   let width, height
 
   if (window.innerWidth >= 820) {
-    return imageSize
+    width = 236
   } else if (window.innerWidth >= 540 && window.innerWidth < 820) {
-    width = (window.innerWidth - containerPadding) / 3
+    width = Math.round((window.innerWidth - containerPadding) / 3)
   } else {
-    width = (window.innerWidth - containerPadding) / 2
+    width = Math.round((window.innerWidth - containerPadding) / 2)
   }
-  height = width * ratio
+  height = Math.round(width * ratio)
+
   return { width, height }
 }

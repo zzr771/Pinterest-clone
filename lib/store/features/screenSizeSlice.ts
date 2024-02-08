@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 const screenSizeSlice = createSlice({
-  name: "resize",
+  name: "screenSize",
   initialState: {
-    screenSize: 820,
+    screenSize: 1920,
   },
   reducers: {
     setScreenSize(state, action) {

@@ -24,15 +24,7 @@ xl	1280px
 2xl	1536px
 w5  1700
 
-/*
-  Use two-dimension arrays to simulate waterfull layout.
-  
-  All cards are positioned in one common container, rather than each column has its
-  own container.
 
-  Use 'transform: translate()' and change its value to realize transition effect, 
-    whick will trigger hardware acceleration. 
-*/
 PinCard:
 screen(px)  card(px)    columns
   1024         236         4      左右padding 8px，下padding 16px
@@ -47,7 +39,7 @@ screen(px)  card(px)    columns
   375          174         2
   280          127         2
 
-屏幕宽度大于820，card定宽，屏幕宽度小于820，card宽度自适应 (33%, 50%)。
+屏幕宽度大于820，card定宽; 屏幕宽度540~820，card宽度33%; 屏幕宽度0~540，card宽度50%。
 
 NavBar：
 1024px 按钮没有收缩

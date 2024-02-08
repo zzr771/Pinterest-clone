@@ -17,7 +17,6 @@ const config: Config = {
       colors: {
         "red-dark": "#AD081B",
         "gray-bg": {
-          0: "rgba(255, 255, 255, 0.9)",
           1: "#EFEFEF",
           2: "#F0F0F0",
           3: "#F5F5F5",
@@ -27,6 +26,10 @@ const config: Config = {
           1: "#333365",
           2: "#878787",
           3: "#5F5F5F",
+        },
+        "gray-tp": {
+          "1": "rgba(0,0,0,0.3)",
+          "2": "rgba(255, 255, 255, 0.9)",
         },
       },
       backgroundImage: {

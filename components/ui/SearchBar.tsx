@@ -73,7 +73,7 @@ export default function SearchBar() {
       hover:bg-gray-bg-4 
       ${focusClass}`}>
       {/* This icon should be hidden when clicked.  && expression can't be used here. Otherwise if you 
-          click on this icon, it will be removed out of searchBarContainer immediately and the click event 
+          click on this icon, it will be removed from searchBarContainer immediately, and the click event 
           can't bubble to searchBarContainer whose handleClick function won't be fired.
         */}
       <FaSearch className="text-gray-font-3" />

@@ -1,13 +1,10 @@
-"use client"
-
-import { useSelector } from "react-redux"
 import { MdOutlineFileUpload } from "react-icons/md"
 import { LuArrowUpRight } from "react-icons/lu"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import { useEffect, useRef } from "react"
 import Image from "next/image"
-import { calculateCardSize } from "@/lib/utils"
+import { useAppSelector } from "@/lib/store/hook"
 
 interface Props {
   pinId: string
@@ -23,27 +20,39 @@ interface Props {
   }
 }
 export default function PinCard({ pinId, image, imageSize, title, author }: Props) {
-  const screenSize = useSelector((state: any) => state.screenSize.screenSize)
+  const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
   const cardBody = useRef<HTMLDivElement>(null)
   const cardContainer = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (cardBody.current && cardContainer.current) {
-      const { width, height } = calculateCardSize(imageSize)
-      const cardPadding = window.innerWidth >= 820 ? 16 : 8
-      cardContainer.current.style.width = width + cardPadding + "px"
-      cardBody.current.style.width = width + "px"
-      cardBody.current.style.height = height + "px"
+      const { width, height } = imageSize
+      if (window.innerWidth >= 820) {
+        cardContainer.current.style.width = width + 16 + "px" // 16: PinCard's left and right padding
+        cardBody.current.style.width = width + "px"
+      } else {
+        let displayWidth
+        if (window.innerWidth >= 540 && window.innerWidth < 820) {
+          displayWidth = Math.round((window.innerWidth - 16) * 0.3333) // 16: waterfall container's left and right padding
+        } else {
+          displayWidth = Math.round((window.innerWidth - 16) * 0.5)
+        }
+        cardContainer.current.style.width = displayWidth + "px"
+        cardBody.current.style.width = displayWidth - 8 + "px" // 8: PinCard's left and right padding
+      }
+      cardBody.current.style.aspectRatio = `${width}/${height}`
     }
+
+    setTimeout(() => {
+      cardContainer.current?.classList.add("card-transform")
+    }, 1000)
   }, [screenSize])
 
-  // continue: fix the error that occurs when open the application with small screen width
-
   return (
-    <div ref={cardContainer} className="absolute p-1 w3:px-2 w3:pb-4">
+    <div ref={cardContainer} className="absolute p-1 pb-2 w3:px-2 w3:pb-4">
       <div ref={cardBody} className="relative">
-        <Image src={image} alt="pin image" className="rounded-2xl absolute z-[-1]" fill sizes="1000px" />
-        <div className="h-full flex flex-col justify-between p-3 cursor-zoom-in hover-show-container max-w3:hidden">
+        <Image src={image} alt="pin image" className="rounded-2xl absolute z-[-1]" fill sizes="300px" />
+        <div className="h-full flex flex-col justify-between p-3 cursor-zoom-in hover-show-container max-w3:hidden hover:bg-gray-tp-1 rounded-2xl">
           <div className="flex justify-end hover-content-flex ">
             <Button
               text="Save"
@@ -95,7 +104,7 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
           </div>
         </div>
       </div>
-      {screenSize <= 768 && (
+      {screenSize <= 820 && (
         <div className="px-1 mt-1.5">
           <div className="flex items-center justify-between ">
             <h5 className="truncate text-xs font-semibold">{title}</h5>
