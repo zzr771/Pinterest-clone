@@ -8,6 +8,7 @@ const NavBarBottom = dynamic(() => import("@/components/ui/NavBarBottom"), { ssr
 
 import ScreenReziseMonitor from "@/components/shared/ScreenReziseMonitor"
 import WaterFall from "@/components/ui/WaterFall"
+import Modal from "@/components/shared/Modal"
 
 export default function Home() {
   return (
@@ -15,8 +16,9 @@ export default function Home() {
       <ScreenReziseMonitor />
       <NavBarTop />
       <NavBarBottom />
-      <section className="w3:mt-20">
+      <section className="relative w3:mt-20">
         <WaterFall />
+        <Modal />
       </section>
     </main>
   )

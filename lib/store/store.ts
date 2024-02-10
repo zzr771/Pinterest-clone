@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit"
 import screenSizeReducer from "./features/screenSizeSlice"
+import searchSuggestionReducer from "./features/searchSuggestion"
 
 export const makeStore = () => {
   return configureStore({
-    reducer: { screenSize: screenSizeReducer },
+    reducer: { screenSize: screenSizeReducer, searchSuggestion: searchSuggestionReducer },
   })
 }
 

@@ -7,11 +7,6 @@ export default function SearchSuggestion() {
     JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
   )
 
-  // localStorage.setItem(
-  //   "pinterest_recentSearches",
-  //   JSON.stringify(["Office inspiration", "new year", "Model Y", "Space X", "Falcon 9"])
-  // )
-
   function deleteSearchTerm(searchTerm: string, event: React.MouseEvent) {
     event.stopPropagation()
     const updatedSearches = recentSearches.filter((item: string) => item !== searchTerm)
@@ -26,7 +21,7 @@ export default function SearchSuggestion() {
   const suggestionCardArray = [1, 2, 3, 4, 5, 6, 7]
 
   return (
-    <div className="bg-white rounded-b-2xl p-8">
+    <div className="bg-white rounded-b-2xl p-8 z-5">
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-semibold text-base">Recent searches</h3>

@@ -4,8 +4,11 @@ import { FaSearch } from "react-icons/fa"
 import { IoMdCloseCircle } from "react-icons/io"
 import { useState, useRef, useMemo } from "react"
 import SearchSuggestion from "./SearchSuggestion"
+import { useAppDispatch } from "@/lib/store/hook"
+import { setShowSearchSuggestion } from "@/lib/store/features/searchSuggestion"
 
 export default function SearchBar() {
+  const dispatch = useAppDispatch()
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -17,6 +20,7 @@ export default function SearchBar() {
       return
     }
     setIsFocused(true)
+    dispatch(setShowSearchSuggestion(true))
     document.addEventListener("click", handleClickOutSide)
   }
 
@@ -31,6 +35,7 @@ export default function SearchBar() {
       if (!searchBarContainer?.current?.contains(event.target as Node)) {
         setSearchTerm("")
         setIsFocused(false)
+        dispatch(setShowSearchSuggestion(false))
         document.removeEventListener("click", handleClickOutSide)
       }
     }
