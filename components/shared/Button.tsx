@@ -1,13 +1,14 @@
 interface Props {
   size?: "tiny" | "small" | "normal" | "large"
-  bgColor?: "black" | "red" | "gray" | "transparent" | "translucent"
+  bgColor?: "white" | "black" | "red" | "gray" | "transparent" | "translucent"
   shadow?: boolean
   hover?: boolean
   rounded?: boolean
   clickEffect?: boolean // shrink on click
   text?: string // either text or children must be passed in
   children?: React.ReactNode
-  click: (param: any) => void
+  className?: string
+  click?: (param: any) => void
 }
 
 export default function Button({
@@ -19,6 +20,7 @@ export default function Button({
   clickEffect = false,
   text,
   children,
+  className = "",
   click,
 }: Props) {
   let sizeClass = ""
@@ -39,6 +41,9 @@ export default function Button({
 
   let bgColorClass = ""
   switch (bgColor) {
+    case "white":
+      bgColorClass = "bg-white"
+      break
     case "black":
       bgColorClass = "bg-black"
       break
@@ -60,7 +65,7 @@ export default function Button({
 
   let shadowClass = ""
   if (shadow) {
-    shadowClass = "shadow-md"
+    shadowClass = "shadow-small"
   }
 
   let hoverClass = ""
@@ -69,6 +74,7 @@ export default function Button({
       case "red":
         hoverClass = "hover:bg-red-dark"
         break
+      case "white":
       case "transparent":
         hoverClass = "hover:bg-gray-bg-4"
         break
@@ -100,6 +106,7 @@ export default function Button({
       ${hoverClass}
       ${roundedClass}
       ${clickEffectClass}
+      ${className}
       `}>
       {text || children}
     </button>

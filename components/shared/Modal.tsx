@@ -7,5 +7,6 @@ export default function Modal() {
   const showSearchSuggestion = useAppSelector((state: any) => state.searchSuggestion.showSearchSuggestion)
 
   if (!(screenSize >= 820) || !showSearchSuggestion) return null
-  return <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-tp-1"></div>
+
+  return <div className="fixed top-[80px] left-0 right-0 bottom-0 z-[4] bg-gray-tp-1"></div>
 }

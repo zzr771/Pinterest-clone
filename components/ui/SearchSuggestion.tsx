@@ -21,7 +21,7 @@ export default function SearchSuggestion() {
   const suggestionCardArray = [1, 2, 3, 4, 5, 6, 7]
 
   return (
-    <div className="bg-white rounded-b-2xl p-8 z-5">
+    <div className="bg-white rounded-b-2xl p-8">
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-semibold text-base">Recent searches</h3>
@@ -47,7 +47,7 @@ export default function SearchSuggestion() {
       <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
-            image="/assets/test/searchSuggestionCardImage.jpg"
+            image="/assets/test/search-suggestion-card-image.jpg"
             title="Office inspiration"
             id=""
             key={item}
@@ -59,7 +59,7 @@ export default function SearchSuggestion() {
       <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
-            image="/assets/test/searchSuggestionCardImage.jpg"
+            image="/assets/test/search-suggestion-card-image.jpg"
             title="Office inspiration"
             id=""
             key={item}

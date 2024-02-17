@@ -1,17 +1,15 @@
 "use client"
+
 import { useState } from "react"
-import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
+import { FaChevronDown, FaBell, FaUser, FaCheck } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
-import { useAppSelector } from "@/lib/store/hook"
 
+const options = ["Home", "Explore", "Create"]
 export default function NavBarTop() {
-  const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
-
   const [activeBtn, setActiveBtn] = useState("Home")
-
-  if (screenSize < 820) return null
+  const [showDropDown, setShowDropDown] = useState(false)
 
   return (
     <section className="nav-top items-center bg-white h-20 py-1 px-4 w3:flex hidden">
@@ -26,17 +24,52 @@ export default function NavBarTop() {
       </Button>
 
       {/* Button Group: Home Explore Create */}
-      <div className="flex items-center">
-        <Button text="Home" click={() => {}} bgColor={activeBtn === "Home" ? "black" : "transparent"} />
-        <div className="flex items-center max-w4:hidden">
-          <Button
-            text="Explore"
-            click={() => {}}
-            bgColor={activeBtn === "Explore" ? "black" : "transparent"}
+      <div className="flex items-center max-w4:hidden">
+        <Button
+          text="Home"
+          click={() => setActiveBtn("Home")}
+          bgColor={activeBtn === "Home" ? "black" : "transparent"}
+        />
+        <Button
+          text="Explore"
+          click={() => setActiveBtn("Explore")}
+          bgColor={activeBtn === "Explore" ? "black" : "transparent"}
+        />
+        <Button
+          text="Create"
+          click={() => setActiveBtn("Create")}
+          bgColor={activeBtn === "Create" ? "black" : "transparent"}
+        />
+      </div>
+
+      <div
+        className={`relative flex items-center p-3.5 ml-2 rounded-full w4:hidden  
+        ${showDropDown ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"}
+       font-semibold cursor-pointer leading-5
+        `}
+        onClick={() => setShowDropDown((prev) => !prev)}>
+        <div className="flex items-center gap-2">
+          <span>{activeBtn}</span>
+          <FaChevronDown
+            className={`h-3.5 w-3.5 w3:max-w4:block hidden ${showDropDown ? "text-white" : "text-black"}`}
           />
-          <Button text="Create" click={() => {}} bgColor={activeBtn === "Create" ? "black" : "transparent"} />
         </div>
-        <FaChevronDown className="h-3 w-3 ml-2 w3:max-w4:block hidden text-black" />
+        {showDropDown && (
+          <div className="horizontal-middle top-[60px] z-5 bg-white p-2 rounded-2xl shadow-small">
+            {options.map((item) => (
+              <div
+                key={item}
+                className={`flex items-center justify-between w-40 p-2 pr-5 font-semibold rounded-lg hover:bg-gray-bg-4
+                ${item === activeBtn ? "bg-gray-bg-4" : ""}
+                text-black
+                `}
+                onClick={() => setActiveBtn(item)}>
+                <span>{item}</span>
+                {item === activeBtn && <FaCheck />}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <SearchBar />

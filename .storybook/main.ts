@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/nextjs"
+const path = require("path")
 
 const config: StorybookConfig = {
   stories: ["../components/**/*.mdx", "../components/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -10,7 +11,6 @@ const config: StorybookConfig = {
     "@storybook/addon-styling-webpack",
     {
       name: "@storybook/addon-styling-webpack",
-
       options: {
         rules: [
           {
@@ -36,6 +36,14 @@ const config: StorybookConfig = {
       },
     },
   ],
+  webpackFinal: async (config, options) => {
+    if (!config.resolve) return config
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@/lib": path.resolve(__dirname, "../lib"),
+    }
+    return config
+  },
   framework: {
     name: "@storybook/nextjs",
     options: {},

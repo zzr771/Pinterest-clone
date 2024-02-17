@@ -1,10 +1,12 @@
+import { useEffect, useRef } from "react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { MdOutlineFileUpload } from "react-icons/md"
 import { LuArrowUpRight } from "react-icons/lu"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
-import { useEffect, useRef } from "react"
-import Image from "next/image"
 import { useAppSelector } from "@/lib/store/hook"
+import { getRandomColorHex } from "@/lib/utils"
 
 interface Props {
   pinId: string
@@ -20,6 +22,7 @@ interface Props {
   }
 }
 export default function PinCard({ pinId, image, imageSize, title, author }: Props) {
+  const router = useRouter()
   const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
   const cardBody = useRef<HTMLDivElement>(null)
   const cardContainer = useRef<HTMLDivElement>(null)
@@ -41,6 +44,7 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
         cardBody.current.style.width = displayWidth - 8 + "px" // 8: PinCard's left and right padding
       }
       cardBody.current.style.aspectRatio = `${width}/${height}`
+      cardBody.current.style.backgroundColor = getRandomColorHex()
     }
 
     setTimeout(() => {
@@ -49,18 +53,22 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
   }, [screenSize])
 
   return (
-    <div ref={cardContainer} className="absolute p-1 pb-2 w3:px-2 w3:pb-4">
-      <div ref={cardBody} className="relative">
-        <Image src={image} alt="pin image" className="rounded-2xl absolute z-[-1]" fill sizes="300px" />
-        <div className="h-full flex flex-col justify-between p-3 cursor-zoom-in hover-show-container max-w3:hidden hover:bg-gray-tp-1 rounded-2xl">
+    <div
+      ref={cardContainer}
+      className="absolute p-1 pb-2 w3:px-2 w3:pb-4"
+      onClick={() => router.push(`/pin/${pinId}`)}>
+      <div ref={cardBody} className="relative rounded-2xl overflow-hidden">
+        <Image src={image} alt="" className="rounded-2xl absolute" fill sizes="300px" />
+        <div className="relative z-1 h-full flex flex-col justify-between p-3 cursor-zoom-in hover-show-container max-w3:hidden hover:bg-gray-tp-1">
           <div className="flex justify-end hover-content-flex ">
             <Button
               text="Save"
               bgColor="red"
               hover
               clickEffect
-              click={() => {
-                /* todo */
+              click={(event) => {
+                event.stopPropagation()
+                // todo
               }}
             />
           </div>
@@ -69,7 +77,8 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
               bgColor="translucent"
               size="small"
               hover
-              click={() => {
+              click={(event) => {
+                event.stopPropagation()
                 /* todo */
               }}>
               <div className="flex items-center gap-2">
@@ -84,7 +93,8 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
                 rounded
                 hover
                 clickEffect
-                click={() => {
+                click={(event) => {
+                  event.stopPropagation()
                   /* todo */
                 }}>
                 <MdOutlineFileUpload className="text-black w-5 h-5" />
@@ -95,7 +105,8 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
                 rounded
                 hover
                 clickEffect
-                click={() => {
+                click={(event) => {
+                  event.stopPropagation()
                   /* todo */
                 }}>
                 <TfiMoreAlt className="text-black w-4 h-4" />

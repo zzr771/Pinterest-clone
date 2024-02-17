@@ -59,6 +59,28 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
   }
+  .shadow-small {
+    box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+  }
+  .shadow-large {
+    box-shadow: 0 0 15px rgb(0 0 0 / 0.1);
+  }
+  .card-transform {
+    transition: transform 0.2s ease-in-out;
+  }
+  .horizontal-middle {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .vertival-middle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .border-top {
+    border-top: 1px solid rgb(239, 239, 239);
+  }
 }
 
 .hover-content-flex {
@@ -67,7 +89,33 @@
 .hover-show-container:hover .hover-content-flex {
   display: flex;
 }
+.hover-content-visible {
+  visibility: hidden;
+}
+.hover-visible-container:hover .hover-content-visible {
+  visibility: visible;
+}
+.sticky1 {
+  position: sticky;
+  top: 64px;
+  z-index: 100;
+}
 
-.card-transform {
-  transition: transform 0.2s ease-in-out;
+.reaction {
+  width: 40px;
+  height: 40px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* background-image: url("/assets/thanks.svg"); */
+}
+.reaction-animation {
+  animation: 2000ms steps(60) 0s infinite normal forwards running play60;
+}
+@keyframes play60 {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -2400px 0;
+  }
 }

@@ -6,14 +6,10 @@ import { AiFillMessage, AiFillHome } from "react-icons/ai"
 import { useAppSelector } from "@/lib/store/hook"
 
 export default function NavBarBottom() {
-  const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
-
   const [activeBtn, setActiveBtn] = useState("Home")
 
-  if (screenSize >= 820) return null
-
   return (
-    <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white">
+    <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white w3:hidden">
       <div className="w-full h-full flex justify-around max-sm:p-2 max-sm:pt-0">
         <div
           className={`flex flex-col justify-center items-center ${

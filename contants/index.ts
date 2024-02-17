@@ -37,7 +37,7 @@ function getInitialPinCardImgs(screenWidth: number) {
       const result = imgs.slice(0, number)
       records.push(...result)
       resolve(result)
-    }, 500)
+    })
   })
 }
 
@@ -59,7 +59,7 @@ function getMorePinCardImgs(screenWidth: number) {
 
     setTimeout(() => {
       resolve(result)
-    }, 500)
+    })
   })
 }
 

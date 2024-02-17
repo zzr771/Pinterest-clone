@@ -1,9 +1,10 @@
 "use client"
-import { useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import PinCard from "@/components/cards/PinCard"
 import { getInitialPinCardImgs, getMorePinCardImgs } from "@/contants/index"
 import { getImageDisplaySize } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
+import Loading from "../shared/Loading"
 
 /*
   All cards are positioned in one common container, rather than each column has its
@@ -142,20 +143,22 @@ export default function WaterFall() {
 
   return (
     <section className="w-full relative">
-      <div ref={containterRef} className="relative w3:mx-auto px-1">
-        {imgs.length > 0 &&
-          imgs.map((img) => (
-            <PinCard
-              key={img.id}
-              pinId={img.id}
-              image={img.src}
-              imageSize={{ width: img.width, height: img.height }}
-              title="test"
-              author={{ name: "user", avatar: "/assets/test/avatar.jpg" }}
-            />
-          ))}
-      </div>
-      <div ref={observerRef} className="w-full h-screen absolute bottom-0 z-[-1]"></div>
+      <Suspense fallback={<Loading />}>
+        <div ref={containterRef} className="relative w3:mx-auto px-1">
+          {imgs.length > 0 &&
+            imgs.map((img) => (
+              <PinCard
+                key={img.id}
+                pinId={img.id}
+                image={img.src}
+                imageSize={{ width: img.width, height: img.height }}
+                title="test"
+                author={{ name: "user", avatar: "/assets/test/avatar.jpg" }}
+              />
+            ))}
+        </div>
+        <div ref={observerRef} className="w-full h-screen absolute bottom-0 z-[-1]"></div>
+      </Suspense>
     </section>
   )
 }

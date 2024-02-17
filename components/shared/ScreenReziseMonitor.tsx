@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo } from "react"
-// import { useDispatch } from "react-redux"
 import { setScreenSize } from "@/lib/store/features/screenSizeSlice"
 import { useAppDispatch } from "@/lib/store/hook"
 
