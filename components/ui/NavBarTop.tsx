@@ -5,6 +5,7 @@ import { FaChevronDown, FaBell, FaUser, FaCheck } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
+import ToolTip from "../shared/ToolTip"
 
 const options = ["Home", "Explore", "Create"]
 export default function NavBarTop() {
@@ -45,7 +46,7 @@ export default function NavBarTop() {
       <div
         className={`relative flex items-center p-3.5 ml-2 rounded-full w4:hidden  
         ${showDropDown ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"}
-       font-semibold cursor-pointer leading-5
+       font-medium cursor-pointer leading-5
         `}
         onClick={() => setShowDropDown((prev) => !prev)}>
         <div className="flex items-center gap-2">
@@ -59,7 +60,7 @@ export default function NavBarTop() {
             {options.map((item) => (
               <div
                 key={item}
-                className={`flex items-center justify-between w-40 p-2 pr-5 font-semibold rounded-lg hover:bg-gray-bg-4
+                className={`flex items-center justify-between w-40 p-2 pr-5 font-medium rounded-lg hover:bg-gray-bg-4
                 ${item === activeBtn ? "bg-gray-bg-4" : ""}
                 text-black
                 `}
@@ -76,31 +77,37 @@ export default function NavBarTop() {
 
       {/* Button Group: Notification Message Profile */}
       <div className="flex items-center">
-        <Button
-          hover={true}
-          rounded={true}
-          click={() => {
-            /* todo */
-          }}>
-          <FaBell className="text-gray-font-3 w-6 h-6" />
-        </Button>
-        <Button
-          hover={true}
-          rounded={true}
-          click={() => {
-            /* todo */
-          }}>
-          <AiFillMessage className="text-gray-font-3 w-6 h-6" />
-        </Button>
-        <Button
-          hover={true}
-          rounded={true}
-          click={() => {
-            /* todo */
-          }}>
-          {/* todo: replace it with Clerk */}
-          <FaUser className="text-gray-font-3 w-6 h-6" />
-        </Button>
+        <ToolTip text="Notifications" position="bottom">
+          <Button
+            hover={true}
+            rounded={true}
+            click={() => {
+              /* todo */
+            }}>
+            <FaBell className="text-gray-font-3 w-6 h-6" />
+          </Button>
+        </ToolTip>
+        <ToolTip text="Messages" position="bottom">
+          <Button
+            hover={true}
+            rounded={true}
+            click={() => {
+              /* todo */
+            }}>
+            <AiFillMessage className="text-gray-font-3 w-6 h-6" />
+          </Button>
+        </ToolTip>
+        <ToolTip text="Your profile" position="bottom">
+          <Button
+            hover={true}
+            rounded={true}
+            click={() => {
+              /* todo */
+            }}>
+            {/* todo: replace it with Clerk */}
+            <FaUser className="text-gray-font-3 w-6 h-6" />
+          </Button>
+        </ToolTip>
       </div>
     </section>
   )

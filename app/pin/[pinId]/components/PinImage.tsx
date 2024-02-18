@@ -52,7 +52,7 @@ export default function PinImage({ src }: { src: string }) {
         <div className="absolute bottom-4 px-5 flex w-full justify-between">
           <a href={src} target="_blank" className="hover-content-visible">
             <Button bgColor="translucent" hover className="!h-11">
-              <div className="flex gap-1 items-center font-semibold">
+              <div className="flex gap-1 items-center font-medium">
                 <LuArrowUpRight className="text-2xl" />
                 <span>View image</span>
               </div>

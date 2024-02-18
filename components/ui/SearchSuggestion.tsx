@@ -24,7 +24,7 @@ export default function SearchSuggestion() {
     <div className="bg-white rounded-b-2xl p-8">
       {recentSearches.length > 0 && (
         <>
-          <h3 className="font-semibold text-base">Recent searches</h3>
+          <h3 className="font-medium text-base">Recent searches</h3>
           <div className="flex flex-wrap gap-2 mt-5">
             {recentSearches.map((item: string) => (
               <div
@@ -43,7 +43,7 @@ export default function SearchSuggestion() {
         </>
       )}
 
-      <h3 className="font-semibold text-base mt-7">Ideas for you</h3>
+      <h3 className="font-medium text-base mt-7">Ideas for you</h3>
       <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
@@ -55,7 +55,7 @@ export default function SearchSuggestion() {
         ))}
       </div>
 
-      <h3 className="font-semibold text-base mt-7">Popular on Pinterest</h3>
+      <h3 className="font-medium text-base mt-7">Popular on Pinterest</h3>
       <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard

@@ -49,3 +49,9 @@ NavBar：
 768px 悬浮于底部
 540px 底部
 430px 底部
+
+不做：
+all: 右下角问号图标
+navbar: account more options,
+pin: share, tags, report pin, get pin embed code
+create: tagged topics, more options

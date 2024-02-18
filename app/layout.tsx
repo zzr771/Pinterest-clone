@@ -10,7 +10,7 @@ import Modal from "@/components/shared/Modal"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Developing",
+  title: " .",
   description: "",
 }
 
