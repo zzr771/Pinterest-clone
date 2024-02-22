@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react"
 
-import NavBarBottom from "./NavBarBottom"
+import SearchBar from "./SearchBar"
 
 const meta = {
-  title: "ui/NavBarBottom",
-  component: NavBarBottom,
+  title: "layout/SearchBar",
+  component: SearchBar,
   parameters: {
     layout: "top",
   },
@@ -16,7 +16,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof NavBarBottom>
+} satisfies Meta<typeof SearchBar>
 
 export default meta
 type Story = StoryObj<typeof meta>

@@ -1,16 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { FaChevronDown, FaBell, FaUser, FaCheck } from "react-icons/fa"
+import { useRef, useState } from "react"
+import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
+import DropDownList from "../shared/DropDownList"
 
 const options = ["Home", "Explore", "Create"]
 export default function NavBarTop() {
   const [activeBtn, setActiveBtn] = useState("Home")
   const [showDropDown, setShowDropDown] = useState(false)
+  const options = useRef([{ label: "Home" }, { label: "Explore" }, { label: "Create" }])
+
+  function onSelectionChange(activeOption: string) {
+    setActiveBtn(activeOption)
+  }
 
   return (
     <section className="nav-top items-center bg-white h-20 py-1 px-4 w3:flex hidden">
@@ -56,19 +62,8 @@ export default function NavBarTop() {
           />
         </div>
         {showDropDown && (
-          <div className="horizontal-middle top-[60px] z-5 bg-white p-2 rounded-2xl shadow-small">
-            {options.map((item) => (
-              <div
-                key={item}
-                className={`flex items-center justify-between w-40 p-2 pr-5 font-medium rounded-lg hover:bg-gray-bg-4
-                ${item === activeBtn ? "bg-gray-bg-4" : ""}
-                text-black
-                `}
-                onClick={() => setActiveBtn(item)}>
-                <span>{item}</span>
-                {item === activeBtn && <FaCheck />}
-              </div>
-            ))}
+          <div className="horizontal-middle top-[60px] z-5">
+            <DropDownList options={options.current} onSelectionChange={onSelectionChange} showCheckMark />
           </div>
         )}
       </div>

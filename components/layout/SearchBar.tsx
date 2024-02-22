@@ -12,7 +12,7 @@ export default function SearchBar() {
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
-  const focusClass = isFocused ? "blue-shadow" : ""
+  const focusClass = isFocused ? "shadow-blue" : ""
 
   const searchBarContainer = useRef<HTMLDivElement>(null)
   function handleClick() {

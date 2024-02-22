@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react"
 import NavBarTop from "./NavBarTop"
 
 const meta = {
-  title: "ui/NavBarTop",
+  title: "layout/NavBarTop",
   component: NavBarTop,
   parameters: {
     layout: "top",

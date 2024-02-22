@@ -44,7 +44,7 @@ export default function WaterFall() {
     } else {
       cardWidth = 252
       cardPaddingBottom = 16
-      cardAuthorPartHeight = 0
+      cardAuthorPartHeight = 78
     }
   }
 

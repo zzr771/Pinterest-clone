@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react"
 import SearchSuggestion from "./SearchSuggestion"
 
 const meta = {
-  title: "ui/SearchSuggestion",
+  title: "layout/SearchSuggestion",
   component: SearchSuggestion,
   parameters: {
     layout: "centered",
