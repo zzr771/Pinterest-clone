@@ -20,12 +20,14 @@ const config: Config = {
           1: "#EFEFEF",
           2: "#F0F0F0",
           3: "#F5F5F5",
-          4: "#E9E9E9", // also as most buttons hover bg
+          4: "#E9E9E9",
+          5: "#E2E2E2",
         },
         "gray-font": {
           1: "#333365",
           2: "#878787",
           3: "#5F5F5F",
+          4: "#767676",
         },
         "gray-tp": {
           "1": "rgba(0,0,0,0.3)",
@@ -36,14 +38,19 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
-      animation: {
-        shrink: "shrink 0.5s ease-in-out",
-      },
       keyframes: {
-        shrink: {
-          "0%, 100%": { transform: "scale(1)" },
-          "50%": { transform: "scale(0.7)" },
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       screens: {
         w1: "540px",
@@ -54,6 +61,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
 export default config
