@@ -81,6 +81,9 @@ export default function Button({
       case "translucent":
         hoverClass = "hover:bg-white"
         break
+      case "gray":
+        hoverClass = "hover:bg-gray-bg-5"
+        break
     }
   }
 

@@ -1,4 +1,4 @@
-import WaterFall from "@/components/ui/WaterFall"
+import WaterFall from "@/components/layout/WaterFall"
 import Modal from "@/components/shared/Modal"
 
 export default function Home() {

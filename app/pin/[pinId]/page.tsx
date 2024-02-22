@@ -9,7 +9,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
         <BackwardButton />
       </div>
 
-      <section className="flex items-stretch mt-2.5 mx-auto rounded-[2rem] shadow-large w-[1016px] min-h-[592px]">
+      <section className="flex items-stretch mt-2.5 mx-auto rounded-[2rem] shadow-large w-[1016px] min-h-[592px] max-h-[902px]">
         <div className="w-[508px] rounded-l-[2rem] min-h-[592px] overflow-hidden">
           <PinImage src={"/assets/test/PinDetail/pin-detail2.jpg"} />
         </div>
