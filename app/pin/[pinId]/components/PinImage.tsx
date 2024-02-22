@@ -11,7 +11,7 @@ export default function PinImage({ src }: { src: string }) {
     The displayed width of the image should not exceed 508. If it does, the size of 
       the image should be minified while the aspect-ratio should be remained.
   */
-  const [imageSizes, setImageSizes] = useState<number[]>([0, 0]) // [width, height]
+  const [imageSize, setimageSize] = useState({ width: 0, height: 0 })
   const [isBigImage, setIsBigImage] = useState(false)
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function PinImage({ src }: { src: string }) {
         height = width / ratio
         setIsBigImage(true)
       }
-      setImageSizes([width, height])
+      setimageSize({ width, height })
     }
   }, [])
 
@@ -45,9 +45,10 @@ export default function PinImage({ src }: { src: string }) {
         <Image
           className={`${isBigImage ? "" : "rounded-2xl"}`}
           src={src}
-          alt=""
-          width={imageSizes[0]}
-          height={imageSizes[1]}
+          alt="pin image"
+          width={imageSize.width}
+          height={imageSize.height}
+          quality={100}
         />
         <div className="absolute bottom-4 px-5 flex w-full justify-between">
           <a href={src} target="_blank" className="hover-content-visible">
