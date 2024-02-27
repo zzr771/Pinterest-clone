@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react"
 import DropDownList from "./DropDownList"
 
 const meta = {
-  title: "layout/DropDownList",
+  title: "shared/DropDownList",
   component: DropDownList,
   parameters: {
     layout: "top",

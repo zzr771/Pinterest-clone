@@ -101,7 +101,7 @@ export default function Button({
     <button
       type="button"
       onClick={click}
-      className={`flex items-center justify-center rounded-full font-medium cursor-pointer
+      className={`flex items-center justify-center rounded-full font-semibold cursor-pointer
       ${sizeClass} 
       ${textColorClass}
       ${bgColorClass}

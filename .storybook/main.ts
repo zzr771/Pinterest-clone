@@ -40,7 +40,7 @@ const config: StorybookConfig = {
     if (!config.resolve) return config
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@/lib": path.resolve(__dirname, "../lib"),
+      "@": path.resolve(__dirname, "../../Pinterest"),
     }
     return config
   },

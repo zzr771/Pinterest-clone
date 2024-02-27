@@ -34,3 +34,18 @@ export function getRandomColorHex() {
   const hexB = b.toString(16).padStart(2, "0")
   return `#${hexR}${hexG}${hexB}`
 }
+
+export function getCardNumber(screenWidth: number) {
+  switch (true) {
+    case screenWidth <= 540:
+      return 12
+    case screenWidth <= 1024:
+      return 15
+    case screenWidth <= 1440:
+      return 25
+    case screenWidth <= 1920:
+      return 30
+    default:
+      return 40
+  }
+}

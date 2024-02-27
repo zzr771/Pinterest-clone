@@ -1,21 +1,24 @@
 "use client"
 import { useRef, useState } from "react"
 import Image from "next/image"
-import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import { TfiMoreAlt } from "react-icons/tfi"
+import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import Button from "@/components/shared/Button"
-import ToolTip from "@/components/shared/ToolTip"
 import Paragraph from "@/components/shared/Paragraph"
-import DropDownList from "@/components/shared/DropDownList"
 import CommentCard from "@/components/cards/CommentCard"
+import { reactionIcons } from "@/constants/index"
+import Reaction from "@/components/shared/Reaction"
+import Comment from "@/components/form/Comment"
+import ToolTip from "@/components/shared/ToolTip"
+import DropDownList from "@/components/shared/DropDownList"
 
 export default function Comments() {
-  const [showMoreOptions, setShowMoreOptions] = useState(false)
   const [isCommentsFolded, setIsCommentsFolded] = useState(false)
-
+  const [showMoreOptions, setShowMoreOptions] = useState(false)
   const options = useRef([
     { label: "Download image", callback: () => {} },
     { label: "Hide Pin", callback: () => {} },
+    { label: "Delete Pin", callback: () => {} },
   ])
 
   function foldComments() {
@@ -30,8 +33,8 @@ export default function Comments() {
       <div className="flex flex-col flex-1 pl-8">
         {/* top bar */}
         <div className="flex justify-between h-[3.75rem] pt-8 pr-8 box-content bg-white rounded-tr-[2rem] sticky top-[64px] z-2">
-          <div className="flex items-center ml-[-12px] relative">
-            <ToolTip text="More options" position="bottom">
+          <div className="flex items-center relative ml-[-12px]">
+            <ToolTip text="More options">
               <Button
                 rounded
                 hover
@@ -47,11 +50,8 @@ export default function Comments() {
               </div>
             )}
           </div>
+
           <div className="flex items-center">
-            <div className="flex items-center gap-2 pr-4">
-              <span className="font-medium">Profile</span>
-              <FaChevronDown className="cursor-pointer w-3.5 h-3.5" />
-            </div>
             <Button text="Save" bgColor="red" hover />
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function Comments() {
           </div>
 
           {/* comments */}
-          <div className="mt-[4.5rem]">
+          <div className="mt-[4rem]">
             <div className="flex items-center justify-between pr-4">
               <h3 className="font-medium my-3">Comments</h3>
               {isCommentsFolded ? (
@@ -114,13 +114,23 @@ export default function Comments() {
       </div>
 
       {/* input */}
-      {/* No comment: What do you think? */}
-      <div className="border-top h-[144px] sticky bottom-0 z-1 py-2 px-8 bg-white">
+      <div className="border-top sticky bottom-0 z-1 py-2 px-8 bg-white">
         <div className="flex justify-between items-center mt-1 mb-3">
+          {/* No comment: What do you think? */}
           <span className="font-medium text-xl">7 Comments</span>
           <div className="flex items-center gap-3">
-            <div className="reaction"></div>
+            <div className="flex gap-1 cursor-pointer">
+              <div
+                style={{ backgroundImage: `url(${reactionIcons[0].src})` }}
+                className="h-5 w-5 bg-no-repeat bg-cover"></div>
+              {"21"}
+            </div>
+            <Reaction />
           </div>
+        </div>
+
+        <div className="mb-3">
+          <Comment />
         </div>
       </div>
     </div>

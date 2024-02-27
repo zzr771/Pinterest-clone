@@ -22,6 +22,7 @@ const config: Config = {
           3: "#F5F5F5",
           4: "#E9E9E9",
           5: "#E2E2E2",
+          6: "#CDCDCD",
         },
         "gray-font": {
           1: "#333365",
@@ -57,7 +58,8 @@ const config: Config = {
         w2: "768px",
         w3: "820px",
         w4: "912px",
-        w5: "1700px",
+        w5: "1055px",
+        w6: "1700px",
       },
     },
   },

@@ -127,9 +127,10 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
         </div>
       </div>
 
+      {/* title & author */}
       <div className="px-1 mt-1.5">
         <div className="flex items-center justify-between ">
-          <h5 className="truncate text-xs font-medium">{title}</h5>
+          <h5 className="truncate max-w3:text-xs text-sm font-medium">{title}</h5>
           {screenSize < 820 && (
             <Button
               bgColor="translucent"
@@ -154,7 +155,7 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
               sizes="32px"
             />
           </div>
-          <div className="flex-1 truncate text-xs font-medium pr-5">{author.name}</div>
+          <div className="flex-1 truncate max-w3:text-xs text-sm font-medium pr-5">{author.name}</div>
         </div>
       </div>
     </div>

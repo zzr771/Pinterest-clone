@@ -44,7 +44,7 @@ export default function SearchSuggestion() {
       )}
 
       <h3 className="font-medium text-base mt-7">Ideas for you</h3>
-      <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
+      <div className="grid grid-cols-3 w6:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
             image="/assets/test/search-suggestion-card-image.jpg"
@@ -56,7 +56,7 @@ export default function SearchSuggestion() {
       </div>
 
       <h3 className="font-medium text-base mt-7">Popular on Pinterest</h3>
-      <div className="grid grid-cols-3 w5:grid-cols-4 gap-2 mt-5">
+      <div className="grid grid-cols-3 w6:grid-cols-4 gap-2 mt-5">
         {suggestionCardArray.map((item) => (
           <SearchSuggestionCard
             image="/assets/test/search-suggestion-card-image.jpg"

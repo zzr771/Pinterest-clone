@@ -5,14 +5,14 @@ import Button from "../shared/Button"
 
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CommentValidation } from "@/lib/validations/comment"
+import { ReplyValidation } from "@/lib/validations/comment"
 
 interface Props {
   close: () => void
 }
 export default function Reply({ close }: Props) {
   const form = useForm({
-    resolver: zodResolver(CommentValidation),
+    resolver: zodResolver(ReplyValidation),
     defaultValues: {
       reply: "",
     },
@@ -20,11 +20,11 @@ export default function Reply({ close }: Props) {
   // watch user input and render the "save" button correspondingly
   const userInput: string = form.watch("reply")
 
-  async function onSubmit(values: z.infer<typeof CommentValidation>) {}
+  async function onSubmit(values: z.infer<typeof ReplyValidation>) {}
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="reply"

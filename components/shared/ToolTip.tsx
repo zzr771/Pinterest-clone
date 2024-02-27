@@ -2,12 +2,13 @@
 import { useLayoutEffect, useRef } from "react"
 
 interface Props {
-  position: "top" | "left" | "right" | "bottom"
+  position?: "top" | "left" | "right" | "bottom"
   text: string
   children: React.ReactNode
+  extraGap?: number
 }
 
-export default function ToolTip({ position, text, children }: Props) {
+export default function ToolTip({ position = "bottom", text, children, extraGap = 0 }: Props) {
   const boxRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -22,20 +23,20 @@ export default function ToolTip({ position, text, children }: Props) {
     switch (position) {
       case "top":
         box.classList.add("horizontal-middle")
-        box.style.bottom = height + 8 + "px"
+        box.style.bottom = height + 8 + extraGap + "px"
         break
       case "bottom":
         box.classList.add("horizontal-middle")
-        box.style.top = containerHeight + 8 + "px"
+        box.style.top = containerHeight + 8 + extraGap + "px"
         break
       case "left":
         box.classList.add("vertical-middle")
-        box.style.left = -width - 8 + "px"
+        box.style.left = -width - 8 - extraGap + "px"
         break
       case "right":
         if (!container) return
         box.classList.add("vertical-middle")
-        box.style.left = containerWidth + 8 + "px"
+        box.style.left = containerWidth + 8 + extraGap + "px"
         break
     }
   }, [])

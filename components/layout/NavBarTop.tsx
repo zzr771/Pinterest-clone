@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
@@ -8,8 +9,8 @@ import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
 import DropDownList from "../shared/DropDownList"
 
-const options = ["Home", "Explore", "Create"]
 export default function NavBarTop() {
+  const router = useRouter()
   const [activeBtn, setActiveBtn] = useState("Home")
   const [showDropDown, setShowDropDown] = useState(false)
   const options = useRef([{ label: "Home" }, { label: "Explore" }, { label: "Create" }])
@@ -25,7 +26,8 @@ export default function NavBarTop() {
         hover={true}
         rounded={true}
         click={() => {
-          /* todo */
+          setActiveBtn("Home")
+          router.push("/")
         }}>
         <img src="/assets/icon.png" alt="icon" className="h-6 w-6" />
       </Button>
@@ -34,17 +36,23 @@ export default function NavBarTop() {
       <div className="flex items-center max-w4:hidden">
         <Button
           text="Home"
-          click={() => setActiveBtn("Home")}
+          click={() => {
+            setActiveBtn("Home")
+            router.push("/")
+          }}
           bgColor={activeBtn === "Home" ? "black" : "transparent"}
         />
         <Button
           text="Explore"
-          click={() => setActiveBtn("Explore")}
           bgColor={activeBtn === "Explore" ? "black" : "transparent"}
+          className="cursor-not-allowed"
         />
         <Button
           text="Create"
-          click={() => setActiveBtn("Create")}
+          click={() => {
+            setActiveBtn("Create")
+            router.push("/idea-pin-builder")
+          }}
           bgColor={activeBtn === "Create" ? "black" : "transparent"}
         />
       </div>
@@ -73,32 +81,17 @@ export default function NavBarTop() {
       {/* Button Group: Notification Message Profile */}
       <div className="flex items-center">
         <ToolTip text="Notifications" position="bottom">
-          <Button
-            hover={true}
-            rounded={true}
-            click={() => {
-              /* todo */
-            }}>
+          <Button hover rounded className="cursor-not-allowed">
             <FaBell className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
         <ToolTip text="Messages" position="bottom">
-          <Button
-            hover={true}
-            rounded={true}
-            click={() => {
-              /* todo */
-            }}>
+          <Button hover rounded className="cursor-not-allowed">
             <AiFillMessage className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
         <ToolTip text="Your profile" position="bottom">
-          <Button
-            hover={true}
-            rounded={true}
-            click={() => {
-              /* todo */
-            }}>
+          <Button hover rounded>
             {/* todo: replace it with Clerk */}
             <FaUser className="text-gray-font-3 w-6 h-6" />
           </Button>

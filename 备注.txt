@@ -22,7 +22,7 @@ w4  912
 lg	1024px	
 xl	1280px	
 2xl	1536px
-w5  1700
+w6  1700
 
 
 PinCard:
@@ -38,8 +38,13 @@ screen(px)  card(px)    columns
   390          182         2      
   375          174         2
   280          127         2
-
 屏幕宽度大于820，card定宽; 屏幕宽度540~820，card宽度33%; 屏幕宽度0~540，card宽度50%。
+
+Pin Detail Image
+屏幕宽度>1055, 图片和评论横向排列，宽508
+屏幕宽度540~1055, 图片和评论纵向排列，宽508
+屏幕宽度<540, 图片和评论横向排列，宽100vw
+
 
 NavBar：
 1024px 按钮没有收缩
@@ -53,5 +58,7 @@ NavBar：
 不做：
 all: 右下角问号图标
 navbar: account more options,
-pin: share, tags, report pin, get pin embed code
-create: tagged topics, more options
+pin: share, tags, report pin, get pin embed code, statistic bar
+create: tagged topics, more options, board
+board
+notifications

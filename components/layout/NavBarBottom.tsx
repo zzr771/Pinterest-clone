@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { FaSearch, FaUser } from "react-icons/fa"
 import { AiFillMessage, AiFillHome } from "react-icons/ai"
-import { useAppSelector } from "@/lib/store/hook"
 
 export default function NavBarBottom() {
   const [activeBtn, setActiveBtn] = useState("Home")

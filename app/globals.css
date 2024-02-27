@@ -25,6 +25,18 @@
 }
 
 @layer components {
+  .no-focus {
+    @apply focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
+  }
+  .pin-container-width {
+    @apply flex-row w-[1016px] max-w5:flex-col max-w5:w-[508px] max-w1:w-screen;
+  }
+  .pin-image-width {
+    @apply w-screen w1:w-[508px];
+  }
+  .text-shadow {
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.75);
+  }
   .blue-shadow {
     box-shadow: rgba(0, 132, 255, 0.5) 0px 0px 0px 4px;
   }
@@ -62,8 +74,11 @@
   .shadow-small {
     box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
   }
-  .shadow-large {
+  .shadow-medium {
     box-shadow: 0 0 15px rgb(0 0 0 / 0.1);
+  }
+  .shadow-large {
+    box-shadow: 0 0 22px rgb(0 0 0 / 0.1);
   }
   .card-transform {
     transition: transform 0.2s ease-in-out;
@@ -81,16 +96,17 @@
   .border-top {
     border-top: 1px solid rgb(239, 239, 239);
   }
-  .no-focus {
-    @apply focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
-  }
 }
 
-.hover-content-flex {
+.hover-content-flex,
+.hover-content-block {
   display: none;
 }
 .hover-show-container:hover .hover-content-flex {
   display: flex;
+}
+.hover-show-container:hover .hover-content-block {
+  display: block;
 }
 .hover-content-visible {
   visibility: hidden;
@@ -104,16 +120,28 @@
   z-index: 100;
 }
 
-.reaction {
-  width: 40px;
-  height: 40px;
-  background-repeat: no-repeat;
-  background-size: cover;
-  /* background-image: url("/assets/thanks.svg"); */
+.main-content {
+  height: calc(100vh - 4rem);
 }
-.reaction-animation {
+.reaction {
+  opacity: 1;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
+  transition-property: transform, opacity;
+}
+.reaction-start {
+  transform: translateY(30px);
+  opacity: 0;
+}
+.reaction-end {
+  transform: translateY(0);
+  opacity: 1;
+}
+.reaction-container:hover .reaction {
+  transform: translateY(-30px) scale(1.6);
   animation: 2000ms steps(60) 0s infinite normal forwards running play60;
 }
+
 @keyframes play60 {
   0% {
     background-position: 0 0;

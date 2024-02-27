@@ -63,4 +63,12 @@ function getMorePinCardImgs(screenWidth: number) {
   })
 }
 
-export { getInitialPinCardImgs, getCardNumber, getMorePinCardImgs }
+const reactionIcons = [
+  { name: "Good idea", src: "/assets/reactions/good-idea.svg" },
+  { name: "Love", src: "/assets/reactions/love.svg" },
+  { name: "Thanks", src: "/assets/reactions/thanks.svg" },
+  { name: "Wow", src: "/assets/reactions/wow.svg" },
+  { name: "Haha", src: "/assets/reactions/haha.svg" },
+]
+
+export { getInitialPinCardImgs, getCardNumber, getMorePinCardImgs, reactionIcons }

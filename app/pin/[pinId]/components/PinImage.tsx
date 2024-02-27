@@ -1,10 +1,9 @@
 "use client"
 
 import { LuArrowUpRight } from "react-icons/lu"
-import { FaSearch } from "react-icons/fa"
 import Button from "@/components/shared/Button"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function PinImage({ src }: { src: string }) {
   /*
@@ -13,6 +12,7 @@ export default function PinImage({ src }: { src: string }) {
   */
   const [imageSize, setimageSize] = useState({ width: 0, height: 0 })
   const [isBigImage, setIsBigImage] = useState(false)
+  const imgContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const newImg = document.createElement("img")
@@ -21,9 +21,16 @@ export default function PinImage({ src }: { src: string }) {
       let { width, height } = ele.target as HTMLImageElement
       const ratio = width / height
 
-      if (width < 508 || height < 592) {
-        // paddings on 4 sides are 20px
-        width = Math.min(width, 508 - 40)
+      // mobile devices
+      if (window.innerWidth < 540) {
+        width = window.innerWidth
+        height = width / ratio
+        height = Math.min(window.innerHeight, height)
+        setIsBigImage(true)
+      }
+      // other devices
+      else if (width < 508 || height < 592) {
+        width = Math.min(width, 508 - 40) // paddings on 4 sides are 20px
         height = width / ratio
         setIsBigImage(false)
       } else if (width >= 508) {
@@ -35,20 +42,29 @@ export default function PinImage({ src }: { src: string }) {
     }
   }, [])
 
+  useEffect(() => {
+    const imgContainer = imgContainerRef.current
+    if (imageSize.width == 0 || !imgContainer) return
+
+    imgContainer.style.width = `${imageSize.width}px`
+    imgContainer.style.height = `${imageSize.height}px`
+  }, [imageSize])
+
   return (
     <div className={`flex items-center justify-center box-border max-h-[902px] ${isBigImage ? "" : "p-5"}`}>
       {/* if the width of the image is less than 508 or the height is less than 592,
             the image should float in the center of the container and its border-radius
             should be 16px
         */}
-      <div className="relative hover-visible-container">
+      <div ref={imgContainerRef} className="relative hover-visible-container">
         <Image
-          className={`${isBigImage ? "" : "rounded-2xl"}`}
+          className={`object-cover ${isBigImage ? "" : "rounded-2xl"}`}
           src={src}
           alt="pin image"
-          width={imageSize.width}
-          height={imageSize.height}
+          fill
           quality={100}
+          priority={true}
+          sizes="(max-width: 540px) 100vw, (min-width: 540px) 508px"
         />
         <div className="absolute bottom-4 px-5 flex w-full justify-between">
           <a href={src} target="_blank" className="hover-content-visible">
@@ -59,9 +75,9 @@ export default function PinImage({ src }: { src: string }) {
               </div>
             </Button>
           </a>
-          <Button bgColor="translucent" hover rounded className="!h-11">
+          {/* <Button bgColor="translucent" hover rounded className="!h-11">
             <FaSearch />
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>

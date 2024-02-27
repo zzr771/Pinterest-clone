@@ -1,7 +1,7 @@
 "use client"
 import { Suspense, useEffect, useRef, useState } from "react"
 import PinCard from "@/components/cards/PinCard"
-import { getInitialPinCardImgs, getMorePinCardImgs } from "@/contants/index"
+import { getInitialPinCardImgs, getMorePinCardImgs } from "@/constants/index"
 import { getImageDisplaySize } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
 import Loading from "../shared/Loading"
