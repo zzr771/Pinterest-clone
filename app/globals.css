@@ -41,11 +41,7 @@
     box-shadow: rgba(0, 132, 255, 0.5) 0px 0px 0px 4px;
   }
   .nav-top {
-    position: fixed;
-    z-index: 5;
-    left: 0;
-    right: 0;
-    top: 0;
+    @apply fixed z-[5] left-0 right-0 top-0;
   }
   .nav-float-bottom {
     position: fixed;
@@ -71,6 +67,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
   }
+}
+@layer utilities {
   .shadow-small {
     box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
   }
@@ -96,6 +94,12 @@
   .border-top {
     border-top: 1px solid rgb(239, 239, 239);
   }
+  .break-word {
+    overflow-wrap: break-word;
+  }
+  .main-content {
+    height: calc(100vh - 5rem);
+  }
 }
 
 .hover-content-flex,
@@ -114,15 +118,7 @@
 .hover-visible-container:hover .hover-content-visible {
   visibility: visible;
 }
-.sticky1 {
-  position: sticky;
-  top: 64px;
-  z-index: 100;
-}
 
-.main-content {
-  height: calc(100vh - 4rem);
-}
 .reaction {
   opacity: 1;
   transition-duration: 0.2s;
@@ -141,7 +137,6 @@
   transform: translateY(-30px) scale(1.6);
   animation: 2000ms steps(60) 0s infinite normal forwards running play60;
 }
-
 @keyframes play60 {
   0% {
     background-position: 0 0;
@@ -149,4 +144,24 @@
   100% {
     background-position: -2400px 0;
   }
+}
+
+.create-pin-label {
+  font-size: 12px;
+  font-weight: 400;
+}
+.create-pin-input {
+  border: 2px solid #cdcdcd;
+  border-radius: 1rem;
+  font-size: 1rem;
+  color: #111;
+}
+.create-pin-input:hover {
+  border-color: #a5a5a5;
+}
+.create-pin-input:focus-visible,
+.create-pin-input:focus {
+  box-shadow: 0 0 rgba(0, 0, 0, 0) !important;
+  outline: none;
+  outline-offset: 0px;
 }

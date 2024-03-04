@@ -129,9 +129,7 @@ export default function Comments() {
           </div>
         </div>
 
-        <div className="mb-3">
-          <Comment />
-        </div>
+        <Comment />
       </div>
     </div>
   )

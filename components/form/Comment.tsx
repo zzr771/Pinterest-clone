@@ -9,11 +9,10 @@ import { IoIosSend } from "react-icons/io"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CommentValidation } from "@/lib/validations/comment"
+import { VirtualTextarea } from "./VirtualTextarea"
 
 export default function Comment() {
   const [isFocused, setIsFocused] = useState(false)
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  const heightSimulatorRef = useRef<HTMLTextAreaElement>(null)
 
   const form = useForm({
     resolver: zodResolver(CommentValidation),
@@ -23,30 +22,10 @@ export default function Comment() {
   })
   const userInput: string = form.watch("comment")
 
-  useEffect(() => {
-    const textArea = textAreaRef.current
-    const heightSimulator = heightSimulatorRef.current
-    if (!textArea || !heightSimulator) return
-
-    setTimeout(() => {
-      const scrollHeight = heightSimulator.scrollHeight
-      textArea.style.height = Math.min(scrollHeight, 146) + "px"
-    })
-  }, [userInput])
-
-  useEffect(() => {
-    const textArea = textAreaRef.current
-    const heightSimulator = heightSimulatorRef.current
-    if (!textArea || !heightSimulator) return
-
-    const width = textArea.offsetWidth
-    heightSimulator.style.width = width + "px"
-  }, [])
-
   async function onSubmit(values: z.infer<typeof CommentValidation>) {}
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 mb-3">
       <div className="flex flex-none justify-center items-center h-12 w-12 bg-gray-bg-1 rounded-full">
         <Image
           className="rounded-full"
@@ -59,8 +38,7 @@ export default function Comment() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className={`flex flex-1 rounded-3xl items-center border-solid border
+          className={`flex flex-1 rounded-3xl items-center border-solid border 
           ${
             isFocused
               ? "bg-white hover:bg-white border-gray-bg-4"
@@ -71,16 +49,17 @@ export default function Comment() {
             control={form.control}
             name="comment"
             render={({ field }) => (
-              <FormItem className="flex gap-3 items-center w-full">
+              <FormItem className="flex-1 space-y-0">
                 <FormControl>
-                  <Textarea
-                    className="h-[52px] !min-h-[10px] p-3.5 resize-none no-focus text-base border-none bg-transparent"
-                    placeholder="Add a comment"
-                    {...field}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    ref={textAreaRef}
-                  />
+                  <div onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}>
+                    <VirtualTextarea
+                      className="p-4 w-[330px]"
+                      minRows={1}
+                      maxRows={5}
+                      placeHolder="Add a comment"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -88,20 +67,19 @@ export default function Comment() {
           />
           <div className="w-10 h-10 m-1.5">
             {userInput.length > 0 && (
-              <Button bgColor="red" rounded hover clickEffect className="w-10 !h-10">
+              <Button
+                bgColor="red"
+                rounded
+                hover
+                clickEffect
+                className="w-10 !h-10"
+                click={form.handleSubmit(onSubmit)}>
                 <IoIosSend className="w-5 h-5" />
               </Button>
             )}
           </div>
         </form>
       </Form>
-
-      <textarea
-        ref={heightSimulatorRef}
-        value={userInput}
-        readOnly
-        className="absolute invisible z-[-999] p-3.5 h-[52px] "
-      />
     </div>
   )
 }
