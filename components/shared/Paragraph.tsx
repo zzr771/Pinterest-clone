@@ -1,7 +1,14 @@
 "use client"
 import { useLayoutEffect, useRef, useState } from "react"
 
-export default function Paragraph({ text, maxLines }: { text: string; maxLines: number }) {
+interface Props {
+  text?: string
+  maxLines: number
+  children?: React.ReactNode
+  className?: string
+}
+
+export default function Paragraph({ text, maxLines, children, className }: Props) {
   const pRef = useRef<HTMLParagraphElement>(null)
   const [showMore, setShowMore] = useState(false)
   const [showLess, setShowLess] = useState(false)
@@ -35,21 +42,21 @@ export default function Paragraph({ text, maxLines }: { text: string; maxLines: 
     }
   }, [])
   return (
-    <div className="relative z-[-1]">
-      <p ref={pRef} className="overflow-hidden leading-[1.4]">
-        {text}
+    <div className={`relative ${className}`}>
+      <div ref={pRef} className="overflow-hidden">
+        {children || text}
         {showLess && (
           <span className="font-medium px-1 cursor-pointer" onClick={clickLessHandler}>
             ... less
           </span>
         )}
-      </p>
+      </div>
       {showMore && (
-        <div
+        <span
           className="absolute bottom-0 right-0 font-medium bg-white px-1 cursor-pointer"
           onClick={clickMoreHandler}>
           ... more
-        </div>
+        </span>
       )}
     </div>
   )
