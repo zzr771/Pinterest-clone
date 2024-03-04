@@ -30,7 +30,7 @@ export default function NavBarBottom() {
           <span className="text-xs">Search</span>
         </div>
 
-        <div
+        {/* <div
           className={`flex flex-col justify-center items-center ${
             activeBtn === "Notification" ? "text-black" : "text-gray-font-3"
           }`}>
@@ -38,7 +38,7 @@ export default function NavBarBottom() {
             <AiFillMessage className="w-full h-full" />
           </div>
           <span className="text-xs">Notification</span>
-        </div>
+        </div> */}
 
         <div
           className={`flex flex-col justify-center items-center ${

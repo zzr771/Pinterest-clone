@@ -5,6 +5,7 @@ import { Draft } from "@/lib/types"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
 import DropDownList from "@/components/shared/DropDownList"
+import useDropDownList from "@/lib/useDropDownList"
 
 interface Props {
   draft: Draft
@@ -21,10 +22,8 @@ export default function DraftCard({
   checkDraft,
 }: Props) {
   const [isChecked, setIsChecked] = useState(false)
-  const [showMoreOptions, setShowMoreOptions] = useState(false)
   const options = useRef([{ label: "Duplicate" }, { label: "Delete" }])
 
-  // console.log("controlCheck", controlCheck)
   const daysRest = useMemo(() => {
     const gap = draft.expirationTime - new Date().getTime()
     return Math.ceil(gap / (1000 * 60 * 60 * 24))
@@ -38,6 +37,10 @@ export default function DraftCard({
   useEffect(() => {
     setIsChecked(controlCheck)
   }, [controlCheck])
+
+  const dropContainerRef = useRef<HTMLDivElement>(null)
+  const [showDropDownList, setShowDropDownList] = useState(false)
+  useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
 
   return (
     <div
@@ -61,20 +64,19 @@ export default function DraftCard({
         {draft.title && <p className="font-semibold text-sm">{draft.title}</p>}
         <p className="text-[13px] text-gray-font-4">{`${daysRest} days until expiration`}</p>
       </div>
-      <div className="relative w-8 h-8">
+      <div ref={dropContainerRef} className="relative w-8 h-8">
         <div className="hover-content-flex">
           <Button
             size="small"
             hover
             rounded
             clickEffect
-            click={() => setShowMoreOptions((prev) => !prev)}
+            click={() => setShowDropDownList((prev) => !prev)}
             className="hover:bg-gray-bg-7">
             <TfiMoreAlt />
           </Button>
         </div>
-
-        {showMoreOptions && (
+        {showDropDownList && (
           <div className="absolute z-[1] top-[40px] left-[-151px]">
             <DropDownList options={options.current} />
           </div>

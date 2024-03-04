@@ -8,12 +8,16 @@ import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
 import DropDownList from "../shared/DropDownList"
+import useDropDownList from "@/lib/useDropDownList"
 
 export default function NavBarTop() {
   const router = useRouter()
   const [activeBtn, setActiveBtn] = useState("Home")
-  const [showDropDown, setShowDropDown] = useState(false)
-  const options = useRef([{ label: "Home" }, { label: "Explore" }, { label: "Create" }])
+
+  const options = useRef([{ label: "Home" }, { label: "Create" }])
+  const dropContainerRef = useRef<HTMLDivElement>(null)
+  const [showDropDownList, setShowDropDownList] = useState(false)
+  useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
 
   function onSelectionChange(activeOption: string) {
     setActiveBtn(activeOption)
@@ -42,11 +46,11 @@ export default function NavBarTop() {
           }}
           bgColor={activeBtn === "Home" ? "black" : "transparent"}
         />
-        <Button
+        {/* <Button
           text="Explore"
           bgColor={activeBtn === "Explore" ? "black" : "transparent"}
           className="cursor-not-allowed"
-        />
+        /> */}
         <Button
           text="Create"
           click={() => {
@@ -58,18 +62,19 @@ export default function NavBarTop() {
       </div>
 
       <div
+        ref={dropContainerRef}
         className={`relative flex items-center p-3.5 ml-2 rounded-full w4:hidden  
-        ${showDropDown ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"}
+        ${showDropDownList ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"}
        font-medium cursor-pointer leading-5
         `}
-        onClick={() => setShowDropDown((prev) => !prev)}>
+        onClick={() => setShowDropDownList((prev) => !prev)}>
         <div className="flex items-center gap-2">
           <span>{activeBtn}</span>
           <FaChevronDown
-            className={`h-3.5 w-3.5 w3:max-w4:block hidden ${showDropDown ? "text-white" : "text-black"}`}
+            className={`h-3.5 w-3.5 w3:max-w4:block hidden ${showDropDownList ? "text-white" : "text-black"}`}
           />
         </div>
-        {showDropDown && (
+        {showDropDownList && (
           <div className="horizontal-middle top-[60px] z-5">
             <DropDownList options={options.current} onSelectionChange={onSelectionChange} showCheckMark />
           </div>
@@ -81,12 +86,12 @@ export default function NavBarTop() {
       {/* Button Group: Notification Message Profile */}
       <div className="flex items-center">
         <ToolTip text="Notifications" position="bottom">
-          <Button hover rounded className="cursor-not-allowed">
+          <Button hover rounded className="!cursor-not-allowed">
             <FaBell className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
         <ToolTip text="Messages" position="bottom">
-          <Button hover rounded className="cursor-not-allowed">
+          <Button hover rounded className="!cursor-not-allowed">
             <AiFillMessage className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>

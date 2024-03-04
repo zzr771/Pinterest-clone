@@ -11,15 +11,19 @@ import Reaction from "@/components/shared/Reaction"
 import Comment from "@/components/form/Comment"
 import ToolTip from "@/components/shared/ToolTip"
 import DropDownList from "@/components/shared/DropDownList"
+import useDropDownList from "@/lib/useDropDownList"
 
 export default function Comments() {
   const [isCommentsFolded, setIsCommentsFolded] = useState(false)
-  const [showMoreOptions, setShowMoreOptions] = useState(false)
   const options = useRef([
     { label: "Download image", callback: () => {} },
     { label: "Hide Pin", callback: () => {} },
     { label: "Delete Pin", callback: () => {} },
   ])
+
+  const dropContainerRef = useRef<HTMLDivElement>(null)
+  const [showDropDownList, setShowDropDownList] = useState(false)
+  useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
 
   function foldComments() {
     setIsCommentsFolded(true)
@@ -33,18 +37,18 @@ export default function Comments() {
       <div className="flex flex-col flex-1 pl-8">
         {/* top bar */}
         <div className="flex justify-between h-[3.75rem] pt-8 pr-8 box-content bg-white rounded-tr-[2rem] sticky top-[64px] z-2">
-          <div className="flex items-center relative ml-[-12px]">
+          <div ref={dropContainerRef} className="flex items-center relative ml-[-12px] ">
             <ToolTip text="More options">
               <Button
                 rounded
                 hover
                 clickEffect
-                click={() => setShowMoreOptions((prev) => !prev)}
-                bgColor={showMoreOptions ? "black" : "transparent"}>
+                click={() => setShowDropDownList((prev) => !prev)}
+                bgColor={showDropDownList ? "black" : "transparent"}>
                 <TfiMoreAlt className="w-5 h-5" />
               </Button>
             </ToolTip>
-            {showMoreOptions && (
+            {showDropDownList && (
               <div className="horizontal-middle top-[62px]">
                 <DropDownList options={options.current} />
               </div>
@@ -71,6 +75,7 @@ export default function Comments() {
                 text={
                   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente veniam, obcaecati pariatur odit illum, inventore qui voluptates exercitationem nam perspiciatis debitis laboriosam doloribus ab nulla itaque. Aperiam eius nobis eveniet."
                 }
+                className="leading-[1.4] z-[-1]"
               />
             </div>
           </div>

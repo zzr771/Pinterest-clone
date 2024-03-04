@@ -11,9 +11,17 @@ interface Props {
   title?: string
   onSelectionChange?: (activeOption: string) => void
   showCheckMark?: boolean
+  className?: string
 }
 
-export default function DropDownList({ options, title, onSelectionChange, showCheckMark = false }: Props) {
+// accept a button and options. When click the button, show a list
+export default function DropDownList({
+  options,
+  title,
+  onSelectionChange,
+  showCheckMark = false,
+  className,
+}: Props) {
   const [activeOption, setActiveOption] = useState<string>(options[0].label)
   const firstOptionRef = useRef<HTMLDivElement>(null)
 
@@ -39,25 +47,23 @@ export default function DropDownList({ options, title, onSelectionChange, showCh
   }, [activeOption])
 
   return (
-    <div className="bg-white p-2 rounded-2xl shadow-small">
-      <div onMouseEnter={handleMouseEnter}>
-        {title && <div className="p-2 text-xs">{title}</div>}
-        {options.map((item, index) => (
-          <div
-            ref={index === 0 ? firstOptionRef : null}
-            key={item.label}
-            className={`flex items-center justify-between min-w-44 p-2 pr-5 font-medium rounded-lg hover:bg-gray-bg-4
+    <div className={`bg-white p-2 rounded-2xl shadow-small ${className}`} onMouseEnter={handleMouseEnter}>
+      {title && <div className="p-2 text-xs font-light">{title}</div>}
+      {options.map((item, index) => (
+        <div
+          ref={index === 0 ? firstOptionRef : null}
+          key={item.label}
+          className={`flex items-center justify-between min-w-44 p-2 pr-5 text-base font-medium rounded-lg hover:bg-gray-bg-4
             text-black cursor-pointer
             `}
-            onClick={(event) => {
-              event.stopPropagation()
-              handleClick(item)
-            }}>
-            <span>{item.label}</span>
-            {showCheckMark && item.label === activeOption && <FaCheck />}
-          </div>
-        ))}
-      </div>
+          onClick={(event) => {
+            event.stopPropagation()
+            handleClick(item)
+          }}>
+          <span>{item.label}</span>
+          {showCheckMark && item.label === activeOption && <FaCheck />}
+        </div>
+      ))}
     </div>
   )
 }

@@ -6,11 +6,19 @@ import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import DropDownList from "../shared/DropDownList"
 import Reply from "../form/Reply"
+import useDropDownList from "@/lib/useDropDownList"
 
 export default function CommentCard() {
-  const [showAuthorOptions, setShowAuthorOptions] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false)
   const authorOptions = useRef([{ label: "Edit" }, { label: "Delete" }])
+
+  const dropContainerRef = useRef<HTMLDivElement>(null)
+  const [showAuthorOptions, setShowAuthorOptions] = useState(false)
+  useDropDownList({
+    dropContainerRef,
+    showDropDownList: showAuthorOptions,
+    setShowDropDownList: setShowAuthorOptions,
+  })
 
   return (
     <div className="my-2.5">
@@ -47,7 +55,7 @@ export default function CommentCard() {
               13
             </div>
             {/* show this button if the current user is the author of the comment */}
-            <div className="relative">
+            <div ref={dropContainerRef} className="relative">
               <Button
                 size="tiny"
                 clickEffect
