@@ -41,11 +41,11 @@
     box-shadow: rgba(0, 132, 255, 0.5) 0px 0px 0px 4px;
   }
   .nav-top {
-    @apply fixed z-[5] left-0 right-0 top-0;
+    @apply fixed z-[100] left-0 right-0 top-0;
   }
   .nav-float-bottom {
     position: fixed;
-    z-index: 5;
+    z-index: 100;
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);

@@ -55,6 +55,11 @@ NavBar：
 540px 底部
 430px 底部
 
+z-index(绝对顺序):
+NavBarTop, NavBarBottom: 100
+SearchSuggestion:100
+Modal:99
+
 不做：
 all: 右下角问号图标
 navbar: account more options,
