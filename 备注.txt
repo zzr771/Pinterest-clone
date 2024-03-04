@@ -22,7 +22,7 @@ w4  912
 lg	1024px	
 xl	1280px	
 2xl	1536px
-w6  1700
+w7  1700
 
 
 PinCard:

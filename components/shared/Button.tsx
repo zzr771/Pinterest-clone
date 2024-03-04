@@ -2,9 +2,9 @@ interface Props {
   size?: "tiny" | "small" | "normal" | "large"
   bgColor?: "white" | "black" | "red" | "gray" | "transparent" | "translucent"
   shadow?: boolean
-  hover?: boolean
-  rounded?: boolean
-  clickEffect?: boolean // shrink on click
+  hover?: boolean // whether to change the bg color when mouse hovers
+  rounded?: boolean // is full rounded
+  clickEffect?: boolean // whether to shrink if clicked
   text?: string // either text or children must be passed in
   children?: React.ReactNode
   className?: string
