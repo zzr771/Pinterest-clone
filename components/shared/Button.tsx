@@ -94,7 +94,7 @@ export default function Button({
 
   let clickEffectClass = ""
   if (clickEffect) {
-    clickEffectClass = "active:scale-90 transition-all"
+    clickEffectClass = "active:scale-[93%] transition-all"
   }
 
   return (
