@@ -49,3 +49,21 @@ export function getCardNumber(screenWidth: number) {
       return 40
   }
 }
+
+export function abbreviateNumber(num: number) {
+  if (num === 0) return ""
+
+  if (num < 1000) {
+    return String(num)
+  } else if (num >= 1000 && num < 1000000) {
+    const whole = Math.round(num / 100)
+    return String(whole / 10) + "k"
+  } else {
+    const whole = Math.round(num / 100000)
+    return String(whole / 10) + "m"
+  }
+}
+
+export function separateNumberByComma(number: number) {
+  return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
