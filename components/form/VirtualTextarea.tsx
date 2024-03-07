@@ -8,8 +8,8 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 }
 
 /*
-    Native <textarea /> doesn't support maxRows and minRows functions. This component
-  uses a div with "contentEditable" to simulate a textarea.
+    Native <textarea /> doesn't support maxRows and minRows features. This component
+  uses a div with property "contentEditable" to simulate a textarea.
     Compared with simulating the height with an extra textarea, this solution doesn't
   need to consider the influence of the scroll bar. When a scroll bar appears, it
   will take some space, which will definitely affect the height simulation.
@@ -49,7 +49,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       props.onChange?.(event)
     }
 
-    // when invoke form.reset(), manually clear the input (the props.value will become empty string)
+    // when invoke form.reset(), manually clear the input (the props.value will become an empty string)
     useEffect(() => {
       if (!props.value) {
         setInput("")
