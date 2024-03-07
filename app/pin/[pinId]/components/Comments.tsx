@@ -88,7 +88,7 @@ export default function Comments() {
                 width={48}
                 height={48}
                 alt="avatar"
-                className="rounded-full mr-1"
+                className="rounded-full mr-1 object-cover"
               />
               <div className="flex flex-col justify-center px-1 text-sm">
                 <span className="font-medium">{"John Doe"}</span>

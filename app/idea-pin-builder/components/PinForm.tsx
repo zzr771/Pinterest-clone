@@ -9,9 +9,7 @@ import { PinValidation } from "@/lib/validations/pin"
 
 import { FaArrowUp } from "react-icons/fa"
 import Button from "@/components/shared/Button"
-import { Textarea } from "@/components/shadcn/textarea"
 import { VirtualTextarea } from "@/components/form/VirtualTextarea"
-import { uptime } from "process"
 
 export default function PinForm() {
   const formDisplayContainerRef = useRef<HTMLDivElement>(null)
@@ -149,7 +147,6 @@ export default function PinForm() {
                         ref={uploadRef}
                         type="file"
                         accept="image/*"
-                        placeholder="654654"
                         className="absolute z-[1] left-0 top-0 w-[375px] h-[453px] opacity-0 p-0 rounded-[2rem] cursor-pointer"
                         onChange={(e) => handleImage(e, field.onChange)}
                       />
@@ -164,11 +161,11 @@ export default function PinForm() {
                 name="title"
                 render={({ field }) => (
                   <FormItem className="space-y-1 mb-5">
-                    <FormLabel className="create-pin-label">Title</FormLabel>
+                    <FormLabel className="label-default">Title</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        className="create-pin-input h-[49px] px-4 py-3"
+                        className="input-default h-[49px] px-4 py-3"
                         placeholder="Add a title"
                         {...field}
                       />
@@ -184,10 +181,10 @@ export default function PinForm() {
                 name="description"
                 render={({ field }) => (
                   <FormItem className="space-y-1 mb-5">
-                    <FormLabel className="create-pin-label">Description</FormLabel>
+                    <FormLabel className="label-default">Description</FormLabel>
                     <FormControl>
                       <VirtualTextarea
-                        className="create-pin-input p-4"
+                        className="input-default p-4"
                         minRows={3}
                         maxRows={6}
                         placeHolder={"Add a detailed description"}
@@ -205,11 +202,11 @@ export default function PinForm() {
                 name="link"
                 render={({ field }) => (
                   <FormItem className="space-y-1 mb-5">
-                    <FormLabel className="create-pin-label">Link</FormLabel>
+                    <FormLabel className="label-default">Link</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        className="create-pin-input h-[49px] px-4 py-3"
+                        className="input-default h-[49px] px-4 py-3"
                         placeholder="Add a link"
                         {...field}
                       />

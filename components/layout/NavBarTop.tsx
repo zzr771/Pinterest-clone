@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
 import Button from "../shared/Button"
@@ -12,16 +12,36 @@ import useDropDownList from "@/lib/useDropDownList"
 
 export default function NavBarTop() {
   const router = useRouter()
+  const pathname = usePathname()
   const [activeBtn, setActiveBtn] = useState("Home")
 
-  const options = useRef([{ label: "Home" }, { label: "Create" }])
+  const options = useRef([
+    {
+      label: "Home",
+      callback: () => {
+        router.push("/")
+      },
+    },
+    {
+      label: "Create",
+      callback: () => {
+        router.push("/idea-pin-builder")
+      },
+    },
+  ])
   const dropContainerRef = useRef<HTMLDivElement>(null)
   const [showDropDownList, setShowDropDownList] = useState(false)
   useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
 
-  function onSelectionChange(activeOption: string) {
-    setActiveBtn(activeOption)
-  }
+  useEffect(() => {
+    if (pathname === "/") {
+      setActiveBtn("Home")
+    } else if (pathname === "/idea-pin-builder") {
+      setActiveBtn("Create")
+    } else {
+      setActiveBtn("")
+    }
+  }, [pathname])
 
   return (
     <section className="nav-top items-center bg-white h-20 py-1 px-4 w3:flex hidden">
@@ -30,7 +50,6 @@ export default function NavBarTop() {
         hover={true}
         rounded={true}
         click={() => {
-          setActiveBtn("Home")
           router.push("/")
         }}>
         <img src="/assets/icon.png" alt="icon" className="h-6 w-6" />
@@ -41,7 +60,6 @@ export default function NavBarTop() {
         <Button
           text="Home"
           click={() => {
-            setActiveBtn("Home")
             router.push("/")
           }}
           bgColor={activeBtn === "Home" ? "black" : "transparent"}
@@ -54,7 +72,6 @@ export default function NavBarTop() {
         <Button
           text="Create"
           click={() => {
-            setActiveBtn("Create")
             router.push("/idea-pin-builder")
           }}
           bgColor={activeBtn === "Create" ? "black" : "transparent"}
@@ -76,7 +93,7 @@ export default function NavBarTop() {
         </div>
         {showDropDownList && (
           <div className="horizontal-middle top-[60px] z-5">
-            <DropDownList options={options.current} onSelectionChange={onSelectionChange} showCheckMark />
+            <DropDownList options={options.current} showCheckMark defaultOption={activeBtn} />
           </div>
         )}
       </div>
@@ -96,7 +113,7 @@ export default function NavBarTop() {
           </Button>
         </ToolTip>
         <ToolTip text="Your profile" position="bottom">
-          <Button hover rounded>
+          <Button hover rounded click={() => router.push("/userID")}>
             {/* todo: replace it with Clerk */}
             <FaUser className="text-gray-font-3 w-6 h-6" />
           </Button>

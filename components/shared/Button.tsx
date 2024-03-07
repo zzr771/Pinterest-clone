@@ -9,6 +9,7 @@ interface Props {
   children?: React.ReactNode
   className?: string
   click?: (param: any) => void
+  disabled?: boolean
 }
 
 export default function Button({
@@ -22,6 +23,7 @@ export default function Button({
   children,
   className = "",
   click,
+  disabled = false,
 }: Props) {
   let sizeClass = ""
   switch (size) {
@@ -67,9 +69,8 @@ export default function Button({
   if (shadow) {
     shadowClass = "shadow-small"
   }
-
   let hoverClass = ""
-  if (hover) {
+  if (hover && !disabled) {
     switch (bgColor) {
       case "red":
         hoverClass = "hover:bg-red-dark"
@@ -93,7 +94,7 @@ export default function Button({
   }
 
   let clickEffectClass = ""
-  if (clickEffect) {
+  if (clickEffect && !disabled) {
     clickEffectClass = "active:scale-[93%] transition-all"
   }
 
@@ -101,6 +102,7 @@ export default function Button({
     <button
       type="button"
       onClick={click}
+      disabled={disabled}
       className={`flex items-center justify-center rounded-full font-semibold cursor-pointer
       ${sizeClass} 
       ${textColorClass}

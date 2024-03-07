@@ -146,22 +146,27 @@
   }
 }
 
-.create-pin-label {
+.label-default {
   font-size: 12px;
   font-weight: 400;
 }
-.create-pin-input {
+.input-default {
   border: 2px solid #cdcdcd;
   border-radius: 1rem;
   font-size: 1rem;
   color: #111;
+  font-weight: 300;
 }
-.create-pin-input:hover {
+.input-default:hover {
   border-color: #a5a5a5;
 }
-.create-pin-input:focus-visible,
-.create-pin-input:focus {
+.input-default:focus-visible,
+.input-default:focus {
   box-shadow: 0 0 rgba(0, 0, 0, 0) !important;
   outline: none;
   outline-offset: 0px;
+}
+/* when an error message appears, change the input's border color */
+.input-default:has(+ .error-message-marker) {
+  border-color: #cc0000;
 }

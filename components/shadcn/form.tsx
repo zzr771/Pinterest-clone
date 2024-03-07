@@ -9,6 +9,7 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form"
+import { MdError } from "react-icons/md"
 
 import { cn } from "@/lib/utils"
 import { Label } from "./label"
@@ -143,13 +144,37 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<
       <p
         ref={ref}
         id={formMessageId}
-        className={cn("text-sm font-medium text-red-500 dark:text-red-900", className)}
+        // error-message-marker: used in .input-default:has(+ .error-message-marker) in globals.css
+        className={cn("error-message-marker flex gap-2 text-xs text-[#cc0000] dark:text-red-900", className)}
         {...props}>
+        <MdError className="w-4 h-4" />
         {body}
       </p>
     )
   }
 )
 FormMessage.displayName = "FormMessage"
+
+// const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
+//   ({ className, children, ...props }, ref) => {
+//     const { error, formMessageId } = useFormField()
+//     const body = error ? String(error?.message) : children
+
+//     if (!body) {
+//       return null
+//     }
+
+//     return (
+//       <p
+//         ref={ref}
+//         id={formMessageId}
+//         className={cn("text-sm font-medium text-red-500 dark:text-red-900", className)}
+//         {...props}>
+//         {body}
+//       </p>
+//     )
+//   }
+// )
+// FormMessage.displayName = "FormMessage"
 
 export { useFormField, Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField }

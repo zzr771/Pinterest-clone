@@ -11,6 +11,7 @@ interface Props {
   title?: string
   onSelectionChange?: (activeOption: string) => void
   showCheckMark?: boolean
+  defaultOption?: string
   className?: string
 }
 
@@ -20,9 +21,10 @@ export default function DropDownList({
   title,
   onSelectionChange,
   showCheckMark = false,
+  defaultOption,
   className,
 }: Props) {
-  const [activeOption, setActiveOption] = useState<string>(options[0].label)
+  const [activeOption, setActiveOption] = useState<string>(defaultOption || options[0].label)
   const firstOptionRef = useRef<HTMLDivElement>(null)
 
   function handleClick(item: Option) {

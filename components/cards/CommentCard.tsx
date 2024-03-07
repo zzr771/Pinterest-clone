@@ -30,7 +30,7 @@ export default function CommentCard() {
             width={32}
             height={32}
             alt="user avatar"
-            className="rounded-full "
+            className="rounded-full object-cover"
           />
         </div>
 

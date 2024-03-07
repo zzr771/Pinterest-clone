@@ -28,7 +28,7 @@ export default function Comment() {
     <div className="flex items-center gap-2 mb-3">
       <div className="flex flex-none justify-center items-center h-12 w-12 bg-gray-bg-1 rounded-full">
         <Image
-          className="rounded-full"
+          className="rounded-full object-cover"
           src="/assets/test/avatar2.jpg"
           width={48}
           height={48}

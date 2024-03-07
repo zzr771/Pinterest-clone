@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { userId: string } }) {
       <div className="flex flex-col items-center w-[488px] mx-auto mb-8">
         {/* avatar */}
         <Image
-          className="rounded-full bg-gray-bg-1 mb-1"
+          className="rounded-full bg-gray-bg-1 mb-1 object-cover"
           src={"/assets/test/avatar3.jpg"}
           alt="user avatar"
           width={120}
