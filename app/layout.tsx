@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import dynamic from "next/dynamic"
+const NavBarTop = dynamic(() => import("@/components/layout/NavBarTop"), { ssr: false })
+const NavBarBottom = dynamic(() => import("@/components/layout/NavBarBottom"), { ssr: false })
 import StoreProvider from "@/components/StoreProvider"
-import NavBarTop from "@/components/layout/NavBarTop"
-import NavBarBottom from "@/components/layout/NavBarBottom"
 import ScreenReziseMonitor from "@/components/shared/ScreenReziseMonitor"
 import Modal from "@/components/shared/Modal"
 

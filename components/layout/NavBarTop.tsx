@@ -8,9 +8,11 @@ import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
 import DropDownList from "../shared/DropDownList"
-import useDropDownList from "@/lib/useDropDownList"
+import useDropDownList from "@/lib/hooks/useDropDownList"
 
 export default function NavBarTop() {
+  if (window.innerWidth < 820) return null
+
   const router = useRouter()
   const pathname = usePathname()
   const [activeBtn, setActiveBtn] = useState("Home")
@@ -44,7 +46,7 @@ export default function NavBarTop() {
   }, [pathname])
 
   return (
-    <section className="nav-top items-center bg-white h-20 py-1 px-4 w3:flex hidden">
+    <section className="nav-top items-center bg-white h-20 py-1 px-4 flex">
       {/* Pinterest icon */}
       <Button
         hover={true}
@@ -65,10 +67,10 @@ export default function NavBarTop() {
           bgColor={activeBtn === "Home" ? "black" : "transparent"}
         />
         {/* <Button
-          text="Explore"
-          bgColor={activeBtn === "Explore" ? "black" : "transparent"}
-          className="cursor-not-allowed"
-        /> */}
+            text="Explore"
+            bgColor={activeBtn === "Explore" ? "black" : "transparent"}
+            className="cursor-not-allowed"
+          /> */}
         <Button
           text="Create"
           click={() => {
@@ -81,9 +83,11 @@ export default function NavBarTop() {
       <div
         ref={dropContainerRef}
         className={`relative flex items-center p-3.5 ml-2 rounded-full w4:hidden  
-        ${showDropDownList ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"}
-       font-medium cursor-pointer leading-5
-        `}
+          ${
+            showDropDownList ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"
+          }
+         font-medium cursor-pointer leading-5
+          `}
         onClick={() => setShowDropDownList((prev) => !prev)}>
         <div className="flex items-center gap-2">
           <span>{activeBtn}</span>
