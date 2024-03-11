@@ -10,7 +10,7 @@ import { getRandomColorHex } from "@/lib/utils"
 
 interface Props {
   pinId: string
-  image: string
+  src: string
   imageSize: {
     width: number
     height: number
@@ -21,7 +21,7 @@ interface Props {
     avatar: string
   }
 }
-export default function PinCard({ pinId, image, imageSize, title, author }: Props) {
+export default function PinCard({ pinId, src, imageSize, title, author }: Props) {
   const router = useRouter()
   const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
   const cardBody = useRef<HTMLDivElement>(null)
@@ -62,14 +62,13 @@ export default function PinCard({ pinId, image, imageSize, title, author }: Prop
       onClick={() => router.push(`/pin/${pinId}`)}>
       <div ref={cardBody} className="relative rounded-2xl overflow-hidden">
         <Image
-          src={image}
+          src={src}
           alt="pin cover image"
           className="rounded-2xl"
           width={imageDisplaySize.width}
           height={imageDisplaySize.height}
           quality={100}
         />
-        {/* <img src={image} /> */}
         <div className="absolute z-1 inset-0 h-full flex flex-col justify-between p-3 cursor-zoom-in max-w3:hidden hover:bg-gray-tp-1 hover-show-container">
           <div className="flex justify-end hover-content-flex">
             <Button

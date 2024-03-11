@@ -53,7 +53,7 @@ export default function Paragraph({ text, maxLines, children, className }: Props
       </div>
       {showMore && (
         <span
-          className="absolute bottom-0 right-0 font-medium bg-white px-1 cursor-pointer"
+          className="absolute bottom-0 right-0 font-medium linear-white pl-2 pr-1 cursor-pointer"
           onClick={clickMoreHandler}>
           ... more
         </span>
