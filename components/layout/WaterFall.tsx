@@ -112,10 +112,11 @@ export default function WaterFall() {
 
   useEffect(() => {
     /*
-    Every time the state imgs changes, the IntersectionObserver must be recreated to update
-      its callback. Because the callback is in a closure where the state imgs will never change.
+      Every time the state imgs changes, the IntersectionObserver must be recreated to update
+    its callback. Because the callback is in a closure where the state imgs will never change.
+    In the callback, we invoke addCards in whick state imgs is used.
     
-    To get the newest imgs, recreation of callback is necessary.
+      To get the newest imgs, recreation of callback is necessary.
   */
     const intersectionObserver = new IntersectionObserver((entries) => {
       if (entries[0].intersectionRatio <= 0) return
@@ -150,7 +151,7 @@ export default function WaterFall() {
               <PinCard
                 key={img.id}
                 pinId={img.id}
-                image={img.src}
+                src={img.src}
                 imageSize={{ width: img.width, height: img.height }}
                 title="test"
                 author={{ name: "user", avatar: "/assets/test/avatar.jpg" }}

@@ -5,7 +5,7 @@ import { Draft } from "@/lib/types"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
 import DropDownList from "@/components/shared/DropDownList"
-import useDropDownList from "@/lib/useDropDownList"
+import useDropDownList from "@/lib/hooks/useDropDownList"
 
 interface Props {
   draft: Draft

@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../shadcn/form" // 这些组件来自库 shadcn
-import { Textarea } from "../shadcn/textarea"
 import Button from "../shared/Button"
 import { IoIosSend } from "react-icons/io"
 

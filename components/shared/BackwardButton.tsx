@@ -17,7 +17,7 @@ export default function BackwardButton() {
       hover
       clickEffect
       rounded
-      bgColor={screenWidth > 540 ? "white" : "translucent"}
+      bgColor={screenWidth > 820 ? "white" : "translucent"}
       click={() => router.back()}>
       <FaArrowLeft className="text-xl text-black" />
     </Button>

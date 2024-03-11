@@ -6,7 +6,7 @@ import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import DropDownList from "../shared/DropDownList"
 import Reply from "../form/Reply"
-import useDropDownList from "@/lib/useDropDownList"
+import useDropDownList from "@/lib/hooks/useDropDownList"
 
 export default function CommentCard() {
   const [showReplyInput, setShowReplyInput] = useState(false)
