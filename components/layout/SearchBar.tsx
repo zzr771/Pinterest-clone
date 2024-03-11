@@ -5,7 +5,7 @@ import { IoMdCloseCircle } from "react-icons/io"
 import { useState, useRef, useMemo } from "react"
 import SearchSuggestion from "./SearchSuggestion"
 import { useAppDispatch } from "@/lib/store/hook"
-import { setShowSearchSuggestion } from "@/lib/store/features/searchSuggestion"
+import { setShowModal } from "@/lib/store/features/modal"
 
 export default function SearchBar() {
   const dispatch = useAppDispatch()
@@ -20,7 +20,7 @@ export default function SearchBar() {
       return
     }
     setIsFocused(true)
-    dispatch(setShowSearchSuggestion(true))
+    dispatch(setShowModal(true))
     document.addEventListener("click", handleClickOutSide)
   }
 
@@ -35,7 +35,7 @@ export default function SearchBar() {
       if (!searchBarContainer?.current?.contains(event.target as Node)) {
         setSearchTerm("")
         setIsFocused(false)
-        dispatch(setShowSearchSuggestion(false))
+        dispatch(setShowModal(false))
         document.removeEventListener("click", handleClickOutSide)
       }
     }
@@ -45,7 +45,7 @@ export default function SearchBar() {
     event.stopPropagation()
     setSearchTerm("")
     setIsFocused(false)
-    dispatch(setShowSearchSuggestion(false))
+    dispatch(setShowModal(false))
     document.removeEventListener("click", handleClickOutSide)
   }
 

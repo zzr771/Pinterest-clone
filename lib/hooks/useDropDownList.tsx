@@ -7,8 +7,8 @@ import { useCallback, useEffect } from "react"
 
 interface Props {
   dropContainerRef: React.RefObject<HTMLDivElement> // this container must contain both the button and <DropDownList />
-  showDropDownList: boolean
-  setShowDropDownList: React.Dispatch<React.SetStateAction<boolean>>
+  showDropDownList: boolean // state
+  setShowDropDownList: React.Dispatch<React.SetStateAction<boolean>> // setState function
 }
 export default function useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList }: Props) {
   const callback = useCallback((event: MouseEvent) => {

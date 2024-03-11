@@ -21,7 +21,7 @@ export default function SearchSuggestion() {
   const suggestionCardArray = [1, 2, 3, 4, 5, 6, 7]
 
   return (
-    <div className="bg-white rounded-b-2xl p-8">
+    <div className="bg-white rounded-b-2xl p-8 max-h-[calc(100vh-80px)] overflow-y-auto">
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-medium text-base">Recent searches</h3>

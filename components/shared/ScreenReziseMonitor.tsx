@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { setScreenSize } from "@/lib/store/features/screenSizeSlice"
+import { setScreenSize } from "@/lib/store/features/screenSize"
 import { useAppDispatch } from "@/lib/store/hook"
 
 export default function ScreenResize() {
