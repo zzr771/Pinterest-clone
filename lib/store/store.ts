@@ -1,10 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit"
-import screenSizeReducer from "./features/screenSizeSlice"
-import searchSuggestionReducer from "./features/searchSuggestion"
+import screenSizeReducer from "./features/screenSize"
+import modalReducer from "./features/modal"
+import intersectionReducer from "./features/intersection"
 
 export const makeStore = () => {
   return configureStore({
-    reducer: { screenSize: screenSizeReducer, searchSuggestion: searchSuggestionReducer },
+    reducer: {
+      screenSize: screenSizeReducer,
+      modal: modalReducer,
+      intersection: intersectionReducer,
+    },
   })
 }
 
