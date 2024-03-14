@@ -20,7 +20,7 @@ export default function useDropDownList({ dropContainerRef, showDropDownList, se
     }
   }, [])
   useEffect(() => {
-    if (showDropDownList) {
+    if (window.innerWidth >= 820 && showDropDownList) {
       document.addEventListener("click", callback)
     } else {
       document.removeEventListener("click", callback)

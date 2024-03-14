@@ -1,13 +1,13 @@
 "use client"
 import Button from "@/components/shared/Button"
-import { FaArrowLeft } from "react-icons/fa6"
+import { FaArrowLeft, FaAngleLeft } from "react-icons/fa6"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useLayoutEffect, useState } from "react"
 
 export default function BackwardButton() {
-  const [screenWidth, setScreenWidth] = useState(1920)
+  const [screenWidth, setScreenWidth] = useState(0)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setScreenWidth(window.innerWidth)
   }, [])
 
@@ -18,8 +18,13 @@ export default function BackwardButton() {
       clickEffect
       rounded
       bgColor={screenWidth > 820 ? "white" : "translucent"}
+      className={screenWidth > 0 ? "visible" : "invisible"}
       click={() => router.back()}>
-      <FaArrowLeft className="text-xl text-black" />
+      {screenWidth > 820 ? (
+        <FaArrowLeft className="text-xl text-black" />
+      ) : (
+        <FaAngleLeft className="text-xl text-black" />
+      )}
     </Button>
   )
 }

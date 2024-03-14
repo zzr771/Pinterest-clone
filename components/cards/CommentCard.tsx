@@ -1,24 +1,43 @@
 "use client"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { HiOutlineHeart } from "react-icons/hi"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import DropDownList from "../shared/DropDownList"
 import Reply from "../form/Reply"
 import useDropDownList from "@/lib/hooks/useDropDownList"
+import InputModal from "../mobile/InputModal"
+import OptionListMobile from "../mobile/OptionListMobile"
 
 export default function CommentCard() {
-  const [showReplyInput, setShowReplyInput] = useState(false)
+  const [showReplyInput, setShowReplyInput] = useState(false) // PC
+  const [showInputModal, setShowInputModal] = useState(false) // mobile
   const authorOptions = useRef([{ label: "Edit" }, { label: "Delete" }])
 
   const dropContainerRef = useRef<HTMLDivElement>(null)
   const [showAuthorOptions, setShowAuthorOptions] = useState(false)
+
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
+
   useDropDownList({
     dropContainerRef,
     showDropDownList: showAuthorOptions,
     setShowDropDownList: setShowAuthorOptions,
   })
+
+  useEffect(() => {
+    if (window.innerWidth < 820) {
+      setIsMobileDevice(true)
+    } else {
+      setIsMobileDevice(false)
+    }
+  }, [])
+
+  function handleClick() {
+    setShowReplyInput((prev) => !prev)
+    setShowInputModal(true)
+  }
 
   return (
     <div className="my-2.5">
@@ -47,7 +66,7 @@ export default function CommentCard() {
           {/* buttons */}
           <div className="flex text-gray-font-4 gap-5 text-sm">
             <div>13d</div>
-            <div className="font-medium cursor-pointer" onClick={() => setShowReplyInput((prev) => !prev)}>
+            <div className="font-medium cursor-pointer" onClick={() => handleClick()}>
               Reply
             </div>
             <div className="flex items-center font-medium gap-1">
@@ -64,17 +83,20 @@ export default function CommentCard() {
                 click={() => setShowAuthorOptions((prev) => !prev)}>
                 <TfiMoreAlt className="text-gray-font-4" />
               </Button>
-              {showAuthorOptions && (
+              {!isMobileDevice && showAuthorOptions && (
                 <div className="horizontal-middle top-7">
                   <DropDownList options={authorOptions.current} />
                 </div>
+              )}
+              {isMobileDevice && showAuthorOptions && (
+                <OptionListMobile options={authorOptions.current} setShowList={setShowAuthorOptions} />
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {showReplyInput && (
+      {!isMobileDevice && showReplyInput && (
         <div className="mt-3 ml-12">
           <Reply
             close={() => {
@@ -82,6 +104,10 @@ export default function CommentCard() {
             }}
           />
         </div>
+      )}
+
+      {showInputModal && isMobileDevice && (
+        <InputModal setShowInputModal={setShowInputModal} isComment={false} />
       )}
 
       {/* todo: replies */}
