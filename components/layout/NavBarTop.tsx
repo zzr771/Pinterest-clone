@@ -66,11 +66,6 @@ export default function NavBarTop() {
           }}
           bgColor={activeBtn === "Home" ? "black" : "transparent"}
         />
-        {/* <Button
-            text="Explore"
-            bgColor={activeBtn === "Explore" ? "black" : "transparent"}
-            className="cursor-not-allowed"
-          /> */}
         <Button
           text="Create"
           click={() => {

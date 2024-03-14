@@ -65,8 +65,8 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           For some reason, sometimes the virtualTextAreaRef fails to prop up the containerRef's
         height. So, turn on containerRef's BFC through "overflow-hidden"
       */
-      <div ref={containerRef} className={`virtualTextarea relative z-[1] overflow-hidden ${className}`}>
-        <div ref={placeHolderRef} className="placeholder absolute z-[-1] text-[#9CA3AF]">
+      <div ref={containerRef} className={`relative z-[1] overflow-hidden ${className}`}>
+        <div ref={placeHolderRef} className="absolute z-[-1] text-[#9CA3AF]">
           {input.length > 0 ? "" : placeHolder}
         </div>
         <div

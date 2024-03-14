@@ -11,7 +11,7 @@ export default function Buttons() {
   const router = useRouter()
 
   const [isFollowing, setIsFollowing] = useState(false) // Whether the current user is following the user that he/she is viewing
-  const isMySelf = useRef(true) // Whether the current user is viewing the profile of himself/herself
+  const isMySelf = useRef(false) // Whether the current user is viewing the profile of himself/herself
 
   const options = useRef([{ label: "Block", callback: () => {} }])
   const dropContainerRef = useRef<HTMLDivElement>(null)

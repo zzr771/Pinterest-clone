@@ -74,7 +74,6 @@ export default function Page({ params }: { params: { userId: string } }) {
   }
 
   async function onSubmit(values: z.infer<typeof ProfileValidation>) {
-    console.log("onSubmit")
     form.reset()
   }
 
