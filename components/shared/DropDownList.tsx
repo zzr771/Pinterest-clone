@@ -1,11 +1,8 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
 import { FaCheck } from "react-icons/fa"
+import { Option } from "@/lib/types"
 
-interface Option {
-  label: string
-  callback?: () => void
-}
 interface Props {
   options: Array<Option>
   title?: string

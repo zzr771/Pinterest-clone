@@ -6,3 +6,8 @@ export interface Draft {
   image: string
   expirationTime: number // millisecond
 }
+
+export interface Option {
+  label: string
+  callback?: () => void
+}
