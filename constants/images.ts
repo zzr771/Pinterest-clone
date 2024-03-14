@@ -1,4 +1,4 @@
-export const imgs = [
+export const pinCovers = [
   {
     id: "1",
     src: "/assets/test/PinCard/1.jpg",
@@ -1024,5 +1024,50 @@ export const imgs = [
     src: "/assets/test/PinCard/171.jpg",
     width: 236,
     height: 291,
+  },
+]
+
+export const pinDetailImgs = [
+  {
+    id: "pin-detail1",
+    src: "/assets/test/PinDetail/pin-detail1.jpg",
+    width: 736,
+    height: 1308,
+  },
+  {
+    id: "pin-detail2",
+    src: "/assets/test/PinDetail/pin-detail2.jpg",
+    width: 564,
+    height: 846,
+  },
+  {
+    id: "pin-detail3",
+    src: "/assets/test/PinDetail/pin-detail3.jpg",
+    width: 564,
+    height: 564,
+  },
+  {
+    id: "pin-detail4",
+    src: "/assets/test/PinDetail/pin-detail4.jpg",
+    width: 564,
+    height: 423,
+  },
+  {
+    id: "pin-detail5",
+    src: "/assets/test/PinDetail/pin-detail5.jpg",
+    width: 564,
+    height: 846,
+  },
+  {
+    id: "pin-detail6",
+    src: "/assets/test/PinDetail/pin-detail6.jpg",
+    width: 736,
+    height: 1312,
+  },
+  {
+    id: "pin-detail7",
+    src: "/assets/test/PinDetail/pin-detail7.jpg",
+    width: 736,
+    height: 1593,
   },
 ]

@@ -5,7 +5,7 @@
   当用户打开应用或者刷新应用时，页面将发送一个“第一次获取pins”的请求，这个请求将携带一个
     参数，用于告诉服务器把 pinRecord 数组清空。
 */
-import { imgs } from "./imgs"
+import { pinCovers } from "./images"
 
 function getCardNumber(screenWidth: number) {
   switch (true) {
@@ -34,7 +34,7 @@ function getInitialPinCardImgs(screenWidth: number) {
   const number = getCardNumber(screenWidth)
   return new Promise<Image[]>((resolve, reject) => {
     setTimeout(() => {
-      const result = imgs.slice(0, number)
+      const result = pinCovers.slice(0, number)
       records.push(...result)
       resolve(result)
     })
@@ -48,8 +48,8 @@ function getMorePinCardImgs(screenWidth: number) {
 
   return new Promise<Image[]>((resolve, reject) => {
     let i = 0
-    while (records.length < targetNumber && i < imgs.length) {
-      const img = imgs[i]
+    while (records.length < targetNumber && i < pinCovers.length) {
+      const img = pinCovers[i]
       if (!records.includes(img)) {
         records.push(img)
         result.push(img)
