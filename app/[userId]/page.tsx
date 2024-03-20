@@ -6,9 +6,11 @@ import { abbreviateNumber } from "@/lib/utils"
 import Paragraph from "@/components/shared/Paragraph"
 import Buttons from "./components/Buttons"
 import Tabs from "@/components/shared/Tabs"
-import { useState } from "react"
+import { useLayoutEffect, useState } from "react"
 import WaterFall from "@/components/layout/WaterFall"
+import BackwardButton from "@/components/shared/BackwardButton"
 const FollowList = dynamic(() => import("./components/FollowList"))
+const FollowListMobile = dynamic(() => import("./components/FollowListMobile"))
 
 const tabs = ["Created", "Saved"]
 export default function Page({ params }: { params: { userId: string } }) {
@@ -21,9 +23,24 @@ export default function Page({ params }: { params: { userId: string } }) {
   const followerNum = abbreviateNumber(6332)
   const followingNum = 15
 
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
+  useLayoutEffect(() => {
+    if (window.innerWidth < 820) {
+      setIsMobileDevice(true)
+    } else {
+      setIsMobileDevice(false)
+    }
+  }, [])
+
   return (
-    <section className="mt-20 text-[15px]">
-      <div className="flex flex-col items-center w-[488px] mx-auto mb-8">
+    <section className="relative mt-20 text-[15px] max-w3:mt-16">
+      {isMobileDevice && (
+        <div className="fixed w3:top-24 w3:left-4 left-2 top-2 z-[1]">
+          <BackwardButton />
+        </div>
+      )}
+
+      <div className="flex flex-col items-center w3:w-[488px] max-w3:w-screen mx-auto mb-8">
         {/* avatar */}
         <Image
           className="rounded-full bg-gray-bg-1 mb-1 object-cover"
@@ -76,12 +93,16 @@ export default function Page({ params }: { params: { userId: string } }) {
         <Buttons />
       </div>
 
-      {showFollowList && <FollowList type={followType} number={1153} setShowFollowList={setShowFollowList} />}
+      {showFollowList && !isMobileDevice && (
+        <FollowList type={followType} number={1153} setShowFollowList={setShowFollowList} />
+      )}
+      {showFollowList && isMobileDevice && (
+        <FollowListMobile type={followType} number={1153} setShowFollowList={setShowFollowList} />
+      )}
 
       <div className="py-3">
         <Tabs tabs={tabs} setSelectedTab={setSelectedTab} />
       </div>
-
       <WaterFall />
     </section>
   )
