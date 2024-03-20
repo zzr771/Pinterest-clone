@@ -55,7 +55,8 @@ export default function DropDownList({
           className={`flex items-center justify-between min-w-44 p-2 pr-5 text-base font-medium rounded-lg hover:bg-gray-bg-4
             text-black cursor-pointer
             `}
-          onClick={(event) => {
+          onClick={(event: React.MouseEvent) => {
+            event.nativeEvent.stopImmediatePropagation()
             event.stopPropagation()
             handleClick(item)
           }}>
