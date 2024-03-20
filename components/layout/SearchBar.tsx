@@ -2,7 +2,7 @@
 
 import { FaSearch } from "react-icons/fa"
 import { IoMdCloseCircle } from "react-icons/io"
-import { useState, useRef, useMemo } from "react"
+import { useState, useRef, useCallback } from "react"
 import SearchSuggestion from "./SearchSuggestion"
 import { useAppDispatch } from "@/lib/store/hook"
 import { setShowModal } from "@/lib/store/features/modal"
@@ -25,19 +25,17 @@ export default function SearchBar() {
   }
 
   /*
-    Every time a state changes, all the code of the component will be excuted again.
-    If handleClickOutSide is a normal function, it will be repetitively created, while
-    each time its memory address is different. So in handleClick, addEventListener will
+      Every time a state changes, all the code of the component will be excuted again.
+    If handleClickOutSide is a normal function, it will be repetitively created, each
+    time its memory address is different. So in handleClick, addEventListener will
     add handleClickOutSide repetitively.
   */
-  const handleClickOutSide = useMemo(() => {
-    return (event: MouseEvent) => {
-      if (!searchBarContainer?.current?.contains(event.target as Node)) {
-        setSearchTerm("")
-        setIsFocused(false)
-        dispatch(setShowModal(false))
-        document.removeEventListener("click", handleClickOutSide)
-      }
+  const handleClickOutSide = useCallback((event: MouseEvent) => {
+    if (!searchBarContainer?.current?.contains(event.target as Node)) {
+      setSearchTerm("")
+      setIsFocused(false)
+      document.removeEventListener("click", handleClickOutSide)
+      dispatch(setShowModal(false))
     }
   }, [])
 
@@ -56,17 +54,18 @@ export default function SearchBar() {
 
     // todo: start search and let searchbar blur
 
-    // push search term in localstorage. Maximum number: 5
+    // save the search term in localStorage with LRU algorithm. Capacity: 10
     let recentResearches = JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
     if (!recentResearches.includes(searchTerm)) {
-      if (recentResearches.length < 5) {
-        recentResearches.push(searchTerm)
-      } else {
-        recentResearches = recentResearches.slice(1)
-        recentResearches.push(searchTerm)
+      if (recentResearches.length >= 10) {
+        recentResearches.pop()
       }
-      localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
+      recentResearches.unshift(searchTerm)
+    } else {
+      recentResearches = recentResearches.filter((item: string) => item !== searchTerm)
+      recentResearches.unshift(searchTerm)
     }
+    localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
   }
 
   return (
