@@ -55,10 +55,6 @@ NavBar：
 540px 底部
 430px 底部
 
-z-index(绝对顺序):
-NavBarTop, NavBarBottom: 100
-SearchSuggestion:100
-Modal:99
 
 不做：
 all: 右下角问号图标
@@ -67,3 +63,10 @@ pin: share, tags, report pin, get pin embed code, statistic bar
 create: tagged topics, more options, board
 board
 notifications
+
+z-index:
+ButtonsMobile(pin detail page): 110
+NavBarTop: 100
+NavBarBottom: 100
+Modal（for SearchSuggestion）: 99
+followListMobile: 90

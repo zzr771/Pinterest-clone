@@ -56,12 +56,12 @@
   }
   .nav-bottom {
     position: fixed;
-    z-index: 5;
+    z-index: 100;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 3.25rem;
-    padding: 12px 8px 16px;
+    height: 3.75rem;
+    padding: 0.75rem 0.5rem 1rem;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
   }
   .waterfall {
@@ -81,6 +81,9 @@
   }
   .shadow-large {
     box-shadow: 0 0 22px rgb(0 0 0 / 0.1);
+  }
+  .shadow-bottom {
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
   .card-transform {
     transition: transform 0.2s ease-in-out;
@@ -173,4 +176,27 @@
 /* when an error message appears, change the input's border color */
 .input-default:has(+ .error-message-marker) {
   border-color: #cc0000;
+}
+.custome-form-message {
+  padding-top: 0.25rem;
+  font-weight: 400;
+  font-size: 12px;
+  color: #767676;
+}
+.error-message-marker + .custome-form-message {
+  display: none;
+}
+
+/* styles for react-slideshow-image */
+ul.indicators {
+  margin-top: 8px !important;
+  gap: 4px;
+  button::before {
+    width: 6px !important;
+    height: 6px !important;
+    background: #8e8e8e !important;
+  }
+  button.active::before {
+    background: #656565 !important;
+  }
 }
