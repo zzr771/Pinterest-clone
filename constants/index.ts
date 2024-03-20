@@ -71,4 +71,16 @@ const reactionIcons = [
   { name: "Haha", src: "/assets/reactions/haha.svg" },
 ]
 
-export { getInitialPinCardImgs, getCardNumber, getMorePinCardImgs, reactionIcons }
+const ideasArray = [
+  { image: "/assets/undone functions/11.jpg", title: "Lac Blanc", id: "" },
+  { image: "/assets/undone functions/12.jpg", title: "Swiss Alps", id: "" },
+  { image: "/assets/undone functions/25.jpg", title: "Jungfrau", id: "" },
+  { image: "/assets/undone functions/27.jpg", title: "Wallpaper", id: "" },
+]
+const popularArray = [
+  { image: "/assets/undone functions/29.jpg", title: "Falcon Rocket", id: "" },
+  { image: "/assets/undone functions/30.jpg", title: "Space X", id: "" },
+  { image: "/assets/undone functions/32.jpg", title: "Station", id: "" },
+  { image: "/assets/undone functions/36.jpg", title: "Horizon from space", id: "" },
+]
+export { getInitialPinCardImgs, getCardNumber, getMorePinCardImgs, reactionIcons, ideasArray, popularArray }

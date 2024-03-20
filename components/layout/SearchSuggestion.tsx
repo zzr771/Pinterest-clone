@@ -1,14 +1,14 @@
 import { useState } from "react"
 import { IoMdClose } from "react-icons/io"
 import SearchSuggestionCard from "../cards/SearchSuggestionCard"
+import { ideasArray, popularArray } from "@/constants/index"
 
 export default function SearchSuggestion() {
   const [recentSearches, setRecentSearches] = useState(
     JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
   )
 
-  function deleteSearchTerm(searchTerm: string, event: React.MouseEvent) {
-    event.stopPropagation()
+  function deleteSearchTerm(searchTerm: string) {
     const updatedSearches = recentSearches.filter((item: string) => item !== searchTerm)
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(updatedSearches))
     setRecentSearches(updatedSearches)
@@ -18,10 +18,11 @@ export default function SearchSuggestion() {
     // todo
   }
 
-  const suggestionCardArray = [1, 2, 3, 4, 5, 6, 7]
-
   return (
-    <div className="bg-white rounded-b-2xl p-8 max-h-[calc(100vh-80px)] overflow-y-auto">
+    <div
+      className={`bg-white rounded-b-2xl max-h-[calc(100vh-80px)] shadow-bottom overflow-y-auto ${
+        recentSearches.length > 0 && "p-8"
+      }`}>
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-medium text-base">Recent searches</h3>
@@ -34,7 +35,11 @@ export default function SearchSuggestion() {
                 <span>{item}</span>
                 <div
                   className="flex justify-center items-center w-6 h-6 rounded-full hover:bg-[#CDCDCD] text-black"
-                  onClick={(event: React.MouseEvent) => deleteSearchTerm(item, event)}>
+                  onClick={(event: React.MouseEvent) => {
+                    event.nativeEvent.stopImmediatePropagation() // stop bubbling to other native DOM click handlers
+                    event.stopPropagation() // stop bubbling to react onClick event handlers
+                    deleteSearchTerm(item)
+                  }}>
                   <IoMdClose />
                 </div>
               </div>
@@ -45,25 +50,15 @@ export default function SearchSuggestion() {
 
       <h3 className="font-medium text-base mt-7">Ideas for you</h3>
       <div className="grid grid-cols-3 w7:grid-cols-4 gap-2 mt-5">
-        {suggestionCardArray.map((item) => (
-          <SearchSuggestionCard
-            image="/assets/test/search-suggestion-card-image.jpg"
-            title="Office inspiration"
-            id=""
-            key={item}
-          />
+        {ideasArray.map((item) => (
+          <SearchSuggestionCard image={item.image} title={item.title} id="" key={item.title} />
         ))}
       </div>
 
       <h3 className="font-medium text-base mt-7">Popular on Pinterest</h3>
       <div className="grid grid-cols-3 w7:grid-cols-4 gap-2 mt-5">
-        {suggestionCardArray.map((item) => (
-          <SearchSuggestionCard
-            image="/assets/test/search-suggestion-card-image.jpg"
-            title="Office inspiration"
-            id=""
-            key={item}
-          />
+        {popularArray.map((item) => (
+          <SearchSuggestionCard image={item.image} title={item.title} id="" key={item.title} />
         ))}
       </div>
     </div>

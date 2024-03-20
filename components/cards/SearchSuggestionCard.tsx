@@ -11,7 +11,7 @@ export default function SearchSuggestionCard({ image, title, id }: Props) {
   }
   return (
     <div
-      className="flex flex-1 overflow-hidden rounded-2xl bg-gray-bg-3 aspect-[2.5/1] cursor-pointer"
+      className="flex flex-1 overflow-hidden rounded-2xl bg-gray-bg-3 aspect-[2.5/1] cursor-not-allowed"
       onClick={handleClick}>
       <div className="relative h-full aspect-square">
         <Image
