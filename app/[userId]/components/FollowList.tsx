@@ -33,9 +33,7 @@ export default function FollowList({ type, number, setShowFollowList }: Props) {
   }
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-gray-tp-1 z-[200]"
-      onClick={handleClick}>
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-tp-1 z-[90]" onClick={handleClick}>
       <div className="flex flex-col w-[550px] h-[833px] rounded-2xl bg-white pb-2">
         {/* title */}
         <div className="relative flex justify-center items-center m-6 p-6">

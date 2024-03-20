@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 interface Props {
   setshowCommentsMobile: React.Dispatch<React.SetStateAction<boolean>>
 }
-export default function ButtonsForMobile({ setshowCommentsMobile }: Props) {
+export default function ButtonsMobile({ setshowCommentsMobile }: Props) {
   const intersectionState = useAppSelector((state) => state.intersection.observers.NavBarBottom)
   const [positionClass, setPositionClass] = useState("")
 
@@ -14,7 +14,7 @@ export default function ButtonsForMobile({ setshowCommentsMobile }: Props) {
     if (intersectionState === "enter-bottom") {
       setPositionClass("static")
     } else if (intersectionState === "leave-bottom") {
-      setPositionClass("fixed z-[5] bottom-0 left-0 right-0 shadow-small")
+      setPositionClass("fixed z-[110] bottom-0 left-0 right-0 shadow-small")
     }
   }, [intersectionState])
 
