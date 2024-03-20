@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { FaSearch, FaUser } from "react-icons/fa"
 import { AiFillHome } from "react-icons/ai"
@@ -8,7 +7,6 @@ import { AiFillHome } from "react-icons/ai"
 export default function NavBarBottom() {
   if (window.innerWidth >= 820) return null
 
-  const [activeBtn, setActiveBtn] = useState("Home")
   const router = useRouter()
   const pathname = usePathname()
 
@@ -21,13 +19,15 @@ export default function NavBarBottom() {
           <AiFillHome className="w-6 h-6" />
         </div>
 
-        <div className={`${activeBtn === "Search" ? "text-black" : "text-gray-font-3"}`}>
+        <div
+          onClick={() => router.push("/search")}
+          className={`${pathname === "Search" ? "text-black" : "text-gray-font-3"}`}>
           <FaSearch className="w-6 h-6" />
         </div>
 
         <div
           onClick={() => router.push("/userID")}
-          className={`${activeBtn === "Saved" ? "text-black" : "text-gray-font-3"}`}>
+          className={`${pathname === "Saved" ? "text-black" : "text-gray-font-3"}`}>
           <FaUser className="w-6 h-6" />
         </div>
       </div>
