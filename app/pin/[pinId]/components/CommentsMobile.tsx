@@ -16,7 +16,7 @@ export default function CommentsMobile({ setshowCommentsMobile }: Props) {
     }
   }
   return (
-    <div className="fixed inset-0 bg-gray-tp-2 z-[10]" onClick={handleClickModal}>
+    <div className="fixed inset-0 bg-gray-tp-2 z-[110]" onClick={handleClickModal}>
       <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem]">
         {/* title */}
         <div className="flex justify-between items-center p-2">
