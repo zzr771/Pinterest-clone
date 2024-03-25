@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { MdOutlineFileUpload } from "react-icons/md"
 import { LuArrowUpRight } from "react-icons/lu"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import { useAppSelector } from "@/lib/store/hook"
 import { getRandomColorHex } from "@/lib/utils"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import OptionListMobile from "../mobile/OptionListMobile"
+const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 interface Props {
   pinId: string
@@ -55,12 +58,34 @@ export default function PinCard({ pinId, src, imageSize, title, author }: Props)
     }, 1000)
   }, [screenSize])
 
+  const options = useRef([
+    {
+      label: "Hide Pin",
+      callback: () => {},
+    },
+    {
+      label: "Download image",
+      callback: () => {},
+    },
+  ])
+  const mobileOptions = useRef([
+    {
+      label: "Save",
+      callback: () => {},
+    },
+    {
+      label: "Hide Pin",
+      callback: () => {},
+    },
+    {
+      label: "Download image",
+      callback: () => {},
+    },
+  ])
+
   return (
-    <div
-      ref={cardContainer}
-      className="absolute p-1 pb-2 w3:px-2 w3:pb-4 w3:pt-0"
-      onClick={() => router.push(`/pin/${pinId}`)}>
-      <div ref={cardBody} className="relative rounded-2xl overflow-hidden">
+    <div ref={cardContainer} className="absolute p-1 pb-2 w3:px-2 w3:pb-4 w3:pt-0">
+      <div ref={cardBody} className="relative rounded-2xl" onClick={() => router.push(`/pin/${pinId}`)}>
         <Image
           src={src}
           alt="pin cover image"
@@ -69,7 +94,11 @@ export default function PinCard({ pinId, src, imageSize, title, author }: Props)
           height={imageDisplaySize.height}
           quality={100}
         />
-        <div className="absolute z-1 inset-0 h-full flex flex-col justify-between p-3 cursor-zoom-in max-w3:hidden hover:bg-gray-tp-1 hover-show-container">
+
+        {/* buttons on image */}
+        <div
+          className="absolute inset-0 h-full flex flex-col justify-between p-3 rounded-2xl cursor-pointer max-w3:hidden hover:bg-gray-tp-1 hover-show-container"
+          onClick={() => router.push(`/pin/${pinId}`)}>
           <div className="flex justify-end hover-content-flex">
             <Button
               text="Save"
@@ -96,52 +125,29 @@ export default function PinCard({ pinId, src, imageSize, title, author }: Props)
                 <span>space.com</span>
               </div>
             </Button>
-            <div className="flex gap-2">
-              <Button
-                bgColor="translucent"
-                size="small"
-                rounded
-                hover
-                clickEffect
-                click={(event) => {
-                  event.stopPropagation()
-                  /* todo */
-                }}>
-                <MdOutlineFileUpload className="text-black w-5 h-5" />
-              </Button>
-              <Button
-                bgColor="translucent"
-                size="small"
-                rounded
-                hover
-                clickEffect
-                click={(event) => {
-                  event.stopPropagation()
-                  /* todo */
-                }}>
+
+            <DropDownList options={options.current} position={{ offsetY: 40 }}>
+              <Button bgColor="translucent" size="small" rounded hover clickEffect>
                 <TfiMoreAlt className="text-black w-4 h-4" />
               </Button>
-            </div>
+            </DropDownList>
           </div>
         </div>
       </div>
 
       {/* title & author */}
-      <div className="px-1 mt-1.5">
+      <div className="px-1 mt-1.5 bg-white">
         <div className="flex items-center justify-between ">
-          <h5 className="truncate max-w3:text-xs text-sm font-medium">{title}</h5>
+          <Link href={`/pin/${pinId}`}>
+            <h5 className="truncate max-w3:text-xs text-sm font-medium cursor-pointer">{title}</h5>
+          </Link>
+
           {screenSize < 820 && (
-            <Button
-              bgColor="translucent"
-              size="tiny"
-              rounded
-              hover
-              clickEffect
-              click={() => {
-                /* todo */
-              }}>
-              <TfiMoreAlt className="text-black w-3.5 h-3.5 rotate-90" />
-            </Button>
+            <OptionListMobile options={mobileOptions.current}>
+              <Button bgColor="translucent" size="tiny" rounded hover clickEffect>
+                <TfiMoreAlt className="text-black w-3.5 h-3.5 rotate-90" />
+              </Button>
+            </OptionListMobile>
           )}
         </div>
         <div className="flex items-center mt-2 gap-1">
@@ -154,7 +160,9 @@ export default function PinCard({ pinId, src, imageSize, title, author }: Props)
               sizes="32px"
             />
           </div>
-          <div className="flex-1 truncate max-w3:text-xs text-sm font-medium pr-5">{author.name}</div>
+          <div className="flex-1 truncate max-w3:text-xs text-sm font-normal pr-5 hover:underline cursor-pointer">
+            {author.name}
+          </div>
         </div>
       </div>
     </div>

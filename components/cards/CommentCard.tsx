@@ -4,27 +4,18 @@ import { useEffect, useRef, useState } from "react"
 import { HiOutlineHeart } from "react-icons/hi"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
-import DropDownList from "../shared/DropDownList"
+import dynamic from "next/dynamic"
+const OptionListMobile = dynamic(() => import("../mobile/OptionListMobile"), { ssr: false })
+const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 import Reply from "../form/Reply"
-import useDropDownList from "@/lib/hooks/useDropDownList"
 import InputModal from "../mobile/InputModal"
-import OptionListMobile from "../mobile/OptionListMobile"
 
 export default function CommentCard() {
   const [showReplyInput, setShowReplyInput] = useState(false) // PC
   const [showInputModal, setShowInputModal] = useState(false) // mobile
   const authorOptions = useRef([{ label: "Edit" }, { label: "Delete" }])
 
-  const dropContainerRef = useRef<HTMLDivElement>(null)
-  const [showAuthorOptions, setShowAuthorOptions] = useState(false)
-
   const [isMobileDevice, setIsMobileDevice] = useState(false)
-
-  useDropDownList({
-    dropContainerRef,
-    showDropDownList: showAuthorOptions,
-    setShowDropDownList: setShowAuthorOptions,
-  })
 
   useEffect(() => {
     if (window.innerWidth < 820) {
@@ -74,22 +65,25 @@ export default function CommentCard() {
               13
             </div>
             {/* show this button if the current user is the author of the comment */}
-            <div ref={dropContainerRef} className="relative">
-              <Button
-                size="tiny"
-                clickEffect
-                hover
-                rounded
-                click={() => setShowAuthorOptions((prev) => !prev)}>
-                <TfiMoreAlt className="text-gray-font-4" />
-              </Button>
-              {!isMobileDevice && showAuthorOptions && (
-                <div className="horizontal-middle top-7">
-                  <DropDownList options={authorOptions.current} />
-                </div>
+            <div className="relative">
+              {!isMobileDevice && (
+                <DropDownList
+                  options={authorOptions.current}
+                  position={{ offsetY: 30 }}
+                  followScrolling
+                  className="z-[1]">
+                  <Button size="tiny" clickEffect hover rounded>
+                    <TfiMoreAlt className="text-gray-font-4" />
+                  </Button>
+                </DropDownList>
               )}
-              {isMobileDevice && showAuthorOptions && (
-                <OptionListMobile options={authorOptions.current} setShowList={setShowAuthorOptions} />
+
+              {isMobileDevice && (
+                <OptionListMobile options={authorOptions.current}>
+                  <Button size="tiny" clickEffect hover rounded>
+                    <TfiMoreAlt className="text-gray-font-4" />
+                  </Button>
+                </OptionListMobile>
               )}
             </div>
           </div>

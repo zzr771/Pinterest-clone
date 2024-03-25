@@ -1,35 +1,58 @@
 import { Option } from "@/lib/types"
+import { useState } from "react"
 import { IoMdClose } from "react-icons/io"
+import { createPortal } from "react-dom"
 
 interface Props {
-  setShowList: React.Dispatch<React.SetStateAction<boolean>>
   options: Option[]
+  children: React.ReactNode // The button that toggles the dropdown list.
 }
-export default function OptionListMobile({ setShowList, options }: Props) {
+export default function OptionListMobile({ options, children }: Props) {
+  if (window.innerWidth >= 820) return null
+
+  const [showList, setShowList] = useState(false)
+
   function handleClickModal(event: React.MouseEvent<HTMLDivElement>) {
     if (event.currentTarget === event.target) {
       setShowList(false)
     }
   }
   return (
-    <div className="fixed inset-0 bg-gray-tp-2 z-[20] text-black" onClick={handleClickModal}>
-      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem]">
-        {/* close button */}
-        <div className="p-2">
-          <div className="w-12 h-12 flex justify-center items-center" onClick={() => setShowList(false)}>
-            <IoMdClose className="w-6 h-6" />
-          </div>
-        </div>
-
-        {/* list */}
-        <div className="p-3 text-base">
-          {options.map((item) => (
-            <div key={item.label} onClick={item?.callback} className="py-2 font-medium">
-              {item.label}
-            </div>
-          ))}
-        </div>
+    <>
+      <div
+        onClick={(event: React.MouseEvent) => {
+          event.stopPropagation()
+          event.nativeEvent.stopImmediatePropagation()
+          setShowList(true)
+        }}>
+        {children}
       </div>
-    </div>
+
+      {showList &&
+        createPortal(
+          <div className="fixed inset-0 bg-gray-tp-2 z-[110] text-black" onClick={handleClickModal}>
+            <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem]">
+              {/* close button */}
+              <div className="p-2">
+                <div
+                  className="w-12 h-12 flex justify-center items-center"
+                  onClick={() => setShowList(false)}>
+                  <IoMdClose className="w-6 h-6" />
+                </div>
+              </div>
+
+              {/* list */}
+              <div className="p-3 text-base">
+                {options.map((item) => (
+                  <div key={item.label} onClick={item?.callback} className="py-2 font-medium">
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+    </>
   )
 }

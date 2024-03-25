@@ -4,8 +4,8 @@ import { Checkbox } from "@/components/shadcn/checkbox"
 import { Draft } from "@/lib/types"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
-import DropDownList from "@/components/shared/DropDownList"
-import useDropDownList from "@/lib/hooks/useDropDownList"
+import dynamic from "next/dynamic"
+const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 interface Props {
   draft: Draft
@@ -38,10 +38,6 @@ export default function DraftCard({
     setIsChecked(controlCheck)
   }, [controlCheck])
 
-  const dropContainerRef = useRef<HTMLDivElement>(null)
-  const [showDropDownList, setShowDropDownList] = useState(false)
-  useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
-
   return (
     <div
       onClick={() => setEditingDraft(draft)}
@@ -64,24 +60,14 @@ export default function DraftCard({
         {draft.title && <p className="font-semibold text-sm">{draft.title}</p>}
         <p className="text-[13px] text-gray-font-4">{`${daysRest} days until expiration`}</p>
       </div>
-      <div ref={dropContainerRef} className="relative w-8 h-8">
-        <div className="hover-content-flex">
-          <Button
-            size="small"
-            hover
-            rounded
-            clickEffect
-            click={() => setShowDropDownList((prev) => !prev)}
-            className="hover:bg-gray-bg-7">
+
+      <DropDownList options={options.current} position={{ offsetY: 40 }} followScrolling>
+        <div className="w-8 h-8">
+          <Button size="small" hover rounded clickEffect className="hover-content-flex hover:bg-gray-bg-7">
             <TfiMoreAlt />
           </Button>
         </div>
-        {showDropDownList && (
-          <div className="absolute z-[1] top-[40px] left-[-151px]">
-            <DropDownList options={options.current} />
-          </div>
-        )}
-      </div>
+      </DropDownList>
     </div>
   )
 }

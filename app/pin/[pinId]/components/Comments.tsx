@@ -11,8 +11,7 @@ import { reactionIcons } from "@/constants/index"
 import Reaction from "@/components/shared/Reaction"
 import Comment from "@/components/form/Comment"
 import ToolTip from "@/components/shared/ToolTip"
-import DropDownList from "@/components/shared/DropDownList"
-import useDropDownList from "@/lib/hooks/useDropDownList"
+const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 const IntersectionMonitor = dynamic(() => import("@/components/mobile/IntersectionMonitor"), { ssr: false })
 const ButtonsMobile = dynamic(() => import("./ButtonsMobile"))
 const CommentsMobile = dynamic(() => import("./CommentsMobile"))
@@ -26,9 +25,7 @@ export default function Comments() {
     { label: "Delete Pin", callback: () => {} },
   ])
 
-  const dropContainerRef = useRef<HTMLDivElement>(null)
   const [showDropDownList, setShowDropDownList] = useState(false)
-  useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
 
   function foldComments() {
     setIsCommentsFolded(true)
@@ -50,25 +47,19 @@ export default function Comments() {
       <div className="relative flex flex-col flex-1 w3:pl-8 pl-4">
         {/* top bar */}
         {!isMobileDevice && (
-          <div className="flex justify-between h-[3.75rem] pt-8 pr-8 box-content bg-white w3:max-w5:rounded-0 w5:rounded-tr-[2rem] sticky top-[64px] z-[5]">
-            <div ref={dropContainerRef} className="flex items-center relative ml-[-12px] ">
-              <ToolTip text="More options">
-                <Button
-                  rounded
-                  hover
-                  clickEffect
-                  click={() => setShowDropDownList((prev) => !prev)}
-                  bgColor={showDropDownList ? "black" : "transparent"}>
-                  <TfiMoreAlt className="w-5 h-5" />
-                </Button>
-              </ToolTip>
-              {showDropDownList && (
-                <div className="horizontal-middle top-[62px]">
-                  <DropDownList options={options.current} />
-                </div>
-              )}
-            </div>
-
+          <div className="flex justify-between items-center h-[3.75rem] pt-8 pr-8 box-content bg-white w3:max-w5:rounded-0 w5:rounded-tr-[2rem] sticky top-[64px] z-[5]">
+            <DropDownList
+              options={options.current}
+              position={{ offsetY: 55 }}
+              setShowDropDownFromParent={setShowDropDownList}>
+              <div className="ml-[-12px]" onClick={() => setShowDropDownList((prev) => !prev)}>
+                <ToolTip text="More options">
+                  <Button rounded hover clickEffect bgColor={showDropDownList ? "black" : "transparent"}>
+                    <TfiMoreAlt className="w-5 h-5" />
+                  </Button>
+                </ToolTip>
+              </div>
+            </DropDownList>
             <div className="flex items-center">
               <Button text="Save" bgColor="red" hover />
             </div>

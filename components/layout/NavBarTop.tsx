@@ -4,36 +4,55 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
 import { AiFillMessage } from "react-icons/ai"
+import { SignInButton, SignOutButton } from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
-import DropDownList from "../shared/DropDownList"
-import useDropDownList from "@/lib/hooks/useDropDownList"
+import Image from "next/image"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 export default function NavBarTop() {
   if (window.innerWidth < 820) return null
 
   const router = useRouter()
   const pathname = usePathname()
-  const [activeBtn, setActiveBtn] = useState("Home")
+  const [activeBtn, setActiveBtn] = useState("")
 
-  const options = useRef([
+  const [showRouteList, setShowRouteList] = useState(false)
+  const routeOptions = useRef([
     {
       label: "Home",
       callback: () => {
         router.push("/")
+        setShowRouteList(false)
       },
     },
     {
       label: "Create",
       callback: () => {
         router.push("/idea-pin-builder")
+        setShowRouteList(false)
       },
     },
   ])
-  const dropContainerRef = useRef<HTMLDivElement>(null)
-  const [showDropDownList, setShowDropDownList] = useState(false)
-  useDropDownList({ dropContainerRef, showDropDownList, setShowDropDownList })
+
+  const userOptions = useRef([
+    {
+      label: "Settings",
+      callback: () => {
+        router.push("/settings")
+      },
+    },
+    {
+      label: "Sign out",
+      callback: () => {
+        handleSignOut()
+      },
+    },
+  ])
 
   useEffect(() => {
     if (pathname === "/") {
@@ -45,57 +64,59 @@ export default function NavBarTop() {
     }
   }, [pathname])
 
+  const { isSignedIn, user } = useUser()
+
+  const hiddenClerkButtonsRef = useRef<HTMLDivElement>(null)
+  function handleSignIn() {
+    const signInButton = hiddenClerkButtonsRef?.current?.children[0] as HTMLButtonElement
+    if (!signInButton) return
+    signInButton.click()
+  }
+  function handleSignOut() {
+    const signOutButton = hiddenClerkButtonsRef?.current?.children[1] as HTMLButtonElement
+    if (!signOutButton) return
+    signOutButton.click()
+  }
+
   return (
     <section className="nav-top items-center bg-white h-20 py-1 px-4 flex">
       {/* Pinterest icon */}
-      <Button
-        hover={true}
-        rounded={true}
-        click={() => {
-          router.push("/")
-        }}>
-        <img src="/assets/icon.png" alt="icon" className="h-6 w-6" />
-      </Button>
+      <Link href="/">
+        <Button hover={true} rounded={true}>
+          <img src="/assets/icon.png" alt="icon" className="h-6 w-6" />
+        </Button>
+      </Link>
 
-      {/* Button Group: Home Explore Create */}
+      {/* Button Group: Home Create */}
       <div className="flex items-center max-w4:hidden">
-        <Button
-          text="Home"
-          click={() => {
-            router.push("/")
-          }}
-          bgColor={activeBtn === "Home" ? "black" : "transparent"}
-        />
-        <Button
-          text="Create"
-          click={() => {
-            router.push("/idea-pin-builder")
-          }}
-          bgColor={activeBtn === "Create" ? "black" : "transparent"}
-        />
+        <Link href="/">
+          <Button text="Home" bgColor={activeBtn === "Home" ? "black" : "transparent"} />
+        </Link>
+        <Link href="/idea-pin-builder">
+          <Button text="Create" bgColor={activeBtn === "Create" ? "black" : "transparent"} />
+        </Link>
       </div>
 
-      <div
-        ref={dropContainerRef}
-        className={`relative flex items-center p-3.5 ml-2 rounded-full w4:hidden  
-          ${
-            showDropDownList ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"
-          }
+      <DropDownList
+        options={routeOptions.current}
+        position={{ offsetX: 50, offsetY: 55 }}
+        setShowDropDownFromParent={setShowRouteList}
+        showCheckMark
+        activeOption={activeBtn}>
+        <div
+          onClick={() => setShowRouteList((prev) => !prev)}
+          className={`relative flex items-center p-3.5 ml-2 rounded-full w4:hidden  
+          ${showRouteList ? "bg-black text-white hover:bg-black" : "bg-white text-black hover:bg-gray-bg-4"}
          font-medium cursor-pointer leading-5
-          `}
-        onClick={() => setShowDropDownList((prev) => !prev)}>
-        <div className="flex items-center gap-2">
-          <span>{activeBtn}</span>
-          <FaChevronDown
-            className={`h-3.5 w-3.5 w3:max-w4:block hidden ${showDropDownList ? "text-white" : "text-black"}`}
-          />
-        </div>
-        {showDropDownList && (
-          <div className="horizontal-middle top-[60px] z-5">
-            <DropDownList options={options.current} showCheckMark defaultOption={activeBtn} />
+          `}>
+          <div className="flex items-center gap-2">
+            <span>{activeBtn || "Home"}</span>
+            <FaChevronDown
+              className={`h-3.5 w-3.5 w3:max-w4:block hidden ${showRouteList ? "text-white" : "text-black"}`}
+            />
           </div>
-        )}
-      </div>
+        </div>
+      </DropDownList>
 
       <SearchBar />
 
@@ -111,12 +132,42 @@ export default function NavBarTop() {
             <AiFillMessage className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
-        <ToolTip text="Your profile" position="bottom">
-          <Button hover rounded click={() => router.push("/userID")}>
-            {/* todo: replace it with Clerk */}
-            <FaUser className="text-gray-font-3 w-6 h-6" />
-          </Button>
-        </ToolTip>
+        {isSignedIn && (
+          <ToolTip text="Your profile" position="bottom">
+            <Link href={`/user/${user?.username}`}>
+              <Button hover rounded>
+                <Image
+                  src={user?.imageUrl}
+                  alt="avatar"
+                  width={30}
+                  height={30}
+                  className="rounded-full object-cover"
+                />
+              </Button>
+            </Link>
+          </ToolTip>
+        )}
+        {!isSignedIn && (
+          <ToolTip text="Sign in & sign up" position="left">
+            <Button hover rounded click={handleSignIn}>
+              <FaUser className="text-gray-font-3 w-6 h-6" />
+            </Button>
+          </ToolTip>
+        )}
+
+        {isSignedIn && (
+          <DropDownList options={userOptions.current} position={{ offsetX: -80, offsetY: 40 }}>
+            <Button hover rounded clickEffect size="small" className="!h-6 !w-6">
+              <FaChevronDown />
+            </Button>
+          </DropDownList>
+        )}
+
+        {/* Clerk components. Not displayed. Their click events will be manually invoked when a user signs in or signs out  */}
+        <div ref={hiddenClerkButtonsRef} className="hidden">
+          <SignInButton mode="modal" />
+          <SignOutButton />
+        </div>
       </div>
     </section>
   )
