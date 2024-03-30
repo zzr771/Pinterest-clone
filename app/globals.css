@@ -200,3 +200,17 @@ ul.indicators {
     background: #656565 !important;
   }
 }
+
+.loading-spinner {
+  color: rgb(118, 118, 118);
+  fill: rgb(118, 118, 118);
+  animation: spinner 0.4s linear infinite;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}
