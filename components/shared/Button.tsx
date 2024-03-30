@@ -102,6 +102,7 @@ export default function Button({
     <button
       type="button"
       onClick={click}
+      aria-disabled={disabled}
       disabled={disabled}
       className={`flex items-center justify-center rounded-full font-semibold cursor-pointer
       ${sizeClass} 
