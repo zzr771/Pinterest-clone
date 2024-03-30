@@ -1,5 +1,8 @@
 "use client"
 
+import Image from "next/image"
+import dynamic from "next/dynamic"
+import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { FaChevronDown, FaBell, FaUser } from "react-icons/fa"
@@ -9,9 +12,6 @@ import { useUser } from "@clerk/nextjs"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
-import Image from "next/image"
-import dynamic from "next/dynamic"
-import Link from "next/link"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 export default function NavBarTop() {
@@ -132,21 +132,27 @@ export default function NavBarTop() {
             <AiFillMessage className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
+        {/* user avatar */}
         {isSignedIn && (
           <ToolTip text="Your profile" position="bottom">
-            <Link href={`/user/${user?.username}`}>
+            <Link href={`/user/${user?.id}`}>
               <Button hover rounded>
-                <Image
-                  src={user?.imageUrl}
-                  alt="avatar"
-                  width={30}
-                  height={30}
-                  className="rounded-full object-cover"
-                />
+                {user.imageUrl ? (
+                  <Image
+                    src={user?.imageUrl}
+                    alt="avatar"
+                    width={30}
+                    height={30}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <FaUser className="text-gray-font-3 w-6 h-6" />
+                )}
               </Button>
             </Link>
           </ToolTip>
         )}
+        {/* button for signing in */}
         {!isSignedIn && (
           <ToolTip text="Sign in & sign up" position="left">
             <Button hover rounded click={handleSignIn}>
@@ -155,6 +161,7 @@ export default function NavBarTop() {
           </ToolTip>
         )}
 
+        {/* dropdown button for signed in users */}
         {isSignedIn && (
           <DropDownList options={userOptions.current} position={{ offsetX: -80, offsetY: 40 }}>
             <Button hover rounded clickEffect size="small" className="!h-6 !w-6">
