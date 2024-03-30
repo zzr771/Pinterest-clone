@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic"
 import BackwardButton from "@/components/shared/BackwardButton"
-import PinImage from "./components/PinImage"
-import Comments from "./components/Comments"
+import PinImage from "./_components/PinImage"
+import Comments from "./_components/Comments"
 import WaterFall from "@/components/layout/WaterFall"
 const InterSectionMonitor = dynamic(() => import("@/components/mobile/IntersectionMonitor"), { ssr: false })
 const OptionButtonMobile = dynamic(() => import("@/components/mobile/OptionButtonMobile"), { ssr: false })

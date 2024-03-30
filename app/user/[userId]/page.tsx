@@ -4,13 +4,13 @@ import Image from "next/image"
 import { FaPinterest } from "react-icons/fa"
 import { abbreviateNumber } from "@/lib/utils"
 import Paragraph from "@/components/shared/Paragraph"
-import Buttons from "./components/Buttons"
+import Buttons from "./_components/Buttons"
 import Tabs from "@/components/shared/Tabs"
 import { useLayoutEffect, useState } from "react"
 import WaterFall from "@/components/layout/WaterFall"
 import BackwardButton from "@/components/shared/BackwardButton"
-const FollowList = dynamic(() => import("./components/FollowList"))
-const FollowListMobile = dynamic(() => import("./components/FollowListMobile"))
+const FollowList = dynamic(() => import("./_components/FollowList"))
+const FollowListMobile = dynamic(() => import("./_components/FollowListMobile"))
 
 const tabs = ["Created", "Saved"]
 export default function Page({ params }: { params: { userId: string } }) {

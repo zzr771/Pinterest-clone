@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react"
-import PinDraftList from "./components/PinDraftList"
+import PinDraftList from "./_components/PinDraftList"
 import type { Draft } from "@/lib/types"
-import PinForm from "./components/PinForm"
+import PinForm from "./_components/PinForm"
 
 const date1 = new Date().getTime() + 30 * 24 * 60 * 60 * 1000
 const date2 = new Date().getTime() + 27 * 24 * 60 * 60 * 1000
