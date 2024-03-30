@@ -1,7 +1,7 @@
 import * as z from "zod"
 
 export const ProfileValidation = z.object({
-  image: z.string(),
+  imageUrl: z.string(),
   firstName: z
     .string()
     .trim()
@@ -14,7 +14,5 @@ export const ProfileValidation = z.object({
     .trim()
     .min(1, { message: "Your profile needs a username" })
     .max(50, { message: "Please enter no more than 50 characters." }),
-  // website: z.string().trim().url({ message: "Not a valid URL" }).optional(),
-  // website: z.union([z.literal(""), z.string().trim().url({ message: "Not a valid URL" })]),
   website: z.string().trim().url({ message: "Not a valid URL" }).optional().or(z.literal("")),
 })
