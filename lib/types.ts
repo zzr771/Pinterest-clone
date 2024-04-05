@@ -11,3 +11,7 @@ export interface Option {
   label: string
   callback?: () => void
 }
+
+export interface RequestError {
+  errorMessage: string
+}

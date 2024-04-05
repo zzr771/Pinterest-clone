@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache"
 import User from "../models/user.model"
 import { connectToDB } from "../mongoose"
+import { getErrorMessage } from "../utils"
+import { RequestError } from "../types"
 
 interface initUserParams {
   id: string
@@ -17,7 +19,7 @@ interface userParams extends initUserParams {
   path?: string
 }
 
-export async function createUser({ id, username, imageUrl }: initUserParams): Promise<void> {
+export async function createUser({ id, username, imageUrl }: initUserParams): Promise<void | RequestError> {
   connectToDB()
   try {
     const existingUser = await User.findOne({ id })
@@ -34,10 +36,15 @@ export async function createUser({ id, username, imageUrl }: initUserParams): Pr
       await newUser.save()
     }
   } catch (error: any) {
-    throw new Error(`Failed to create user: ${error.message}`)
+    return {
+      errorMessage: getErrorMessage(error),
+    }
   }
 }
 
+interface DuplicateUsername {
+  isDuplicate: true
+}
 export async function updateUser({
   id,
   username,
@@ -47,23 +54,28 @@ export async function updateUser({
   about = "",
   website = "",
   path = "",
-}: userParams): Promise<void> {
+}: userParams): Promise<void | RequestError | DuplicateUsername> {
   connectToDB()
   try {
     const existingUser = await User.findOne({ username })
-    if (existingUser) {
+    if (existingUser && existingUser.id !== id) {
+      return {
+        isDuplicate: true,
+      }
     }
     await User.findOneAndUpdate({ id }, { imageUrl, firstName, lastName, about, website, username })
 
     if (path === "/settings") {
       revalidatePath(path)
     }
-  } catch (error: any) {
-    throw new Error(`Failed to update user: ${error.message}`)
+  } catch (error) {
+    return {
+      errorMessage: getErrorMessage(error),
+    }
   }
 }
 
-export async function fetchUserSettings(id: string): Promise<userParams> {
+export async function fetchUserSettings(id: string): Promise<userParams | RequestError> {
   connectToDB()
   try {
     let user = await User.findOne({ id }, [
@@ -80,9 +92,22 @@ export async function fetchUserSettings(id: string): Promise<userParams> {
       delete user._id // Prevent interfering the value change check in function 'checkValuesChange'
       return user
     } else {
-      throw new Error(`user is null`)
+      return {
+        errorMessage: "User doesn't exist",
+      }
     }
-  } catch (error: any) {
-    throw new Error(`Failed to fetch user: ${error.message}`)
+  } catch (error) {
+    return {
+      errorMessage: getErrorMessage(error),
+    }
   }
+}
+
+// temp
+export async function adjustUserProperties() {
+  connectToDB()
+  try {
+    const res = await User.updateMany({}, { $set: { drafts: [] } })
+    console.log(res)
+  } catch (err) {}
 }

@@ -67,3 +67,22 @@ export function abbreviateNumber(num: number) {
 export function separateNumberByComma(number: number) {
   return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
+
+export function getErrorMessage(error: unknown): string {
+  let message = "Something went wrong"
+
+  if (error instanceof Error) {
+    message = error.message
+  } else if (error && typeof error === "object" && "message" in error) {
+    message = String(error.message)
+  } else if (typeof error === "string") {
+    message = error
+  }
+
+  return message
+}
+
+export function isBase64Image(imageData: string) {
+  const base64Regex = /^data:image\/(png|jpe?g|gif|webp);base64,/
+  return base64Regex.test(imageData)
+}
