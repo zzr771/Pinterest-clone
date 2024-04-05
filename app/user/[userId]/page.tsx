@@ -2,13 +2,15 @@
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import { FaPinterest } from "react-icons/fa"
+import { RiSettingsFill } from "react-icons/ri"
 import { abbreviateNumber } from "@/lib/utils"
 import Paragraph from "@/components/shared/Paragraph"
 import Buttons from "./_components/Buttons"
 import Tabs from "@/components/shared/Tabs"
-import { useLayoutEffect, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import WaterFall from "@/components/layout/WaterFall"
 import BackwardButton from "@/components/shared/BackwardButton"
+import OptionListMobile from "@/components/mobile/OptionListMobile"
 const FollowList = dynamic(() => import("./_components/FollowList"))
 const FollowListMobile = dynamic(() => import("./_components/FollowListMobile"))
 
@@ -23,7 +25,10 @@ export default function Page({ params }: { params: { userId: string } }) {
   const followerNum = abbreviateNumber(6332)
   const followingNum = 15
 
+  const [isMySelf, setIsMySelf] = useState(true) // Whether the current user is viewing the profile of himself/herself
+
   const [isMobileDevice, setIsMobileDevice] = useState(false)
+  const options = useRef([{ label: "Sign out" }])
   useLayoutEffect(() => {
     if (window.innerWidth < 820) {
       setIsMobileDevice(true)
@@ -33,10 +38,19 @@ export default function Page({ params }: { params: { userId: string } }) {
   }, [])
 
   return (
-    <section className="relative mt-20 text-[15px] max-w3:mt-16">
+    <section className="relative pt-20 text-[15px] max-w3:pt-16">
       {isMobileDevice && (
-        <div className="fixed w3:top-24 w3:left-4 left-2 top-2 z-[1]">
+        <div className="fixed left-2 top-2 z-[1]">
           <BackwardButton />
+        </div>
+      )}
+      {isMobileDevice && isMySelf && (
+        <div className="absolute right-2 top-2 z-[1]">
+          <OptionListMobile options={options.current}>
+            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-white">
+              <RiSettingsFill className="w-5 h-5 " />
+            </div>
+          </OptionListMobile>
         </div>
       )}
 
@@ -90,7 +104,7 @@ export default function Page({ params }: { params: { userId: string } }) {
           </span>
         </div>
 
-        <Buttons />
+        <Buttons isMySelf={isMySelf} />
       </div>
 
       {showFollowList && !isMobileDevice && (
