@@ -7,10 +7,8 @@ import { authMiddleware } from "@clerk/nextjs"
 
 export default authMiddleware({
   // Allow signed out users to access the specified routes:
-  publicRoutes: ["/", "/user/:path*", "/pin/:path*", "/search"],
-  // Prevent the specified routes from accessing
-  // authentication information:
-  // ignoredRoutes: [],
+  publicRoutes: ["/", "/user/:path*", "/pin/:path*", "/search", "/api/uploadthing"],
+  ignoredRoutes: [],
 })
 
 export const config = {
