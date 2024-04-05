@@ -1,7 +1,3 @@
-user页面：
-	移动端：
-		“...”按钮和退出登录按钮
+SignInMonitor中fetchUserSettings，提供给redux
 
-username 唯一性校验
 
-请求错误处理

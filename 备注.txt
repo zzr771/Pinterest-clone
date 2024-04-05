@@ -65,6 +65,7 @@ board
 notifications
 
 z-index:
+MessageBox: 120
 CommentsMobile: 110
 OptionListMobile: 110
 DropDownList: 110
