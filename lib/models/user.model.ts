@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
 
   created: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
   saved: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
+  drafts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
 
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   follower: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
