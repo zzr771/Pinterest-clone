@@ -4,12 +4,13 @@ import "./globals.css"
 import "react-slideshow-image/dist/styles.css"
 import dynamic from "next/dynamic"
 import { ClerkProvider } from "@clerk/nextjs"
+import { Toaster } from "react-hot-toast"
 const NavBarTop = dynamic(() => import("@/components/layout/NavBarTop"), { ssr: false })
 const NavBarBottom = dynamic(() => import("@/components/layout/NavBarBottom"), { ssr: false })
 import StoreProvider from "@/components/StoreProvider"
 import ScreenReziseMonitor from "@/components/shared/ScreenReziseMonitor"
 import Modal from "@/components/shared/Modal"
-import SignUpMonitor from "@/components/shared/SignUpMonitor"
+import SignInMonitor from "@/components/shared/SignInMonitor"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,8 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Modal />
             {children}
             <ScreenReziseMonitor />
-            <SignUpMonitor />
           </StoreProvider>
+
+          <SignInMonitor />
+          <Toaster position="top-right" containerClassName="toaster-container" />
         </body>
       </html>
     </ClerkProvider>
