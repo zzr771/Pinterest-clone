@@ -16,6 +16,7 @@ const config: Config = {
     extend: {
       colors: {
         "red-dark": "#AD081B",
+        "red-error": "#cc0000",
         "gray-bg": {
           1: "#EFEFEF",
           2: "#F0F0F0",

@@ -145,7 +145,7 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<
         ref={ref}
         id={formMessageId}
         // error-message-marker: used in .input-default:has(+ .error-message-marker) in globals.css
-        className={cn("error-message-marker flex gap-2 text-xs text-[#cc0000] dark:text-red-900", className)}
+        className={cn("error-message-marker flex gap-2 text-xs text-red-error dark:text-red-900", className)}
         {...props}>
         <MdError className="w-4 h-4" />
         {body}
