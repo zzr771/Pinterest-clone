@@ -31,13 +31,6 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       const lineHeight = parseInt(styles.lineHeight)
       virtualTextArea.style.minHeight = minRows * lineHeight + "px"
       virtualTextArea.style.maxHeight = maxRows * lineHeight + "px"
-
-      // transfer the container's padding to the textarea's margin
-      const padding = styles.padding
-      if (parseInt(padding) === 0) return // prevent the influence cuased by the devMode double execution
-      virtualTextArea.style.margin = padding
-      placeHolder.style.margin = padding
-      container.style.padding = "0px"
     }, [])
 
     function handleChange() {
@@ -49,13 +42,27 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       props.onChange?.(event)
     }
 
-    // when invoke form.reset(), manually clear the input (the props.value will become an empty string)
+    /*
+      This useEffect is to handle form.reset() and form.setValue().
+
+      Things to know:
+        1. When form.reset() is invoked, the original value will be sent to 'props.value'.
+        2. When a user types anything or form.setValue() is invoked, props.value will change as well.
+        3. When a user is typing and 'virtualTextAre.textContent' is set by JS code, the cursor will move to
+        the beginning immediately.
+
+        To respond to form.reset() and form.setValue(), we must listen to 'props.value' change. But we can't
+      set 'virtualTextAre.textContent' when the user is typing.
+        So we check if the virtualTextAre is currently being focused. If it is, we don't update the 
+        'virtualTextAre.textContent', so the cursor won't move. If it is not, we can update the 
+        'virtualTextAre.textContent' safely to the new value.
+    */
     useEffect(() => {
-      if (!props.value) {
-        setInput("")
-        const virtualTextAre = virtualTextAreaRef.current
-        if (virtualTextAre) {
-          virtualTextAre.textContent = ""
+      const virtualTextAre = virtualTextAreaRef.current
+      if (document.activeElement !== virtualTextAre) {
+        if (virtualTextAre && typeof props.value === "string") {
+          virtualTextAre.textContent = props.value
+          setInput(props.value)
         }
       }
     }, [props.value])
@@ -63,7 +70,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       /* 
           For some reason, sometimes the virtualTextAreaRef fails to prop up the containerRef's
-        height. So, turn on containerRef's BFC through "overflow-hidden"
+        height. So, turn on containerRef's BFC mode by "overflow-hidden"
       */
       <div ref={containerRef} className={`relative z-[1] overflow-hidden ${className}`}>
         <div ref={placeHolderRef} className="absolute z-[-1] text-[#9CA3AF]">
