@@ -12,6 +12,7 @@ import { useUser } from "@clerk/nextjs"
 import Button from "../shared/Button"
 import SearchBar from "./SearchBar"
 import ToolTip from "../shared/ToolTip"
+import { useAppSelector } from "@/lib/store/hook"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 export default function NavBarTop() {
@@ -64,7 +65,7 @@ export default function NavBarTop() {
     }
   }, [pathname])
 
-  const { isSignedIn, user } = useUser()
+  const user = useAppSelector((state) => state.user.user)
 
   const hiddenClerkButtonsRef = useRef<HTMLDivElement>(null)
   function handleSignIn() {
@@ -133,7 +134,7 @@ export default function NavBarTop() {
           </Button>
         </ToolTip>
         {/* user avatar */}
-        {isSignedIn && (
+        {user && (
           <ToolTip text="Your profile" position="bottom">
             <Link href={`/user/${user?.id}`}>
               <Button hover rounded>
@@ -143,7 +144,8 @@ export default function NavBarTop() {
                     alt="avatar"
                     width={30}
                     height={30}
-                    className="rounded-full object-cover"
+                    className="w-[30px] h-[30px] rounded-full object-cover"
+                    sizes="60px"
                   />
                 ) : (
                   <FaUser className="text-gray-font-3 w-6 h-6" />
@@ -153,7 +155,7 @@ export default function NavBarTop() {
           </ToolTip>
         )}
         {/* button for signing in */}
-        {!isSignedIn && (
+        {!user && (
           <ToolTip text="Sign in & sign up" position="left">
             <Button hover rounded click={handleSignIn}>
               <FaUser className="text-gray-font-3 w-6 h-6" />
@@ -162,7 +164,7 @@ export default function NavBarTop() {
         )}
 
         {/* dropdown button for signed in users */}
-        {isSignedIn && (
+        {user && (
           <DropDownList options={userOptions.current} position={{ offsetX: -80, offsetY: 40 }}>
             <Button hover rounded clickEffect size="small" className="!h-6 !w-6">
               <FaChevronDown />

@@ -15,3 +15,15 @@ export interface Option {
 export interface RequestError {
   errorMessage: string
 }
+
+export interface UserSettings {
+  _id?: string
+  id: string
+  username: string
+  imageUrl: string
+  firstName: string
+  lastName?: string
+  about?: string
+  website?: string
+  path?: string
+}

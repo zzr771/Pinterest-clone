@@ -9,7 +9,6 @@ import { ProfileValidation } from "@/lib/validations/profile"
 import { useEffect, useRef, useState, ChangeEvent } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { useUser } from "@clerk/nextjs"
 import { FaAngleLeft } from "react-icons/fa6"
 import { MdError } from "react-icons/md"
 import toast from "react-hot-toast"
@@ -22,21 +21,20 @@ import { getErrorMessage, isBase64Image } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
 import showMessageBox from "@/lib/showMessageBox"
 import { deleteFile } from "@/lib/actions/uploadthing"
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
+import { UserSettings } from "@/lib/types"
+import { storeUserInfo } from "@/lib/store/features/user"
 
-interface Profile {
-  imageUrl: string
-  username: string
-  firstName: string
-  lastName?: string
-  about?: string
-  website?: string
-}
-type Keys = keyof Profile
+type Keys = keyof UserSettings
+const FORM_FIELDS = ["imageUrl", "username", "firstName", "lastName", "about", "website"]
 export default function Page() {
   const router = useRouter()
-  const { isSignedIn, user } = useUser()
+  const dispatch = useAppDispatch()
+  const [isLoading, setIsLoading] = useState(true)
 
-  const defaultValues = useRef<Profile>({
+  const defaultValues = useRef<UserSettings>({
+    _id: "",
+    id: "",
     imageUrl: "",
     firstName: "",
     lastName: "",
@@ -49,31 +47,33 @@ export default function Page() {
     defaultValues: defaultValues.current,
   })
 
-  const [isLoading, setIsLoading] = useState(true)
+  const user = useAppSelector((state) => state.user.user)
+  function loadUserSettings() {
+    if (user === null) return
+    defaultValues.current = user
+    form.setValue("imageUrl", user.imageUrl)
+    form.setValue("username", user.username)
+    form.setValue("firstName", user.firstName)
+    form.setValue("lastName", user.lastName || "")
+    form.setValue("about", user.about || "")
+    form.setValue("website", user.website || "")
+    setIsLoading(false)
+    setIsValidationPassed(false)
+  }
   async function getUserSettings() {
     if (!user) return
+
     setIsLoading(true)
     const res = await fetchUserSettings(user.id)
     if ("errorMessage" in res) {
       toast.error(res.errorMessage)
       return
     }
-
-    defaultValues.current = res
-    form.setValue("imageUrl", res.imageUrl)
-    form.setValue("username", res.username)
-    form.setValue("firstName", res.firstName)
-    form.setValue("lastName", res.lastName || "")
-    form.setValue("about", res.about || "")
-    form.setValue("website", res.website || "")
-    setIsLoading(false)
-    setIsValidationPassed(false)
+    dispatch(storeUserInfo(res))
   }
   useEffect(() => {
-    if (isSignedIn) {
-      getUserSettings()
-    }
-  }, [isSignedIn])
+    if (user) loadUserSettings()
+  }, [user])
 
   // when the user input changes, validate all form fields
   const [isValidationPassed, setIsValidationPassed] = useState(false)
@@ -91,7 +91,7 @@ export default function Page() {
 
     let haveValuesChanged = false
     Object.entries(defaultValues.current).forEach(([key, value]) => {
-      if (!haveValuesChanged && form.getValues(key as Keys) !== value) {
+      if (!haveValuesChanged && FORM_FIELDS.includes(key) && form.getValues(key as Keys) !== value) {
         haveValuesChanged = true
         return
       }
@@ -130,9 +130,13 @@ export default function Page() {
   function handleChangeAvatar() {
     uploadRef?.current?.click()
   }
-
-  function resetForm() {
-    form.reset(defaultValues.current)
+  async function deleteAvatar(imageUrl: string) {
+    try {
+      await deleteFile(imageUrl)
+    } catch (error) {
+      toast.error(getErrorMessage(error))
+      return
+    }
   }
 
   const { startUpload } = useUploadThing("avatar")
@@ -148,7 +152,6 @@ export default function Page() {
     if (hasImageChanged) {
       try {
         const imgResponse = await startUpload(files)
-        console.log("imgResponse", imgResponse)
         if (imgResponse && imgResponse[0].url) {
           values.imageUrl = imgResponse[0].url
         }
@@ -175,19 +178,14 @@ export default function Page() {
     }
   }
 
-  async function deleteAvatar(imageUrl: string) {
-    try {
-      await deleteFile(imageUrl)
-    } catch (error) {
-      toast.error(getErrorMessage(error))
-      return
-    }
+  function resetForm() {
+    form.reset(defaultValues.current)
   }
 
   return (
     <>
       {isLoading && <Loading />}
-      <div className={`w3:mt-20 w3:h-[calc(100vh-160px)] w3:overflow-y-auto ${isLoading && "hidden"}`}>
+      <div className={`w3:mt-20 w3:h-[calc(100vh-160px)] w3:overflow-y-auto`}>
         <div className="w3:w-[600px] w3:mx-auto w3:pt-4">
           {/* title */}
           <div className="mb-8 max-w3:hidden">

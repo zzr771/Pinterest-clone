@@ -4,17 +4,15 @@ import { usePathname } from "next/navigation"
 import { FaSearch, FaUser } from "react-icons/fa"
 import { AiFillHome } from "react-icons/ai"
 import Link from "next/link"
-import { useUser } from "@clerk/nextjs"
 import { SignInButton, SignOutButton } from "@clerk/nextjs"
 import { useRef } from "react"
 import Image from "next/image"
+import { useAppSelector } from "@/lib/store/hook"
 
 export default function NavBarBottom() {
   if (window.innerWidth >= 820) return null
 
   const pathname = usePathname()
-
-  const { isSignedIn, user } = useUser()
 
   const hiddenClerkButtonsRef = useRef<HTMLDivElement>(null)
   function handleSignIn() {
@@ -27,6 +25,8 @@ export default function NavBarBottom() {
     if (!signOutButton) return
     signOutButton.click()
   }
+
+  const user = useAppSelector((state) => state.user.user)
 
   return (
     <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white">
@@ -43,7 +43,8 @@ export default function NavBarBottom() {
           </div>
         </Link>
 
-        {isSignedIn && (
+        {/* avatar */}
+        {user && (
           <Link href={`/user/${user?.id}`}>
             {user.imageUrl ? (
               <Image
@@ -51,14 +52,15 @@ export default function NavBarBottom() {
                 alt="avatar"
                 width={30}
                 height={30}
-                className="rounded-full object-cover"
+                className="w-[30px] h-[30px] rounded-full object-cover"
+                sizes="60px"
               />
             ) : (
               <FaUser className="w-6 h-6" />
             )}
           </Link>
         )}
-        {!isSignedIn && (
+        {!user && (
           <div onClick={handleSignIn}>
             <FaUser className="w-6 h-6" />
           </div>

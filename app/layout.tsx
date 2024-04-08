@@ -29,10 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <NavBarBottom />
             <Modal />
             {children}
+
             <ScreenReziseMonitor />
+            <SignInMonitor />
           </StoreProvider>
 
-          <SignInMonitor />
           <Toaster position="top-right" containerClassName="toaster-container" />
         </body>
       </html>

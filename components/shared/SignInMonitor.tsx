@@ -1,21 +1,29 @@
 "use client"
 
-import { createUser } from "@/lib/actions/user.actions"
+import { createUserIfNeeded } from "@/lib/actions/user.actions"
+import { storeUserInfo } from "@/lib/store/features/user"
+import { useAppDispatch } from "@/lib/store/hook"
 import { useUser } from "@clerk/nextjs"
 import { useEffect } from "react"
 import toast from "react-hot-toast"
 
 export default function SignInMonitor() {
   const { isSignedIn, user } = useUser()
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
-    if (isSignedIn) {
+    async function request() {
+      if (!isSignedIn) return
+
       const { id, imageUrl, username } = user
-      createUser({ id, imageUrl, username: username || "anonymous" }).then((res) => {
-        if (res?.errorMessage) {
-          toast.error(res.errorMessage)
-        }
-      })
+      const res = await createUserIfNeeded({ id, imageUrl, username: username || "anonymous" })
+      if (res && "id" in res) {
+        dispatch(storeUserInfo(res))
+      } else if (res && "errorMessage" in res) {
+        toast.error(res.errorMessage)
+      }
     }
+    request()
   }, [isSignedIn])
 
   return null

@@ -4,26 +4,32 @@ import { revalidatePath } from "next/cache"
 import User from "../models/user.model"
 import { connectToDB } from "../mongoose"
 import { getErrorMessage } from "../utils"
-import { RequestError } from "../types"
+import { RequestError, UserSettings } from "../types"
 
 interface initUserParams {
   id: string
   username: string
   imageUrl: string
 }
-interface userParams extends initUserParams {
-  firstName: string
-  lastName?: string
-  about?: string
-  website?: string
-  path?: string
-}
 
-export async function createUser({ id, username, imageUrl }: initUserParams): Promise<void | RequestError> {
+// Match user by id. If not found, create a new user. If found, return the user.
+export async function createUserIfNeeded({
+  id,
+  username,
+  imageUrl,
+}: initUserParams): Promise<void | UserSettings | RequestError> {
   connectToDB()
   try {
-    const existingUser = await User.findOne({ id })
-    if (!existingUser) {
+    let user = await User.findOne({ id }, [
+      "id",
+      "imageUrl",
+      "username",
+      "firstName",
+      "lastName",
+      "about",
+      "website",
+    ])
+    if (!user) {
       const newUser = new User({
         id,
         username,
@@ -34,6 +40,9 @@ export async function createUser({ id, username, imageUrl }: initUserParams): Pr
         website: "",
       })
       await newUser.save()
+    } else {
+      user = JSON.parse(JSON.stringify(user))
+      return user
     }
   } catch (error: any) {
     return {
@@ -54,7 +63,7 @@ export async function updateUser({
   about = "",
   website = "",
   path = "",
-}: userParams): Promise<void | RequestError | DuplicateUsername> {
+}: UserSettings): Promise<void | RequestError | DuplicateUsername> {
   connectToDB()
   try {
     const existingUser = await User.findOne({ username })
@@ -75,10 +84,11 @@ export async function updateUser({
   }
 }
 
-export async function fetchUserSettings(id: string): Promise<userParams | RequestError> {
+export async function fetchUserSettings(id: string): Promise<UserSettings | RequestError> {
   connectToDB()
   try {
     let user = await User.findOne({ id }, [
+      "id",
       "imageUrl",
       "username",
       "firstName",
@@ -89,7 +99,6 @@ export async function fetchUserSettings(id: string): Promise<userParams | Reques
 
     if (user) {
       user = JSON.parse(JSON.stringify(user))
-      delete user._id // Prevent interfering the value change check in function 'checkValuesChange'
       return user
     } else {
       return {

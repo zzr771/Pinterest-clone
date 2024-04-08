@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit"
 import screenSizeReducer from "./features/screenSize"
 import modalReducer from "./features/modal"
 import intersectionReducer from "./features/intersection"
+import userReducer from "./features/user"
 
 export const makeStore = () => {
   return configureStore({
@@ -9,6 +10,7 @@ export const makeStore = () => {
       screenSize: screenSizeReducer,
       modal: modalReducer,
       intersection: intersectionReducer,
+      user: userReducer,
     },
   })
 }
