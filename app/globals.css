@@ -214,3 +214,23 @@ ul.indicators {
     transform: rotate(90deg);
   }
 }
+
+.skeleton {
+  background: linear-gradient(
+      to right,
+      rgb(246, 247, 249) 0%,
+      rgb(233, 235, 238) 20%,
+      rgb(246, 247, 249) 40%,
+      rgb(246, 247, 249) 100%
+    )
+    no-repeat rgb(246, 247, 249);
+  animation: 1s linear 0s infinite normal forwards running LoadingShimmerAnimation;
+}
+@keyframes LoadingShimmerAnimation {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
