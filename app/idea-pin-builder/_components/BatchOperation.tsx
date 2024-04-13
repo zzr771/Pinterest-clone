@@ -1,16 +1,46 @@
 import { FaMinus } from "react-icons/fa"
 import { IoMdTrash } from "react-icons/io"
 import { Checkbox } from "@/components/shadcn/checkbox"
-import type { Draft } from "@/lib/types"
+import type { PinDraft } from "@/lib/types"
 import Button from "@/components/shared/Button"
+import { deleteDrafts } from "@/lib/actions/user.actions"
+import { useAuth } from "@clerk/nextjs"
+import toast from "react-hot-toast"
+import { getErrorMessage } from "@/lib/utils"
+import { deleteFiles } from "@/lib/actions/uploadthing.actions"
+import { dialog } from "@/components/shared/Dialog"
 
 interface Props {
-  draftList: Draft[]
-  checkedDrafts: Draft[]
+  draftList: PinDraft[]
+  checkedDrafts: PinDraft[]
+  setCheckedDrafts: React.Dispatch<React.SetStateAction<PinDraft[]>>
   checkAllDrafts: (isAll: boolean) => void
+  handleDeleteDrafts: (drafts: PinDraft[]) => Promise<void>
 }
 
-export default function BatchOperation({ draftList, checkedDrafts, checkAllDrafts }: Props) {
+export default function BatchOperation({
+  draftList,
+  checkedDrafts,
+  setCheckedDrafts,
+  checkAllDrafts,
+  handleDeleteDrafts,
+}: Props) {
+  const { userId } = useAuth()
+
+  function handleDeleteCheckedDrafts() {
+    dialog({
+      title: "Delete your drafts?",
+      content: "You'll lose the edits you've made. This can't be undone!",
+      confirmText: "Delete",
+      cancelText: "Keep editing",
+      confirmCallback: deleteCheckedDrafts,
+    })
+  }
+  async function deleteCheckedDrafts() {
+    await handleDeleteDrafts(checkedDrafts)
+    setCheckedDrafts([])
+  }
+
   return (
     <div className="h-[4.5rem] border-t border-gray-bg-6 p-4">
       {checkedDrafts.length === 0 ? (
@@ -37,7 +67,7 @@ export default function BatchOperation({ draftList, checkedDrafts, checkAllDraft
 
           {/* batch button */}
           <div className="flex items-center gap-2">
-            <Button hover rounded clickEffect className="!w-10 !h-10">
+            <Button hover rounded clickEffect className="!w-10 !h-10" click={handleDeleteCheckedDrafts}>
               <IoMdTrash className="w-6 h-6" />
             </Button>
             <Button text="Publish" bgColor="red" className="!h-10 text-[15px] !px-3" />

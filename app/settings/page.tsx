@@ -20,7 +20,7 @@ import Loading from "@/components/shared/Loading"
 import { getErrorMessage, isBase64Image } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
 import showMessageBox from "@/lib/showMessageBox"
-import { deleteFile } from "@/lib/actions/uploadthing"
+import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
 import { UserSettings } from "@/lib/types"
 import { storeUserInfo } from "@/lib/store/features/user"
@@ -130,15 +130,8 @@ export default function Page() {
   function handleChangeAvatar() {
     uploadRef?.current?.click()
   }
-  async function deleteAvatar(imageUrl: string) {
-    try {
-      await deleteFile(imageUrl)
-    } catch (error) {
-      toast.error(getErrorMessage(error))
-      return
-    }
-  }
 
+  // ---------------------------------------------------------------------- Submit
   const { startUpload } = useUploadThing("avatar")
   const [isDuplicateUsername, setIsDuplicateUsername] = useState(false)
   async function onSubmit(values: z.infer<typeof ProfileValidation>) {
@@ -167,13 +160,19 @@ export default function Page() {
       getUserSettings()
       // if the avatar changes AND the update succeeds, delete the previous avatar
       if (hasImageChanged) {
-        deleteAvatar(prevAvatarUrl)
+        deleteImage(prevAvatarUrl)
       }
-      return
     } else if ("isDuplicate" in res) {
       setIsDuplicateUsername(true)
     } else if ("errorMessage" in res) {
       toast.error(res.errorMessage)
+    }
+  }
+  async function deleteImage(imageUrl: string) {
+    try {
+      await deleteFiles([imageUrl])
+    } catch (error) {
+      toast.error(getErrorMessage(error))
       return
     }
   }

@@ -15,13 +15,24 @@ const userSchema = new mongoose.Schema({
 
   created: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
   saved: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
-  drafts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
 
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   follower: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
   hidePins: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
   blockUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
+  drafts: [
+    {
+      _id: { type: String, required: true },
+      imageUrl: { type: String, required: true },
+      expiredAt: { type: Number, required: true },
+      title: String,
+      description: String,
+      link: String,
+      imageSize: { width: Number, height: Number },
+    },
+  ],
 })
 
 // If User model already exists, don't recreate it.

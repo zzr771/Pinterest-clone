@@ -1,23 +1,59 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FiChevronsLeft, FiChevronsRight } from "react-icons/fi"
 import { FaPlus } from "react-icons/fa6"
-import type { Draft } from "@/lib/types"
+import type { PinDraft } from "@/lib/types"
 import Button from "@/components/shared/Button"
 import DraftCard from "./DraftCard"
 import BatchOperation from "./BatchOperation"
+import { useAuth } from "@clerk/nextjs"
+import { deleteDrafts } from "@/lib/actions/user.actions"
+import toast from "react-hot-toast"
+import { getErrorMessage } from "@/lib/utils"
+import { deleteFiles } from "@/lib/actions/uploadthing.actions"
+import { debug } from "console"
 
 interface Props {
-  draftList: Draft[]
-  editingDraft: Draft
-  setEditingDraft: (draft: Draft) => void
+  draftList: PinDraft[]
+  draftOnEdit: PinDraft
+  setDraftOnEdit: React.Dispatch<React.SetStateAction<PinDraft>>
+  isCreatingDraft: boolean
+  setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
+  getDraftList: () => void
 }
 
-export default function PinDraftList({ draftList, editingDraft, setEditingDraft }: Props) {
+export default function PinDraftList({
+  draftList,
+  draftOnEdit,
+  setDraftOnEdit,
+  isCreatingDraft,
+  setIsCreatingDraft,
+  getDraftList,
+}: Props) {
   const [isFolded, setisFolded] = useState(false)
-  const [checkedDrafts, setCheckedDrafts] = useState<Draft[]>([]) // store the _id of the checked drafts
+  const [checkedDrafts, setCheckedDrafts] = useState<PinDraft[]>([]) // drafts that are currently checked
+  const { userId } = useAuth()
+
+  function createEmptyDraft() {
+    // If there is an empty draft already.
+    if (!draftOnEdit.imageUrl) return
+
+    setDraftOnEdit(getEmptyDraft())
+  }
+
+  function getEmptyDraft() {
+    return {
+      _id: crypto.randomUUID(),
+      imageUrl: "",
+      title: "",
+      description: "",
+      link: "",
+      expiredAt: 0,
+      imageSize: { width: 0, height: 0 },
+    }
+  }
 
   // select or unselect a draft
-  function checkDraft(isCheck: boolean, draft: Draft) {
+  function checkDraft(isCheck: boolean, draft: PinDraft) {
     if (isCheck) {
       setCheckedDrafts((prev) => {
         return [...prev, draft]
@@ -38,6 +74,53 @@ export default function PinDraftList({ draftList, editingDraft, setEditingDraft 
     }
   }
 
+  async function handleDeleteDrafts(draftsToDelete: PinDraft[]) {
+    /*
+        If draftOnEdit is being deleted, set state 'draftOnEdit' to the next remaining draft.
+        If draftOnEdit and all drafts after it are being deleted, set state 'draftOnEdit' to an empty draft.
+    */
+    let draftToSet = draftOnEdit
+    if (draftsToDelete.find((item) => item._id === draftToSet._id)) {
+      let index = draftList.findIndex((item) => item._id === draftToSet._id)
+
+      if (index === draftList.length - 1) {
+        draftToSet = getEmptyDraft()
+      } else {
+        while (index < draftList.length) {
+          if (!draftsToDelete.includes(draftList[index])) {
+            draftToSet = draftList[index]
+            break
+          }
+          index++
+        }
+        if (index === draftList.length) {
+          draftToSet = getEmptyDraft()
+        }
+      }
+    }
+
+    if (!userId) return
+    const draftIds = draftsToDelete.map((draft) => draft._id)
+    const res = await deleteDrafts(userId, draftIds)
+    if (res && "errorMessage" in res) {
+      toast.error(getErrorMessage(res))
+      return
+    }
+
+    setDraftOnEdit(draftToSet)
+    getDraftList()
+    deleteImages(draftsToDelete)
+  }
+
+  async function deleteImages(drafts: PinDraft[]) {
+    let imageUrls = drafts.map((draft) => draft.imageUrl)
+    imageUrls = [...new Set(imageUrls)]
+    const res = await deleteFiles(imageUrls)
+    if (res && "errorMessage" in res) {
+      toast.error(res.errorMessage)
+    }
+  }
+
   return (
     <section
       className={`flex-none flex flex-col main-content border border-gray-bg-6 border-b-0 ${
@@ -48,7 +131,7 @@ export default function PinDraftList({ draftList, editingDraft, setEditingDraft 
         <div className="flex items-center justify-between my-4">
           {!isFolded && (
             <h4 className="font-medium text-lg">
-              Pin drafts <span className="font-normal">{"(3)"}</span>
+              Pin drafts <span className="font-normal">{`(${draftList.length})`}</span>
             </h4>
           )}
           <Button hover clickEffect rounded click={() => setisFolded((prev) => !prev)}>
@@ -57,7 +140,7 @@ export default function PinDraftList({ draftList, editingDraft, setEditingDraft 
         </div>
         {/* todo: disable this button while saving a new created draft */}
         {isFolded && (
-          <Button hover clickEffect rounded>
+          <Button hover clickEffect rounded disabled={isCreatingDraft} click={createEmptyDraft}>
             <FaPlus className="h-5 w-5" />
           </Button>
         )}
@@ -66,6 +149,8 @@ export default function PinDraftList({ draftList, editingDraft, setEditingDraft 
             text="Create new"
             bgColor="gray"
             hover
+            disabled={isCreatingDraft}
+            click={createEmptyDraft}
             className="!h-10 px-3 py-2 w-full font-medium !text-[15px] active:scale-[98%] transition"
           />
         )}
@@ -78,14 +163,18 @@ export default function PinDraftList({ draftList, editingDraft, setEditingDraft 
         <>
           {/* card list */}
           <div className="relative flex-1 p-2 overflow-y-auto overflow-x-hidden">
+            {isCreatingDraft && <div className="h-[88px] rounded-2xl skeleton"></div>}
             {draftList.map((item) => (
               <DraftCard
                 key={item._id}
                 draft={item}
-                isEditing={editingDraft?._id === item._id}
-                setEditingDraft={setEditingDraft}
+                isEditing={draftOnEdit?._id === item._id}
+                setDraftOnEdit={setDraftOnEdit}
                 controlCheck={checkedDrafts.includes(item)}
                 checkDraft={checkDraft}
+                getDraftList={getDraftList}
+                setIsCreatingDraft={setIsCreatingDraft}
+                handleDeleteDrafts={handleDeleteDrafts}
               />
             ))}
           </div>
@@ -94,7 +183,9 @@ export default function PinDraftList({ draftList, editingDraft, setEditingDraft 
           <BatchOperation
             draftList={draftList}
             checkedDrafts={checkedDrafts}
+            setCheckedDrafts={setCheckedDrafts}
             checkAllDrafts={checkAllDrafts}
+            handleDeleteDrafts={handleDeleteDrafts}
           />
         </>
       )}

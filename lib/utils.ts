@@ -86,3 +86,9 @@ export function isBase64Image(imageData: string) {
   const base64Regex = /^data:image\/(png|jpe?g|gif|webp);base64,/
   return base64Regex.test(imageData)
 }
+
+// check whether a string is in a url format
+export function isValidUrl(str: string) {
+  const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+  return regexp.test(str)
+}
