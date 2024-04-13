@@ -53,7 +53,7 @@ export default function Button({
       bgColorClass = "bg-red"
       break
     case "translucent":
-      bgColorClass = "bg-gray-tp-3"
+      bgColorClass = "bg-gray-tp-5"
       break
     case "gray":
       bgColorClass = "bg-gray-bg-4"
