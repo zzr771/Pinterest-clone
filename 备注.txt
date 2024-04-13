@@ -65,6 +65,7 @@ board
 notifications
 
 z-index:
+Dialog: 120
 MessageBox: 120
 CommentsMobile: 110
 OptionListMobile: 110
@@ -76,7 +77,7 @@ Modal（for SearchSuggestion）: 99
 followListMobile: 90
 
 精彩的组件：
-DropDownList
 WaterFall
 VirtualTextarea
 IntersectionMonitor
+Dialog
