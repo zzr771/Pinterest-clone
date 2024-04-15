@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { Checkbox } from "@/components/shadcn/checkbox"
 import { PinDraft } from "@/lib/types"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
 import dynamic from "next/dynamic"
-import { deleteDrafts, duplicateDraft } from "@/lib/actions/user.actions"
+import { duplicateDraft } from "@/lib/actions/user.actions"
 import { useAuth } from "@clerk/nextjs"
 import toast from "react-hot-toast"
-import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { dialog } from "@/components/shared/Dialog"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
@@ -16,7 +15,7 @@ interface Props {
   draft: PinDraft
   isEditing: boolean
   controlCheck?: boolean // Use this prop to control the checked state from PinDraftList
-  setDraftOnEdit: (draft: PinDraft) => void
+  setCurrentDraft: (draft: PinDraft) => void
   checkDraft: (isCheck: boolean, draft: PinDraft) => void
   getDraftList: () => void
   setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
@@ -26,7 +25,7 @@ export default function DraftCard({
   draft,
   isEditing = false,
   controlCheck = false,
-  setDraftOnEdit,
+  setCurrentDraft,
   checkDraft,
   getDraftList,
   setIsCreatingDraft,
@@ -81,7 +80,7 @@ export default function DraftCard({
 
   return (
     <div
-      onClick={() => setDraftOnEdit(draft)}
+      onClick={() => setCurrentDraft(draft)}
       className={`flex items-center gap-2 p-2 mb-1 border-[1px] hover-show-container rounded-lg hover:bg-gray-bg-5 ${
         isEditing ? "bg-gray-bg-5" : "border-transparent"
       }`}>

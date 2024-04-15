@@ -18,7 +18,7 @@ export default function Page() {
   const { userId, isSignedIn } = useAuth()
   const [isCreatingDraft, setIsCreatingDraft] = useState(false)
   const [draftList, setDraftList] = useState<PinDraft[]>([])
-  const [draftOnEdit, setDraftOnEdit] = useState<PinDraft>({
+  const [currentDraft, setCurrentDraft] = useState<PinDraft>({
     _id: crypto.randomUUID(),
     imageUrl: "",
     title: "",
@@ -47,16 +47,16 @@ export default function Page() {
     <div className="flex mt-20 main-content">
       <PinDraftList
         draftList={draftList}
-        draftOnEdit={draftOnEdit}
-        setDraftOnEdit={setDraftOnEdit}
+        currentDraft={currentDraft}
+        setCurrentDraft={setCurrentDraft}
         isCreatingDraft={isCreatingDraft}
         setIsCreatingDraft={setIsCreatingDraft}
         getDraftList={getDraftList}
       />
       <PinForm
         setDraftList={setDraftList}
-        draftOnEdit={draftOnEdit}
-        setDraftOnEdit={setDraftOnEdit}
+        currentDraft={currentDraft}
+        setCurrentDraft={setCurrentDraft}
         isCreatingDraft={isCreatingDraft}
         setIsCreatingDraft={setIsCreatingDraft}
         getDraftList={getDraftList}

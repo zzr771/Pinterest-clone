@@ -24,16 +24,16 @@ import Image from "next/image"
 */
 interface Props {
   setDraftList: React.Dispatch<React.SetStateAction<PinDraft[]>>
-  draftOnEdit: PinDraft
-  setDraftOnEdit: React.Dispatch<React.SetStateAction<PinDraft>>
+  currentDraft: PinDraft
+  setCurrentDraft: React.Dispatch<React.SetStateAction<PinDraft>>
   isCreatingDraft: boolean
   setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
   getDraftList: () => void
 }
 export default function PinForm({
   setDraftList,
-  draftOnEdit,
-  setDraftOnEdit,
+  currentDraft,
+  setCurrentDraft,
   isCreatingDraft,
   setIsCreatingDraft,
   getDraftList,
@@ -45,10 +45,9 @@ export default function PinForm({
   const [isSaving, setIsSaving] = useState(false) // Tip:' Saving...'
   const [showChangeTip, setShowChangeTip] = useState(false) // Tip: 'Changes stored!'
   const prevImageUrl = useRef("") // Used for deleting the previous image when a new one is uploaded
-  const isInitialLoading = useRef(true) // when 'draftOnEdit' changes, this value will be set to 'true'
-  const currentDraft = useMemo(() => draftOnEdit, [draftOnEdit]) // store the edited draft when sending requests, in case users click other drafts
+  const isInitialLoading = useRef(true) // when 'currentDraft' changes, this value will be set to 'true'
 
-  // auto-layout according to the content area width
+  // Auto-layout according to the content area's width
   const handleSrceenResize = useCallback(
     debounce(() => {
       const formDisplayContainer = formDisplayContainerRef.current
@@ -78,6 +77,7 @@ export default function PinForm({
     }
   }, [])
 
+  // ---------------------------------------------------------------------- Form
   const form = useForm({
     resolver: zodResolver(PinDraftValidation),
     defaultValues: {
@@ -89,13 +89,13 @@ export default function PinForm({
   })
   const [imageUrl, title, description, link] = form.watch(["imageUrl", "title", "description", "link"])
   useEffect(() => {
-    form.setValue("imageUrl", draftOnEdit?.imageUrl || "")
-    form.setValue("description", draftOnEdit?.description || "")
-    form.setValue("title", draftOnEdit?.title || "")
-    form.setValue("link", draftOnEdit?.link || "")
-    prevImageUrl.current = draftOnEdit?.imageUrl || ""
+    form.setValue("imageUrl", currentDraft?.imageUrl || "")
+    form.setValue("description", currentDraft?.description || "")
+    form.setValue("title", currentDraft?.title || "")
+    form.setValue("link", currentDraft?.link || "")
+    prevImageUrl.current = currentDraft?.imageUrl || ""
     isInitialLoading.current = true
-  }, [draftOnEdit._id])
+  }, [currentDraft._id])
 
   // ---------------------------------------------------------------------- Read image
   const [files, setFiles] = useState<File[]>([])
@@ -115,8 +115,8 @@ export default function PinForm({
     const image = document.createElement("img")
     image.src = URL.createObjectURL(files[0])
     image.onload = () => {
-      setDraftOnEdit({
-        ...draftOnEdit,
+      setCurrentDraft({
+        ...currentDraft,
         imageSize: {
           width: image.width,
           height: image.height,
@@ -125,6 +125,7 @@ export default function PinForm({
     }
   }
   useEffect(() => {
+    console.log("useEffect", files)
     if (files.length > 0) {
       getImageSize()
       uploadImage()
@@ -139,7 +140,7 @@ export default function PinForm({
   const { startUpload } = useUploadThing("pin")
   async function uploadImage() {
     setIsSaving(true)
-    if (!draftOnEdit.imageUrl) {
+    if (!currentDraft.imageUrl) {
       setIsCreatingDraft(true)
     }
     try {
@@ -194,11 +195,11 @@ export default function PinForm({
   const { userId } = useAuth()
   const submit = form.handleSubmit(onSubmit)
   async function onSubmit(values: z.infer<typeof PinDraftValidation>) {
-    if (!userId || !draftOnEdit) return
+    if (!userId || !currentDraft) return
 
     setIsSaving(true)
     const res = await upsertDraft(userId, {
-      ...draftOnEdit,
+      ...currentDraft,
       ...values,
     })
 
@@ -212,7 +213,7 @@ export default function PinForm({
     if (isCreatingDraft) {
       await getDraftList()
       setIsCreatingDraft(false)
-      setDraftOnEdit(res)
+      setCurrentDraft(res)
     } else {
       // store draft changes in draftList
       setDraftList((prev) => {

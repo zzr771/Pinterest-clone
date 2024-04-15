@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FiChevronsLeft, FiChevronsRight } from "react-icons/fi"
 import { FaPlus } from "react-icons/fa6"
 import type { PinDraft } from "@/lib/types"
@@ -10,12 +10,11 @@ import { deleteDrafts } from "@/lib/actions/user.actions"
 import toast from "react-hot-toast"
 import { getErrorMessage } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
-import { debug } from "console"
 
 interface Props {
   draftList: PinDraft[]
-  draftOnEdit: PinDraft
-  setDraftOnEdit: React.Dispatch<React.SetStateAction<PinDraft>>
+  currentDraft: PinDraft
+  setCurrentDraft: React.Dispatch<React.SetStateAction<PinDraft>>
   isCreatingDraft: boolean
   setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
   getDraftList: () => void
@@ -23,8 +22,8 @@ interface Props {
 
 export default function PinDraftList({
   draftList,
-  draftOnEdit,
-  setDraftOnEdit,
+  currentDraft,
+  setCurrentDraft,
   isCreatingDraft,
   setIsCreatingDraft,
   getDraftList,
@@ -35,9 +34,9 @@ export default function PinDraftList({
 
   function createEmptyDraft() {
     // If there is an empty draft already.
-    if (!draftOnEdit.imageUrl) return
+    if (!currentDraft.imageUrl) return
 
-    setDraftOnEdit(getEmptyDraft())
+    setCurrentDraft(getEmptyDraft())
   }
 
   function getEmptyDraft() {
@@ -76,10 +75,10 @@ export default function PinDraftList({
 
   async function handleDeleteDrafts(draftsToDelete: PinDraft[]) {
     /*
-        If draftOnEdit is being deleted, set state 'draftOnEdit' to the next remaining draft.
-        If draftOnEdit and all drafts after it are being deleted, set state 'draftOnEdit' to an empty draft.
+        If currentDraft is being deleted, set state 'currentDraft' to the next remaining draft.
+        If currentDraft and all drafts after it are being deleted, set state 'currentDraft' to an empty draft.
     */
-    let draftToSet = draftOnEdit
+    let draftToSet = currentDraft
     if (draftsToDelete.find((item) => item._id === draftToSet._id)) {
       let index = draftList.findIndex((item) => item._id === draftToSet._id)
 
@@ -107,7 +106,7 @@ export default function PinDraftList({
       return
     }
 
-    setDraftOnEdit(draftToSet)
+    setCurrentDraft(draftToSet)
     getDraftList()
     deleteImages(draftsToDelete)
   }
@@ -168,8 +167,8 @@ export default function PinDraftList({
               <DraftCard
                 key={item._id}
                 draft={item}
-                isEditing={draftOnEdit?._id === item._id}
-                setDraftOnEdit={setDraftOnEdit}
+                isEditing={currentDraft?._id === item._id}
+                setCurrentDraft={setCurrentDraft}
                 controlCheck={checkedDrafts.includes(item)}
                 checkDraft={checkDraft}
                 getDraftList={getDraftList}
