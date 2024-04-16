@@ -22,6 +22,7 @@ export interface UserSettings {
 export interface PinDraft {
   _id: string
   imageUrl: string
+  prevImageUrl?: string
   imageSize: {
     width: number
     height: number

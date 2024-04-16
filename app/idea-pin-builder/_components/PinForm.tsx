@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState, ChangeEvent, useMemo, useCallback } from "react"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcn/form"
 import { Input } from "@/components/shadcn/input"
@@ -6,18 +5,20 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PinDraftValidation } from "@/lib/validations/pinDraft"
 
+import { useEffect, useRef, useState, ChangeEvent, useCallback } from "react"
+import Image from "next/image"
+import { useAuth } from "@clerk/nextjs"
+import toast from "react-hot-toast"
 import { FaArrowUp } from "react-icons/fa"
 import { debounce } from "lodash"
+import { useUploadThing } from "@/lib/uploadthing"
 import Button from "@/components/shared/Button"
 import { VirtualTextarea } from "@/components/form/VirtualTextarea"
 import type { PinDraft } from "@/lib/types"
-import { getErrorMessage, isValidUrl } from "@/lib/utils"
-import { useUploadThing } from "@/lib/uploadthing"
-import toast from "react-hot-toast"
+import { getErrorMessage, isBase64Image } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { upsertDraft } from "@/lib/actions/user.actions"
-import { useAuth } from "@clerk/nextjs"
-import Image from "next/image"
+import imagePlaceholder from "@/public/assets/image-placeholder"
 
 /*
     When a user edits a draft, one request that updates the database will be sent. But the UI doesn't refresh.
@@ -44,7 +45,6 @@ export default function PinForm({
 
   const [isSaving, setIsSaving] = useState(false) // Tip:' Saving...'
   const [showChangeTip, setShowChangeTip] = useState(false) // Tip: 'Changes stored!'
-  const prevImageUrl = useRef("") // Used for deleting the previous image when a new one is uploaded
   const isInitialLoading = useRef(true) // when 'currentDraft' changes, this value will be set to 'true'
 
   // Auto-layout according to the content area's width
@@ -77,6 +77,12 @@ export default function PinForm({
     }
   }, [])
 
+  // Use Ref to provide newest state value to functions in closure
+  const isCreatingDraftRef = useRef(false)
+  useEffect(() => {
+    isCreatingDraftRef.current = isCreatingDraft
+  }, [isCreatingDraft])
+
   // ---------------------------------------------------------------------- Form
   const form = useForm({
     resolver: zodResolver(PinDraftValidation),
@@ -93,8 +99,8 @@ export default function PinForm({
     form.setValue("description", currentDraft?.description || "")
     form.setValue("title", currentDraft?.title || "")
     form.setValue("link", currentDraft?.link || "")
-    prevImageUrl.current = currentDraft?.imageUrl || ""
     isInitialLoading.current = true
+    setCurrentDraft({ ...currentDraft, prevImageUrl: currentDraft.imageUrl })
   }, [currentDraft._id])
 
   // ---------------------------------------------------------------------- Read image
@@ -109,47 +115,58 @@ export default function PinForm({
       setFiles(Array.from(e.target.files))
 
       fileReader.readAsDataURL(file)
+      fileReader.onload = (e) => {
+        if (typeof e.target?.result === "string") {
+          form.setValue("imageUrl", e?.target?.result) // Trigger image uploading and draft saving
+        }
+      }
     }
   }
-  function getImageSize() {
-    const image = document.createElement("img")
-    image.src = URL.createObjectURL(files[0])
-    image.onload = () => {
-      setCurrentDraft({
-        ...currentDraft,
-        imageSize: {
-          width: image.width,
-          height: image.height,
-        },
-      })
-    }
-  }
-  useEffect(() => {
-    console.log("useEffect", files)
-    if (files.length > 0) {
-      getImageSize()
-      uploadImage()
-    }
-  }, [files])
-
   function handleClickImage() {
     uploadRef?.current?.click()
   }
 
   // ---------------------------------------------------------------------- Upload image to uploadthing
   const { startUpload } = useUploadThing("pin")
-  async function uploadImage() {
+  function getImageSize(draftOnEdit: PinDraft) {
+    const image = document.createElement("img")
+    image.src = draftOnEdit.imageUrl
+    image.onload = () => {
+      draftOnEdit.imageSize = {
+        width: image.width,
+        height: image.height,
+      }
+      setCurrentDraft((prev) => {
+        return {
+          ...prev,
+          imageSize: {
+            width: image.width,
+            height: image.height,
+          },
+        }
+      })
+      uploadImage(draftOnEdit)
+    }
+  }
+  async function uploadImage(draftOnEdit: PinDraft) {
     setIsSaving(true)
-    if (!currentDraft.imageUrl) {
+    /*
+        An empty draft doesn't have an imageUrl. Its imageUrl and prevImageUrl are both empty.
+      However, the imageUrl has been changed when an user selects an image. So prevImageUrl 
+      becomes the flag to determine if a draft is empty.
+    */
+    if (!draftOnEdit.prevImageUrl) {
       setIsCreatingDraft(true)
     }
+
     try {
       const imgResponse = await startUpload(files)
 
       if (imgResponse && imgResponse[0].url) {
-        form.setValue("imageUrl", imgResponse[0].url) // setValue() will cause 'imageUrl' to change, then trigger useEffect, and finally call 'submit'
-        prevImageUrl.current && deleteImage(prevImageUrl.current)
-        prevImageUrl.current = imgResponse[0].url
+        draftOnEdit.imageUrl = imgResponse[0].url
+        draftOnEdit.prevImageUrl && deleteImage(draftOnEdit.prevImageUrl)
+        draftOnEdit.prevImageUrl = imgResponse[0].url
+        submit(draftOnEdit)
       }
     } catch (error) {
       toast.error(getErrorMessage(error))
@@ -168,20 +185,24 @@ export default function PinForm({
     if (timer.current > 0) {
       clearTimeout(timer.current)
     }
-
     timer.current = window.setTimeout(() => {
       timer.current = 0
+
       if (isInitialLoading.current) {
         isInitialLoading.current = false
         return
       }
-      if (!isValidUrl(imageUrl)) return
 
-      form.trigger().then((result) => {
-        if (result) {
-          submit()
-        }
-      })
+      /*
+          Pass in the draft to guarantee that following manipulations and requests
+        will only affect this draft even if 'currentDraft' changes.
+      */
+      const draftOnEdit = { ...currentDraft, imageUrl, title, description, link }
+      if (isBase64Image(imageUrl)) {
+        getImageSize(draftOnEdit)
+        return
+      }
+      submit(draftOnEdit)
     }, 500)
   }, [imageUrl, title, description, link])
   function handleChangeTip() {
@@ -193,15 +214,14 @@ export default function PinForm({
 
   // ---------------------------------------------------------------------- Submit form changes
   const { userId } = useAuth()
-  const submit = form.handleSubmit(onSubmit)
-  async function onSubmit(values: z.infer<typeof PinDraftValidation>) {
-    if (!userId || !currentDraft) return
+  async function submit(draftOnEdit: PinDraft) {
+    if (!userId) return
+
+    const isValid = await form.trigger()
+    if (!isValid) return
 
     setIsSaving(true)
-    const res = await upsertDraft(userId, {
-      ...currentDraft,
-      ...values,
-    })
+    const res = await upsertDraft(userId, draftOnEdit)
 
     setIsSaving(false)
     if (res && "errorMessage" in res) {
@@ -210,19 +230,17 @@ export default function PinForm({
     }
 
     // if the draft is new created
-    if (isCreatingDraft) {
+    if (isCreatingDraftRef.current) {
       await getDraftList()
       setIsCreatingDraft(false)
-      setCurrentDraft(res)
-    } else {
-      // store draft changes in draftList
-      setDraftList((prev) => {
-        const index = prev.findIndex((item) => item._id === res._id)
-        const newList = [...prev]
-        newList.splice(index, 1, res)
-        return newList
-      })
     }
+    // store draft changes in draftList
+    setDraftList((prev) => {
+      const index = prev.findIndex((item) => item._id === res._id)
+      const newList = [...prev]
+      newList.splice(index, 1, res)
+      return newList
+    })
 
     handleChangeTip()
   }
@@ -264,14 +282,18 @@ export default function PinForm({
             </div>
           )}
           {imageUrl.length > 0 && (
-            <div className="flex-none w-[375px] max-h-[900px] cursor-pointer" onClick={handleClickImage}>
+            <div
+              className="flex-none w-[375px] min-h-[100px] max-h-[900px] cursor-pointer"
+              onClick={handleClickImage}>
               <Image
                 src={imageUrl}
                 alt="uploaded image"
                 className="object-contain rounded-[2rem]"
-                width={375}
-                height={200}
-                sizes="750px"
+                width={currentDraft.imageSize.width}
+                height={currentDraft.imageSize.height}
+                quality={100}
+                sizes="375px"
+                placeholder={imagePlaceholder}
               />
             </div>
           )}
