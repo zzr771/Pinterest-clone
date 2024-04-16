@@ -1,3 +1,11 @@
+/*
+    Native <textarea /> doesn't support maxRows and minRows features. This component
+  uses a div with property "contentEditable" to simulate a textarea.
+    This solution is more performant than using a <div> to simulate the textarea's
+  height. When input changes, the textContent of the div will be updated, which triggers
+  reflow. Then we need to get the height of the div, and this will trigger reflow again.
+  With current solution, we only need to trigger reflow once.
+ */
 import * as React from "react"
 import { ChangeEvent, forwardRef, useEffect, useRef, useState, useLayoutEffect } from "react"
 
@@ -7,13 +15,6 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
   maxRows: number
 }
 
-/*
-    Native <textarea /> doesn't support maxRows and minRows features. This component
-  uses a div with property "contentEditable" to simulate a textarea.
-    Compared with simulating the height with an extra textarea, this solution doesn't
-  need to consider the influence of the scroll bar. When a scroll bar appears, it
-  will take some space, which will definitely affect the height simulation.
- */
 export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, placeHolder, minRows, maxRows, ...props }, ref) => {
     const [input, setInput] = useState("")

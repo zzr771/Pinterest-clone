@@ -103,6 +103,7 @@
   }
   .break-word {
     overflow-wrap: break-word;
+    white-space: pre-wrap;
   }
   .main-content {
     height: calc(100vh - 5rem);
@@ -163,6 +164,7 @@
   font-size: 1rem;
   color: #111;
   font-weight: 300;
+  resize: none;
 }
 .input-default:hover {
   border-color: #a5a5a5;
