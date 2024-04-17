@@ -20,6 +20,7 @@ export async function createUserIfNeeded({
 }: initUserParams): Promise<void | UserSettings | RequestError> {
   connectToDB()
   try {
+    // Note the parameter is 'id' instead of '_id"
     let user = await User.findOne({ id }, [
       "id",
       "imageUrl",
@@ -55,8 +56,8 @@ export async function createUserIfNeeded({
 interface DuplicateUsername {
   isDuplicate: true
 }
-export async function updateUser({
-  id,
+export async function updateUserSetting({
+  _id,
   username,
   imageUrl,
   firstName,
@@ -68,13 +69,13 @@ export async function updateUser({
   connectToDB()
   try {
     const existingUser = await User.findOne({ username })
-    if (existingUser && existingUser.id !== id) {
+    if (existingUser && String(existingUser._id) !== _id) {
       return {
         isDuplicate: true,
       }
     }
-    await User.findOneAndUpdate({ id }, { imageUrl, firstName, lastName, about, website, username })
 
+    await User.findByIdAndUpdate(_id, { imageUrl, firstName, lastName, about, website, username })
     if (path === "/settings") {
       revalidatePath(path)
     }
@@ -85,10 +86,10 @@ export async function updateUser({
   }
 }
 
-export async function fetchUserSettings(id: string): Promise<UserSettings | RequestError> {
+export async function fetchUserSettings(userId: string): Promise<UserSettings | RequestError> {
   connectToDB()
   try {
-    let user = await User.findOne({ id }, [
+    let user = await User.findById(userId, [
       "id",
       "imageUrl",
       "username",
@@ -113,10 +114,11 @@ export async function fetchUserSettings(id: string): Promise<UserSettings | Requ
   }
 }
 
-export async function fetchUserDrafts(id: string): Promise<PinDraft[] | RequestError> {
+export async function fetchUserDrafts(userId: string): Promise<PinDraft[] | RequestError> {
   connectToDB()
   try {
-    const user = await User.findOne({ id })
+    const user = await User.findById(userId)
+    console.log("useruseruseruseruseruseruser", user)
     if (!user) {
       return {
         errorMessage: "User doesn't exist",
@@ -138,7 +140,7 @@ export async function fetchUserDrafts(id: string): Promise<PinDraft[] | RequestE
 export async function upsertDraft(userId: string, draft: PinDraft): Promise<PinDraft | RequestError> {
   connectToDB()
   try {
-    const user = await User.findOne({ id: userId })
+    const user = await User.findById(userId)
     if (!user) {
       return {
         errorMessage: "User doesn't exist",
@@ -169,7 +171,7 @@ export async function upsertDraft(userId: string, draft: PinDraft): Promise<PinD
 export async function deleteDrafts(userId: string, draftId: string[]): Promise<void | RequestError> {
   connectToDB()
   try {
-    const user = await User.findOne({ id: userId })
+    const user = await User.findById(userId)
     if (!user) {
       return {
         errorMessage: "User doesn't exist",
@@ -188,7 +190,7 @@ export async function deleteDrafts(userId: string, draftId: string[]): Promise<v
 export async function duplicateDraft(userId: string, draftId: string): Promise<void | RequestError> {
   connectToDB()
   try {
-    const user = await User.findOne({ id: userId })
+    const user = await User.findById(userId)
     if (!user) {
       return {
         errorMessage: "User doesn't exist",

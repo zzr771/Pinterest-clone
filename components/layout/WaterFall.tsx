@@ -154,7 +154,7 @@ export default function WaterFall() {
                 src={img.src}
                 imageSize={{ width: img.width, height: img.height }}
                 title="test"
-                author={{ name: "user", avatar: "/assets/test/avatar.jpg", id: "4f8se64f53esf" }}
+                author={{ name: "user", avatar: "/assets/test/avatar.jpg", _id: "4f8se64f53esf" }}
               />
             ))}
         </div>

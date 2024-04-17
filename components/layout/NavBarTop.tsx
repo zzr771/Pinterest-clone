@@ -135,7 +135,7 @@ export default function NavBarTop() {
         {/* user avatar */}
         {user && (
           <ToolTip text="Your profile" position="bottom">
-            <Link href={`/user/${user?.id}`}>
+            <Link href={`/user/${user?._id}`}>
               <Button hover rounded>
                 {user.imageUrl ? (
                   <Image

@@ -45,7 +45,7 @@ export default function NavBarBottom() {
 
         {/* avatar */}
         {user && (
-          <Link href={`/user/${user?.id}`}>
+          <Link href={`/user/${user?._id}`}>
             {user.imageUrl ? (
               <Image
                 src={user?.imageUrl}

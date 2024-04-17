@@ -3,6 +3,7 @@
 import { createUserIfNeeded } from "@/lib/actions/user.actions"
 import { storeUserInfo } from "@/lib/store/features/user"
 import { useAppDispatch } from "@/lib/store/hook"
+import { UserSettings } from "@/lib/types"
 import { useUser } from "@clerk/nextjs"
 import { useEffect } from "react"
 import toast from "react-hot-toast"
@@ -23,7 +24,12 @@ export default function SignInMonitor() {
         toast.error(res.errorMessage)
       }
     }
-    request()
+
+    if (isSignedIn) {
+      request()
+    } else {
+      dispatch(storeUserInfo(null))
+    }
   }, [isSignedIn])
 
   return null

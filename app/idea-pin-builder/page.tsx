@@ -1,12 +1,12 @@
 "use client"
 import { useEffect, useState } from "react"
-import { useAuth } from "@clerk/nextjs"
 import PinDraftList from "./_components/PinDraftList"
 import PinForm from "./_components/PinForm"
 import type { PinDraft } from "@/lib/types"
 import { fetchUserDrafts } from "@/lib/actions/user.actions"
 import toast from "react-hot-toast"
 import Dialog from "@/components/shared/Dialog"
+import { useAppSelector } from "@/lib/store/hook"
 
 /*
     To prevent too many unnecessary requests, a user's draftList will be fetched only during initial
@@ -15,7 +15,7 @@ import Dialog from "@/components/shared/Dialog"
   updated locally. So that the drafts in the database and in 'draftList' will be in sync.
 */
 export default function Page() {
-  const { userId, isSignedIn } = useAuth()
+  const user = useAppSelector((store) => store.user.user)
   const [isCreatingDraft, setIsCreatingDraft] = useState(false)
   const [draftList, setDraftList] = useState<PinDraft[]>([])
   const [currentDraft, setCurrentDraft] = useState<PinDraft>({
@@ -29,8 +29,8 @@ export default function Page() {
   })
 
   async function getDraftList() {
-    if (!userId) return
-    const res = await fetchUserDrafts(userId)
+    if (!user) return
+    const res = await fetchUserDrafts(user._id)
     if (res && "errorMessage" in res) {
       toast.error(res.errorMessage)
       return
@@ -38,10 +38,10 @@ export default function Page() {
     setDraftList(res)
   }
   useEffect(() => {
-    if (isSignedIn) {
+    if (user) {
       getDraftList()
     }
-  }, [isSignedIn])
+  }, [user])
 
   return (
     <div className="flex mt-20 main-content">

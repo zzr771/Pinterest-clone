@@ -3,7 +3,6 @@ import { IoMdTrash } from "react-icons/io"
 import { Checkbox } from "@/components/shadcn/checkbox"
 import type { PinDraft } from "@/lib/types"
 import Button from "@/components/shared/Button"
-import { useAuth } from "@clerk/nextjs"
 import { dialog } from "@/components/shared/Dialog"
 
 interface Props {
@@ -21,8 +20,6 @@ export default function BatchOperation({
   checkAllDrafts,
   handleDeleteDrafts,
 }: Props) {
-  const { userId } = useAuth()
-
   function handleDeleteCheckedDrafts() {
     dialog({
       title: "Delete your drafts?",

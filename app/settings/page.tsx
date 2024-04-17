@@ -15,7 +15,7 @@ import toast from "react-hot-toast"
 
 import Button from "@/components/shared/Button"
 import { VirtualTextarea } from "@/components/form/VirtualTextarea"
-import { fetchUserSettings, updateUser } from "@/lib/actions/user.actions"
+import { fetchUserSettings, updateUserSetting } from "@/lib/actions/user.actions"
 import Loading from "@/components/shared/Loading"
 import { getErrorMessage, isBase64Image } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
@@ -64,7 +64,7 @@ export default function Page() {
     if (!user) return
 
     setIsLoading(true)
-    const res = await fetchUserSettings(user.id)
+    const res = await fetchUserSettings(user._id)
     if ("errorMessage" in res) {
       toast.error(res.errorMessage)
       return
@@ -153,8 +153,7 @@ export default function Page() {
         return
       }
     }
-
-    const res = await updateUser({ id: user.id, ...values, path: "/settings" })
+    const res = await updateUserSetting({ _id: user._id, ...values, path: "/settings" })
     if (res === void 0) {
       showMessageBox({ message: "Profile saved!" })
       getUserSettings()

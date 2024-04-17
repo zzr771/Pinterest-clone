@@ -6,9 +6,9 @@ import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
 import dynamic from "next/dynamic"
 import { duplicateDraft } from "@/lib/actions/user.actions"
-import { useAuth } from "@clerk/nextjs"
 import toast from "react-hot-toast"
 import { dialog } from "@/components/shared/Dialog"
+import { useAppSelector } from "@/lib/store/hook"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 interface Props {
@@ -31,15 +31,15 @@ export default function DraftCard({
   setIsCreatingDraft,
   handleDeleteDrafts,
 }: Props) {
-  const { userId } = useAuth()
+  const user = useAppSelector((store) => store.user.user)
   const [isChecked, setIsChecked] = useState(false)
   const options = [
     {
       label: "Duplicate",
       callback: async () => {
-        if (!userId) return
+        if (!user) return
         setIsCreatingDraft(true)
-        const res = await duplicateDraft(userId, draft._id)
+        const res = await duplicateDraft(user._id, draft._id)
         if (res && "errorMessage" in res) {
           toast.error(res.errorMessage)
           return

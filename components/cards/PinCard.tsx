@@ -20,9 +20,9 @@ interface Props {
   }
   title: string
   author: {
+    _id: string
     name: string
     avatar: string
-    id: string
   }
 }
 export default function PinCard({ pinId, src, imageSize, title, author }: Props) {
@@ -161,7 +161,7 @@ export default function PinCard({ pinId, src, imageSize, title, author }: Props)
               sizes="32px"
             />
           </div>
-          <Link href={`/user/${author.id}`}>
+          <Link href={`/user/${author._id}`}>
             <div className="flex-1 truncate max-w3:text-xs text-sm font-normal pr-5 hover:underline cursor-pointer">
               {author.name}
             </div>

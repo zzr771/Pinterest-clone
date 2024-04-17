@@ -5,11 +5,11 @@ import type { PinDraft } from "@/lib/types"
 import Button from "@/components/shared/Button"
 import DraftCard from "./DraftCard"
 import BatchOperation from "./BatchOperation"
-import { useAuth } from "@clerk/nextjs"
 import { deleteDrafts } from "@/lib/actions/user.actions"
 import toast from "react-hot-toast"
 import { getErrorMessage } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
+import { useAppSelector } from "@/lib/store/hook"
 
 interface Props {
   draftList: PinDraft[]
@@ -30,7 +30,7 @@ export default function PinDraftList({
 }: Props) {
   const [isFolded, setisFolded] = useState(false)
   const [checkedDrafts, setCheckedDrafts] = useState<PinDraft[]>([]) // drafts that are currently checked
-  const { userId } = useAuth()
+  const user = useAppSelector((store) => store.user.user)
 
   function createEmptyDraft() {
     // If there is an empty draft already.
@@ -98,9 +98,9 @@ export default function PinDraftList({
       }
     }
 
-    if (!userId) return
+    if (!user) return
     const draftIds = draftsToDelete.map((draft) => draft._id)
-    const res = await deleteDrafts(userId, draftIds)
+    const res = await deleteDrafts(user._id, draftIds)
     if (res && "errorMessage" in res) {
       toast.error(getErrorMessage(res))
       return

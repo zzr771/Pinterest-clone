@@ -7,7 +7,6 @@ import { PinDraftValidation } from "@/lib/validations/pinDraft"
 
 import { useEffect, useRef, useState, ChangeEvent, useCallback } from "react"
 import Image from "next/image"
-import { useAuth } from "@clerk/nextjs"
 import toast from "react-hot-toast"
 import { FaArrowUp } from "react-icons/fa"
 import { debounce } from "lodash"
@@ -19,6 +18,7 @@ import { getErrorMessage, isBase64Image } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { upsertDraft } from "@/lib/actions/user.actions"
 import imagePlaceholder from "@/public/assets/image-placeholder"
+import { useAppSelector } from "@/lib/store/hook"
 
 /*
     When a user edits a draft, one request that updates the database will be sent. But the UI doesn't refresh.
@@ -213,15 +213,15 @@ export default function PinForm({
   }
 
   // ---------------------------------------------------------------------- Submit form changes
-  const { userId } = useAuth()
+  const user = useAppSelector((store) => store.user.user)
   async function submit(draftOnEdit: PinDraft) {
-    if (!userId) return
+    if (!user) return
 
     const isValid = await form.trigger()
     if (!isValid) return
 
     setIsSaving(true)
-    const res = await upsertDraft(userId, draftOnEdit)
+    const res = await upsertDraft(user._id, draftOnEdit)
 
     setIsSaving(false)
     if (res && "errorMessage" in res) {

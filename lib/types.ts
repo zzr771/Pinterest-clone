@@ -1,3 +1,5 @@
+import { Types } from "mongoose"
+
 export interface Option {
   label: string
   callback?: () => void
@@ -8,11 +10,11 @@ export interface RequestError {
 }
 
 export interface UserSettings {
-  id: string
+  _id: string
+  id?: string
   username: string
   imageUrl: string
   firstName: string
-  _id?: string
   lastName?: string
   about?: string
   website?: string
@@ -31,4 +33,34 @@ export interface PinDraft {
   title?: string
   description?: string
   link?: string
+}
+
+export interface Pin {
+  author: Types.ObjectId
+  imageUrl: string
+  imageSize: {
+    width: number
+    height: number
+  }
+  title?: string
+  description?: string
+  link?: string
+  createdAt: number
+  comments?: Comment[]
+  reactions?: [
+    {
+      user: Types.ObjectId
+      reaction: string
+    }
+  ]
+}
+
+export interface Comment {
+  author: Types.ObjectId
+  content: string
+  createdAt: number
+  likes: number
+
+  replyTo?: Types.ObjectId
+  replies?: Comment[]
 }

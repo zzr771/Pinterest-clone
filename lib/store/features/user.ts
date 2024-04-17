@@ -5,12 +5,12 @@ type UserState = null | UserSettings
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    user: null as UserState,
+    user: null as UserState, // 'null' means the user hasn't signed in
   },
   reducers: {
-    storeUserInfo(state, action: PayloadAction<UserSettings>) {
-      const payload: UserSettings = action.payload
-      state.user = action.payload
+    storeUserInfo(state, action: PayloadAction<UserState>) {
+      const payload: UserState = action.payload
+      state.user = payload
     },
   },
 })
