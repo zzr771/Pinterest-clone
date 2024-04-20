@@ -8,7 +8,7 @@ interface Props {
   text?: string // either text or children must be passed in
   children?: React.ReactNode
   className?: string
-  click?: (param: any) => void
+  click?: (...args: any[]) => void
   disabled?: boolean
 }
 
