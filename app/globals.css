@@ -236,3 +236,17 @@ ul.indicators {
     background-position: 400px 0;
   }
 }
+
+.upload-spinner {
+  width: 40px;
+  aspect-ratio: 1;
+  --_c: no-repeat radial-gradient(farthest-side, rgb(118, 118, 118) 92%, #0000);
+  background: var(--_c) top, var(--_c) left, var(--_c) right, var(--_c) bottom;
+  background-size: 10px 10px;
+  animation: l7 1s infinite;
+}
+@keyframes l7 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}

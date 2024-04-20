@@ -5,11 +5,9 @@ import { PinDraft } from "@/lib/types"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
 import dynamic from "next/dynamic"
-import { duplicateDraft } from "@/lib/actions/user.actions"
-import toast from "react-hot-toast"
 import { dialog } from "@/components/shared/Dialog"
-import { useAppSelector } from "@/lib/store/hook"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
+import imagePlaceholder from "@/public/assets/image-placeholder"
 
 interface Props {
   draft: PinDraft
@@ -17,9 +15,8 @@ interface Props {
   controlCheck?: boolean // Use this prop to control the checked state from PinDraftList
   setCurrentDraft: (draft: PinDraft) => void
   checkDraft: (isCheck: boolean, draft: PinDraft) => void
-  getDraftList: () => void
-  setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
   handleDeleteDrafts: (drafts: PinDraft[]) => Promise<void>
+  handleDuplicateDraft: (_id: string) => Promise<void>
 }
 export default function DraftCard({
   draft,
@@ -27,25 +24,15 @@ export default function DraftCard({
   controlCheck = false,
   setCurrentDraft,
   checkDraft,
-  getDraftList,
-  setIsCreatingDraft,
   handleDeleteDrafts,
+  handleDuplicateDraft,
 }: Props) {
-  const user = useAppSelector((store) => store.user.user)
   const [isChecked, setIsChecked] = useState(false)
   const options = [
     {
       label: "Duplicate",
       callback: async () => {
-        if (!user) return
-        setIsCreatingDraft(true)
-        const res = await duplicateDraft(user._id, draft._id)
-        if (res && "errorMessage" in res) {
-          toast.error(res.errorMessage)
-          return
-        }
-        await getDraftList()
-        setIsCreatingDraft(false)
+        handleDuplicateDraft(draft._id)
       },
     },
     {
@@ -65,9 +52,9 @@ export default function DraftCard({
   ]
 
   const daysLeft = useMemo(() => {
-    const gap = draft.expiredAt - new Date().getTime()
-    return Math.ceil(gap / (1000 * 60 * 60 * 24))
-  }, [])
+    const gap = draft.expiredAt - Date.now()
+    return Math.ceil(gap / (1000 * 3600 * 24))
+  }, [draft.expiredAt])
 
   function onCheckedChange(value: boolean) {
     setIsChecked(value)
@@ -81,16 +68,25 @@ export default function DraftCard({
   return (
     <div
       onClick={() => setCurrentDraft(draft)}
-      className={`flex items-center gap-2 p-2 mb-1 border-[1px] hover-show-container rounded-lg hover:bg-gray-bg-5 ${
+      className={`relative flex items-center gap-2 p-2 mb-1 border-[1px] hover-show-container rounded-lg hover:bg-gray-bg-5 ${
         isEditing ? "bg-gray-bg-5" : "border-transparent"
       }`}>
+      {/* cover layer on create */}
+      {draft.state === "Creating..." && <div className="absolute inset-0 rounded-2xl skeleton"></div>}
+      {/* cover layer on publish */}
+      {draft.state === "Publishing..." && (
+        <div className="absolute inset-0 w-full h-full flex items-center rounded-lg bg-gray-tp-4">
+          <div className="ml-12 upload-spinner"></div>
+        </div>
+      )}
+
       <Checkbox
         checked={isChecked}
         onCheckedChange={onCheckedChange}
         className="flex-none border-2 border-gray-font-4 bg-white data-[state=checked]:border-black data-[state=checked]:bg-black data-[state=checked]:text-white"
       />
       <Image
-        src={draft.imageUrl}
+        src={draft.imageUrl || imagePlaceholder}
         alt="draft thumbnail"
         width={72}
         height={72}
