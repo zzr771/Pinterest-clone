@@ -19,7 +19,7 @@ import { fetchUserSettings, updateUserSetting } from "@/lib/actions/user.actions
 import Loading from "@/components/shared/Loading"
 import { getErrorMessage, isBase64Image } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
-import showMessageBox from "@/lib/showMessageBox"
+import showMessageBox from "@/components/shared/showMessageBox"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
 import { UserSettings } from "@/lib/types"
