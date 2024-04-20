@@ -7,6 +7,7 @@ import { fetchUserDrafts } from "@/lib/actions/user.actions"
 import toast from "react-hot-toast"
 import Dialog from "@/components/shared/Dialog"
 import { useAppSelector } from "@/lib/store/hook"
+import Loading from "@/components/shared/Loading"
 
 /*
     To prevent too many unnecessary requests, a user's draftList will be fetched only during initial
@@ -16,17 +17,9 @@ import { useAppSelector } from "@/lib/store/hook"
 */
 export default function Page() {
   const user = useAppSelector((store) => store.user.user)
-  const [isCreatingDraft, setIsCreatingDraft] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [draftList, setDraftList] = useState<PinDraft[]>([])
-  const [currentDraft, setCurrentDraft] = useState<PinDraft>({
-    _id: crypto.randomUUID(),
-    imageUrl: "",
-    title: "",
-    description: "",
-    link: "",
-    expiredAt: 0,
-    imageSize: { width: 0, height: 0 },
-  })
+  const [currentDraft, setCurrentDraft] = useState<PinDraft>(genEmptyDraft())
 
   async function getDraftList() {
     if (!user) return
@@ -35,31 +28,62 @@ export default function Page() {
       toast.error(res.errorMessage)
       return
     }
-    setDraftList(res)
+    /*
+        If draftA is successfully created, while draftB is still being created,
+      replace draftA with the data from the server and preserve draftB (Because draft
+      returned from the database doesn't have 'isUnsaved')
+    */
+
+    setDraftList((prev) => {
+      let unsavedDrafts = prev.filter((item) => item.isUnsaved)
+      // remove draftA (the newly created draft)
+      unsavedDrafts = unsavedDrafts.filter((item) => !res.find((redDraft) => redDraft._id === item._id))
+      return [...unsavedDrafts, ...res]
+    })
   }
+
   useEffect(() => {
-    if (user) {
-      getDraftList()
+    async function init() {
+      if (user) {
+        await getDraftList()
+        setIsLoading(false)
+      }
     }
+    init()
   }, [user])
+
+  function genEmptyDraft() {
+    return {
+      _id: crypto.randomUUID(),
+      imageUrl: "",
+      title: "",
+      description: "",
+      link: "",
+      expiredAt: Date.now() + 1000 * 3600 * 24 * 30,
+      imageSize: { width: 375, height: 375 },
+      state: "",
+      isUnsaved: true,
+    } as PinDraft
+  }
 
   return (
     <div className="flex mt-20 main-content">
+      {isLoading && <Loading />}
       <PinDraftList
+        draftList={draftList}
+        setDraftList={setDraftList}
+        getDraftList={getDraftList}
+        currentDraft={currentDraft}
+        setCurrentDraft={setCurrentDraft}
+        genEmptyDraft={genEmptyDraft}
+      />
+      <PinForm
+        getDraftList={getDraftList}
+        setDraftList={setDraftList}
         draftList={draftList}
         currentDraft={currentDraft}
         setCurrentDraft={setCurrentDraft}
-        isCreatingDraft={isCreatingDraft}
-        setIsCreatingDraft={setIsCreatingDraft}
-        getDraftList={getDraftList}
-      />
-      <PinForm
-        setDraftList={setDraftList}
-        currentDraft={currentDraft}
-        setCurrentDraft={setCurrentDraft}
-        isCreatingDraft={isCreatingDraft}
-        setIsCreatingDraft={setIsCreatingDraft}
-        getDraftList={getDraftList}
+        genEmptyDraft={genEmptyDraft}
       />
       <Dialog />
     </div>

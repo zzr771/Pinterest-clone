@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcn/form"
 import { Input } from "@/components/shadcn/input"
-import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PinDraftValidation } from "@/lib/validations/pinDraft"
 
@@ -13,41 +12,51 @@ import { debounce } from "lodash"
 import { useUploadThing } from "@/lib/uploadthing"
 import Button from "@/components/shared/Button"
 import { VirtualTextarea } from "@/components/form/VirtualTextarea"
-import type { PinDraft } from "@/lib/types"
-import { getErrorMessage, isBase64Image } from "@/lib/utils"
+import type { PinDraft, DraftState } from "@/lib/types"
+import { getErrorMessage } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { upsertDraft } from "@/lib/actions/user.actions"
 import imagePlaceholder from "@/public/assets/image-placeholder"
 import { useAppSelector } from "@/lib/store/hook"
+import { createPins } from "@/lib/actions/pin.actions"
+import showMessageBox from "@/components/shared/showMessageBox"
+import { useRouter } from "next/navigation"
 
 /*
     When a user edits a draft, one request that updates the database will be sent. But the UI doesn't refresh.
 */
 interface Props {
+  getDraftList: () => void
   setDraftList: React.Dispatch<React.SetStateAction<PinDraft[]>>
+  draftList: PinDraft[]
   currentDraft: PinDraft
   setCurrentDraft: React.Dispatch<React.SetStateAction<PinDraft>>
-  isCreatingDraft: boolean
-  setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
-  getDraftList: () => void
+  genEmptyDraft: () => PinDraft
 }
 export default function PinForm({
+  getDraftList,
   setDraftList,
+  draftList,
   currentDraft,
   setCurrentDraft,
-  isCreatingDraft,
-  setIsCreatingDraft,
-  getDraftList,
+  genEmptyDraft,
 }: Props) {
+  // Use Ref to provide newest state value to functions in closure
+  const currentDraftRef = useRef(currentDraft)
+  const draftListRef = useRef(draftList)
+  useEffect(() => {
+    currentDraftRef.current = currentDraft
+  }, [currentDraft])
+  useEffect(() => {
+    draftListRef.current = draftList
+  }, [draftList])
+
+  // ---------------------------------------------------------------------- Auto-layout according to the content area's width
   const formDisplayContainerRef = useRef<HTMLDivElement>(null)
   const formDisplayDivRef = useRef<HTMLDivElement>(null)
   const uploadRef = useRef<HTMLInputElement>(null)
+  const isInitialLoading = useRef(true) // when 'currentDraft' changes, this value will be set to 'true' to avoid submitting
 
-  const [isSaving, setIsSaving] = useState(false) // Tip:' Saving...'
-  const [showChangeTip, setShowChangeTip] = useState(false) // Tip: 'Changes stored!'
-  const isInitialLoading = useRef(true) // when 'currentDraft' changes, this value will be set to 'true'
-
-  // Auto-layout according to the content area's width
   const handleSrceenResize = useCallback(
     debounce(() => {
       const formDisplayContainer = formDisplayContainerRef.current
@@ -77,11 +86,25 @@ export default function PinForm({
     }
   }, [])
 
-  // Use Ref to provide newest state value to functions in closure
-  const isCreatingDraftRef = useRef(false)
+  // ---------------------------------------------------------------------- Draft State
+  const [draftState, setDraftState] = useState<DraftState>("")
   useEffect(() => {
-    isCreatingDraftRef.current = isCreatingDraft
-  }, [isCreatingDraft])
+    setDraftState(currentDraft.state || "")
+  }, [currentDraft.state])
+
+  function handleDraftState(draftOnEdit: PinDraft, state: DraftState) {
+    if (draftOnEdit._id === currentDraftRef.current._id) {
+      setCurrentDraft({ ...draftOnEdit, state: state })
+    }
+    setDraftList((prev) => {
+      return prev.map((item) => {
+        if (item._id === draftOnEdit._id) {
+          item.state = state
+        }
+        return item
+      })
+    })
+  }
 
   // ---------------------------------------------------------------------- Form
   const form = useForm({
@@ -103,8 +126,12 @@ export default function PinForm({
     setCurrentDraft({ ...currentDraft, prevImageUrl: currentDraft.imageUrl })
   }, [currentDraft._id])
 
-  // ---------------------------------------------------------------------- Read image
+  // ---------------------------------------------------------------------- Listen to image changes
   const [files, setFiles] = useState<File[]>([])
+  const filesRef = useRef(files)
+  useEffect(() => {
+    filesRef.current = files
+  }, [files])
   function handleImage(e: ChangeEvent<HTMLInputElement>, fieldChange: (value: string) => void) {
     e.preventDefault() // prevent browser reloading
     const fileReader = new FileReader()
@@ -117,7 +144,7 @@ export default function PinForm({
       fileReader.readAsDataURL(file)
       fileReader.onload = (e) => {
         if (typeof e.target?.result === "string") {
-          form.setValue("imageUrl", e?.target?.result) // Trigger image uploading and draft saving
+          getImageSize({ ...currentDraft, imageUrl: e.target?.result })
         }
       }
     }
@@ -145,22 +172,23 @@ export default function PinForm({
           },
         }
       })
+      form.setValue("imageUrl", draftOnEdit.imageUrl)
       uploadImage(draftOnEdit)
     }
   }
   async function uploadImage(draftOnEdit: PinDraft) {
-    setIsSaving(true)
-    /*
-        An empty draft doesn't have an imageUrl. Its imageUrl and prevImageUrl are both empty.
-      However, the imageUrl has been changed when an user selects an image. So prevImageUrl 
-      becomes the flag to determine if a draft is empty.
-    */
-    if (!draftOnEdit.prevImageUrl) {
-      setIsCreatingDraft(true)
+    if (draftOnEdit.isUnsaved) {
+      handleDraftState(draftOnEdit, "Creating...")
+      draftOnEdit.state = "Creating..."
+      setDraftList((prev) => {
+        return [draftOnEdit, ...prev]
+      })
+    } else {
+      handleDraftState(draftOnEdit, "Saving...")
     }
 
     try {
-      const imgResponse = await startUpload(files)
+      const imgResponse = await startUpload(filesRef.current)
 
       if (imgResponse && imgResponse[0].url) {
         draftOnEdit.imageUrl = imgResponse[0].url
@@ -197,20 +225,10 @@ export default function PinForm({
           Pass in the draft to guarantee that following manipulations and requests
         will only affect this draft even if 'currentDraft' changes.
       */
-      const draftOnEdit = { ...currentDraft, imageUrl, title, description, link }
-      if (isBase64Image(imageUrl)) {
-        getImageSize(draftOnEdit)
-        return
-      }
+      const draftOnEdit = { ...currentDraft, title, description, link }
       submit(draftOnEdit)
     }, 500)
-  }, [imageUrl, title, description, link])
-  function handleChangeTip() {
-    setShowChangeTip(true)
-    setTimeout(() => {
-      setShowChangeTip(false)
-    }, 3000)
-  }
+  }, [title, description, link])
 
   // ---------------------------------------------------------------------- Submit form changes
   const user = useAppSelector((store) => store.user.user)
@@ -220,41 +238,90 @@ export default function PinForm({
     const isValid = await form.trigger()
     if (!isValid) return
 
-    setIsSaving(true)
+    handleDraftState(draftOnEdit, "Saving...")
     const res = await upsertDraft(user._id, draftOnEdit)
 
-    setIsSaving(false)
+    handleDraftState(draftOnEdit, "")
+
     if (res && "errorMessage" in res) {
       toast.error(res.errorMessage)
       return
     }
 
     // if the draft is new created
-    if (isCreatingDraftRef.current) {
+    if (draftOnEdit.isUnsaved) {
       await getDraftList()
-      setIsCreatingDraft(false)
     }
-    // store draft changes in draftList
+
+    /*
+      Rules about showing "Changes stored!":
+        1. Show this message only when the moment draftA is saved, the user is still editing draftA
+        2. When the user clicks another draft, remove this message
+      So, only currentDraft needs to get "Changes stored!", drafts in draftList don't.
+    */
+    if (res._id === currentDraftRef.current._id) {
+      setCurrentDraft({ ...res, state: "Changes stored!" })
+    }
+
+    /*
+        Save drafts changes by setDraftList instead of setCurrentDraft. Because the user may 
+      be editing draftB while draftA is just saved.
+    */
     setDraftList((prev) => {
       const index = prev.findIndex((item) => item._id === res._id)
       const newList = [...prev]
       newList.splice(index, 1, res)
       return newList
     })
-
-    handleChangeTip()
   }
 
   // ---------------------------------------------------------------------- Publish
-  async function publish() {}
+  const router = useRouter()
+  async function publish() {
+    if (!user) return
+    if (currentDraft.state === "Saving...") {
+      toast("Please wait until the saving operation is completed.")
+      return
+    }
+
+    // the newest data is in draftList, not currentDraft
+    const targetDraft = draftList.find((item) => item._id === currentDraft?._id)
+    if (!targetDraft) return
+
+    handleDraftState(targetDraft, "Publishing...")
+    const res = await createPins(user._id, [targetDraft])
+    if (res && "errorMessage" in res) {
+      toast.error(res.errorMessage)
+      return
+    }
+
+    await getDraftList()
+
+    // wait until new draftList is set
+    setTimeout(() => {
+      // reset currentDraft
+      if (!draftListRef.current.find((item) => item._id === currentDraftRef.current?._id)) {
+        setCurrentDraft(draftListRef.current[0] || genEmptyDraft())
+      }
+      showMessageBox({
+        message: "Your Pin has been published!",
+        button: {
+          text: "View",
+          callback: () => {
+            router.push(`/pin/${res[0]._id}`)
+          },
+        },
+      })
+    })
+  }
 
   return (
     <section className="flex-1 flex flex-col border-t main-content border-gray-bg-6">
       <div className="flex flex-none h-20 justify-between items-center px-[1.875rem]">
         <h4 className="font-medium text-lg">Create Pin</h4>
+        <div className="loader"></div>
         <div className="flex items-center gap-3">
-          {isSaving && <span className="text-gray-font-4">Saving...</span>}
-          {!isSaving && showChangeTip && <span className="text-gray-font-4">Changes stored!</span>}
+          <span className="text-gray-font-4">{draftState}</span>
           {imageUrl.length > 0 && <Button text="Publish" bgColor="red" hover click={publish} />}
         </div>
       </div>
@@ -288,7 +355,7 @@ export default function PinForm({
               <Image
                 src={imageUrl}
                 alt="uploaded image"
-                className="object-contain rounded-[2rem]"
+                className="object-contain rounded-[2rem] mx-auto max-w-[375px]"
                 width={currentDraft.imageSize.width}
                 height={currentDraft.imageSize.height}
                 quality={100}
@@ -312,9 +379,7 @@ export default function PinForm({
                         ref={uploadRef}
                         type="file"
                         accept="image/*"
-                        className={`absolute z-[1] left-0 top-0 w-[375px] h-[453px] p-0 opacity-0 rounded-[2rem] cursor-pointer ${
-                          isCreatingDraft && "invisible"
-                        }`}
+                        className={`absolute z-[1] left-0 top-0 w-[375px] h-[453px] p-0 opacity-0 rounded-[2rem] cursor-pointer`}
                         onChange={(e) => handleImage(e, field.onChange)}
                       />
                     </FormControl>
@@ -324,7 +389,7 @@ export default function PinForm({
 
               <div className="relative">
                 {/* translucent cover layer */}
-                {!imageUrl && <div className="absolute inset-0 z-10 bg-gray-tp-4"></div>}
+                {currentDraft.isUnsaved && <div className="absolute inset-0 z-10 bg-gray-tp-4"></div>}
 
                 {/* title */}
                 <FormField
