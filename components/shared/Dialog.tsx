@@ -2,7 +2,10 @@
   Usage:
     1. import and use <Dialog /> as a normal component in loyout.tsx or page.tsx
     2. import the 'dialog' function in whichever component you need, invoke 'dialog'
-        and pass in necessary parameters, and a dialog will pop up
+        and pass in necessary parameters
+  
+    When the 'dialog' function is invoked, a dialog will be displayed in the center of the 
+  screen, with at least a confirm button
 */
 import { useState } from "react"
 import { createPortal } from "react-dom"
@@ -13,7 +16,7 @@ interface Props {
   content?: string
   confirmText: string
   cancelText?: string
-  confirmCallback?: Function
+  confirmCallback?: (...args: any[]) => void
 }
 
 let changeShowDialog: React.Dispatch<React.SetStateAction<boolean>>

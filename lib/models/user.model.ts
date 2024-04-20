@@ -35,6 +35,6 @@ const userSchema = new mongoose.Schema({
   ],
 })
 
-// If User model already exists, don't recreate it.
+// Prevent repetitive model creation
 const User = mongoose.models.User || mongoose.model("User", userSchema)
 export default User
