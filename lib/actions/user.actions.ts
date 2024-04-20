@@ -5,6 +5,7 @@ import { connectToDB } from "../mongoose"
 import User from "../models/user.model"
 import { getErrorMessage } from "../utils"
 import { RequestError, UserSettings, PinDraft } from "../types"
+import { duplicateImage } from "./uploadthing.actions"
 
 interface initUserParams {
   id: string
@@ -118,7 +119,6 @@ export async function fetchUserDrafts(userId: string): Promise<PinDraft[] | Requ
   connectToDB()
   try {
     const user = await User.findById(userId)
-    console.log("useruseruseruseruseruseruser", user)
     if (!user) {
       return {
         errorMessage: "User doesn't exist",
@@ -187,7 +187,11 @@ export async function deleteDrafts(userId: string, draftId: string[]): Promise<v
   }
 }
 
-export async function duplicateDraft(userId: string, draftId: string): Promise<void | RequestError> {
+export async function duplicateDraft(
+  userId: string,
+  OriginaldraftId: string,
+  newDraftId: string
+): Promise<void | RequestError> {
   connectToDB()
   try {
     const user = await User.findById(userId)
@@ -197,16 +201,24 @@ export async function duplicateDraft(userId: string, draftId: string): Promise<v
       }
     }
 
-    const target = user.drafts.find((item: PinDraft) => item._id === draftId)
+    const target = user.drafts.find((item: PinDraft) => item._id === OriginaldraftId)
     if (!target) {
       return {
         errorMessage: "Draft doesn't exist",
       }
     }
 
+    const duplicatedImage = await duplicateImage(target.imageUrl)
+    if (!duplicatedImage) {
+      return {
+        errorMessage: "Duplication went wrong",
+      }
+    }
+
     user.drafts.unshift({
       ...JSON.parse(JSON.stringify(target)),
-      _id: crypto.randomUUID(),
+      _id: newDraftId,
+      imageUrl: duplicatedImage?.data?.url,
       expiredAt: Date.now() + 1000 * 3600 * 24 * 30,
     })
     await user.save()

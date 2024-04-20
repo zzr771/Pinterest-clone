@@ -25,3 +25,8 @@ export async function deleteFiles(arr: string[]): Promise<void | RequestError> {
     }
   }
 }
+
+export async function duplicateImage(imageUrl: string) {
+  const uploadedFile = await utapi.uploadFilesFromUrl(imageUrl)
+  return uploadedFile
+}

@@ -5,7 +5,7 @@ import type { PinDraft } from "@/lib/types"
 import Button from "@/components/shared/Button"
 import DraftCard from "./DraftCard"
 import BatchOperation from "./BatchOperation"
-import { deleteDrafts } from "@/lib/actions/user.actions"
+import { deleteDrafts, duplicateDraft } from "@/lib/actions/user.actions"
 import toast from "react-hot-toast"
 import { getErrorMessage } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
@@ -13,42 +13,35 @@ import { useAppSelector } from "@/lib/store/hook"
 
 interface Props {
   draftList: PinDraft[]
+  getDraftList: () => void
+  setDraftList: React.Dispatch<React.SetStateAction<PinDraft[]>>
   currentDraft: PinDraft
   setCurrentDraft: React.Dispatch<React.SetStateAction<PinDraft>>
-  isCreatingDraft: boolean
-  setIsCreatingDraft: React.Dispatch<React.SetStateAction<boolean>>
-  getDraftList: () => void
+  genEmptyDraft: () => PinDraft
 }
 
 export default function PinDraftList({
   draftList,
+  getDraftList,
+  setDraftList,
   currentDraft,
   setCurrentDraft,
-  isCreatingDraft,
-  setIsCreatingDraft,
-  getDraftList,
+  genEmptyDraft,
 }: Props) {
   const [isFolded, setisFolded] = useState(false)
   const [checkedDrafts, setCheckedDrafts] = useState<PinDraft[]>([]) // drafts that are currently checked
   const user = useAppSelector((store) => store.user.user)
 
   function createEmptyDraft() {
+    if (draftList.length >= 50) {
+      toast("Maximum number of drafts: 50")
+      return
+    }
+
     // If there is an empty draft already.
     if (!currentDraft.imageUrl) return
 
-    setCurrentDraft(getEmptyDraft())
-  }
-
-  function getEmptyDraft() {
-    return {
-      _id: crypto.randomUUID(),
-      imageUrl: "",
-      title: "",
-      description: "",
-      link: "",
-      expiredAt: 0,
-      imageSize: { width: 0, height: 0 },
-    }
+    setCurrentDraft(genEmptyDraft())
   }
 
   // select or unselect a draft
@@ -83,7 +76,7 @@ export default function PinDraftList({
       let index = draftList.findIndex((item) => item._id === draftToSet._id)
 
       if (index === draftList.length - 1) {
-        draftToSet = getEmptyDraft()
+        draftToSet = genEmptyDraft()
       } else {
         while (index < draftList.length) {
           if (!draftsToDelete.includes(draftList[index])) {
@@ -93,7 +86,7 @@ export default function PinDraftList({
           index++
         }
         if (index === draftList.length) {
-          draftToSet = getEmptyDraft()
+          draftToSet = genEmptyDraft()
         }
       }
     }
@@ -120,6 +113,25 @@ export default function PinDraftList({
     }
   }
 
+  async function handleDuplicateDraft(originalDraftId: string) {
+    if (draftList.length >= 50) {
+      toast("Maximum number of drafts: 50")
+      return
+    }
+    if (!user) return
+
+    const newDraft = genEmptyDraft()
+    newDraft.state = "Creating..."
+    setDraftList((prev) => [newDraft, ...prev])
+
+    const res = await duplicateDraft(user._id, originalDraftId, newDraft._id)
+    if (res && "errorMessage" in res) {
+      toast.error(res.errorMessage)
+      return
+    }
+    await getDraftList()
+  }
+
   return (
     <section
       className={`flex-none flex flex-col main-content border border-gray-bg-6 border-b-0 ${
@@ -139,7 +151,7 @@ export default function PinDraftList({
         </div>
         {/* todo: disable this button while saving a new created draft */}
         {isFolded && (
-          <Button hover clickEffect rounded disabled={isCreatingDraft} click={createEmptyDraft}>
+          <Button hover clickEffect rounded click={createEmptyDraft}>
             <FaPlus className="h-5 w-5" />
           </Button>
         )}
@@ -148,7 +160,6 @@ export default function PinDraftList({
             text="Create new"
             bgColor="gray"
             hover
-            disabled={isCreatingDraft}
             click={createEmptyDraft}
             className="!h-10 px-3 py-2 w-full font-medium !text-[15px] active:scale-[98%] transition"
           />
@@ -162,7 +173,6 @@ export default function PinDraftList({
         <>
           {/* card list */}
           <div className="relative flex-1 p-2 overflow-y-auto overflow-x-hidden">
-            {isCreatingDraft && <div className="h-[88px] rounded-2xl skeleton"></div>}
             {draftList.map((item) => (
               <DraftCard
                 key={item._id}
@@ -171,9 +181,8 @@ export default function PinDraftList({
                 setCurrentDraft={setCurrentDraft}
                 controlCheck={checkedDrafts.includes(item)}
                 checkDraft={checkDraft}
-                getDraftList={getDraftList}
-                setIsCreatingDraft={setIsCreatingDraft}
                 handleDeleteDrafts={handleDeleteDrafts}
+                handleDuplicateDraft={handleDuplicateDraft}
               />
             ))}
           </div>
