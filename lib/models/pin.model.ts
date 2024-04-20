@@ -1,17 +1,18 @@
 import mongoose from "mongoose"
 
 const pinSchema = new mongoose.Schema({
-  author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   imageUrl: { type: String, required: true },
   imageSize: {
-    width: {
-      type: Number,
-      required: true,
+    type: {
+      width: {
+        type: Number,
+      },
+      height: {
+        type: Number,
+      },
     },
-    height: {
-      type: Number,
-      required: true,
-    },
+    required: true,
   },
   title: String,
   description: String,
@@ -27,6 +28,5 @@ const pinSchema = new mongoose.Schema({
   ],
 })
 
-// If User model already exists, don't recreate it.
 const Pin = mongoose.models.Pin || mongoose.model("Pin", pinSchema)
 export default Pin

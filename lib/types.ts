@@ -21,6 +21,8 @@ export interface UserSettings {
   path?: string
 }
 
+export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
+
 export interface PinDraft {
   _id: string
   imageUrl: string
@@ -33,10 +35,14 @@ export interface PinDraft {
   title?: string
   description?: string
   link?: string
+
+  state: DraftState
+  isUnsaved?: boolean // only drafts created by 'genEmptyDraft' has this property, and drafts from the database don't
 }
 
-export interface Pin {
-  author: Types.ObjectId
+export interface PinParams {
+  _id: string
+  author: string
   imageUrl: string
   imageSize: {
     width: number
@@ -49,18 +55,18 @@ export interface Pin {
   comments?: Comment[]
   reactions?: [
     {
-      user: Types.ObjectId
+      user: string
       reaction: string
     }
   ]
 }
 
 export interface Comment {
-  author: Types.ObjectId
+  author: string
   content: string
   createdAt: number
   likes: number
 
-  replyTo?: Types.ObjectId
+  replyTo?: string
   replies?: Comment[]
 }
