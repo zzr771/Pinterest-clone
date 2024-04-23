@@ -11,6 +11,7 @@ interface Props {
   setCheckedDrafts: React.Dispatch<React.SetStateAction<PinDraft[]>>
   checkAllDrafts: (isAll: boolean) => void
   handleDeleteDrafts: (drafts: PinDraft[]) => Promise<void>
+  publishDrafts: (drafts: PinDraft[]) => Promise<void>
 }
 
 export default function BatchOperation({
@@ -19,6 +20,7 @@ export default function BatchOperation({
   setCheckedDrafts,
   checkAllDrafts,
   handleDeleteDrafts,
+  publishDrafts,
 }: Props) {
   function handleDeleteCheckedDrafts() {
     dialog({
@@ -31,6 +33,10 @@ export default function BatchOperation({
   }
   async function deleteCheckedDrafts() {
     await handleDeleteDrafts(checkedDrafts)
+    setCheckedDrafts([])
+  }
+  async function publishCheckedDrafts() {
+    await publishDrafts(checkedDrafts)
     setCheckedDrafts([])
   }
 
@@ -63,7 +69,12 @@ export default function BatchOperation({
             <Button hover rounded clickEffect className="!w-10 !h-10" click={handleDeleteCheckedDrafts}>
               <IoMdTrash className="w-6 h-6" />
             </Button>
-            <Button text="Publish" bgColor="red" className="!h-10 text-[15px] !px-3" />
+            <Button
+              text="Publish"
+              bgColor="red"
+              className="!h-10 text-[15px] !px-3"
+              click={publishCheckedDrafts}
+            />
           </div>
         </div>
       )}

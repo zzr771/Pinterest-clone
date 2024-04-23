@@ -8,7 +8,7 @@ export async function deleteFiles(arr: string[]): Promise<void | RequestError> {
   const keys = arr.map((url) => url.split("/").pop() || "")
   if (keys.length !== arr.length) {
     return {
-      errorMessage: "Invalid Image URL",
+      errorMessage: "Invalid Image URL.",
     }
   }
 
@@ -16,7 +16,7 @@ export async function deleteFiles(arr: string[]): Promise<void | RequestError> {
     const deleteResult = await utapi.deleteFiles(keys)
     if (!deleteResult.success) {
       return {
-        errorMessage: "Failed to delete file",
+        errorMessage: "Failed to delete file.",
       }
     }
   } catch (error) {

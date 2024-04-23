@@ -18,6 +18,8 @@ interface Props {
   currentDraft: PinDraft
   setCurrentDraft: React.Dispatch<React.SetStateAction<PinDraft>>
   genEmptyDraft: () => PinDraft
+  calculateNextDraft: (drafs: PinDraft[]) => PinDraft
+  publishDrafts: (drafts: PinDraft[]) => Promise<void>
 }
 
 export default function PinDraftList({
@@ -27,6 +29,8 @@ export default function PinDraftList({
   currentDraft,
   setCurrentDraft,
   genEmptyDraft,
+  calculateNextDraft,
+  publishDrafts,
 }: Props) {
   const [isFolded, setisFolded] = useState(false)
   const [checkedDrafts, setCheckedDrafts] = useState<PinDraft[]>([]) // drafts that are currently checked
@@ -34,7 +38,7 @@ export default function PinDraftList({
 
   function createEmptyDraft() {
     if (draftList.length >= 50) {
-      toast("Maximum number of drafts: 50")
+      toast("Maximum number of drafts: 50.")
       return
     }
 
@@ -67,31 +71,10 @@ export default function PinDraftList({
   }
 
   async function handleDeleteDrafts(draftsToDelete: PinDraft[]) {
-    /*
-        If currentDraft is being deleted, set state 'currentDraft' to the next remaining draft.
-        If currentDraft and all drafts after it are being deleted, set state 'currentDraft' to an empty draft.
-    */
-    let draftToSet = currentDraft
-    if (draftsToDelete.find((item) => item._id === draftToSet._id)) {
-      let index = draftList.findIndex((item) => item._id === draftToSet._id)
-
-      if (index === draftList.length - 1) {
-        draftToSet = genEmptyDraft()
-      } else {
-        while (index < draftList.length) {
-          if (!draftsToDelete.includes(draftList[index])) {
-            draftToSet = draftList[index]
-            break
-          }
-          index++
-        }
-        if (index === draftList.length) {
-          draftToSet = genEmptyDraft()
-        }
-      }
-    }
-
     if (!user) return
+
+    const draftToSet = calculateNextDraft(draftsToDelete)
+
     const draftIds = draftsToDelete.map((draft) => draft._id)
     const res = await deleteDrafts(user._id, draftIds)
     if (res && "errorMessage" in res) {
@@ -115,7 +98,7 @@ export default function PinDraftList({
 
   async function handleDuplicateDraft(originalDraftId: string) {
     if (draftList.length >= 50) {
-      toast("Maximum number of drafts: 50")
+      toast("Maximum number of drafts: 50.")
       return
     }
     if (!user) return
@@ -194,6 +177,7 @@ export default function PinDraftList({
             setCheckedDrafts={setCheckedDrafts}
             checkAllDrafts={checkAllDrafts}
             handleDeleteDrafts={handleDeleteDrafts}
+            publishDrafts={publishDrafts}
           />
         </>
       )}

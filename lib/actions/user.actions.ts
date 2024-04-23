@@ -105,7 +105,7 @@ export async function fetchUserSettings(userId: string): Promise<UserSettings | 
       return user
     } else {
       return {
-        errorMessage: "User doesn't exist",
+        errorMessage: "User doesn't exist.",
       }
     }
   } catch (error) {
@@ -121,7 +121,7 @@ export async function fetchUserDrafts(userId: string): Promise<PinDraft[] | Requ
     const user = await User.findById(userId)
     if (!user) {
       return {
-        errorMessage: "User doesn't exist",
+        errorMessage: "User doesn't exist.",
       }
     }
 
@@ -143,7 +143,7 @@ export async function upsertDraft(userId: string, draft: PinDraft): Promise<PinD
     const user = await User.findById(userId)
     if (!user) {
       return {
-        errorMessage: "User doesn't exist",
+        errorMessage: "User doesn't exist.",
       }
     }
 
@@ -174,7 +174,7 @@ export async function deleteDrafts(userId: string, draftId: string[]): Promise<v
     const user = await User.findById(userId)
     if (!user) {
       return {
-        errorMessage: "User doesn't exist",
+        errorMessage: "User doesn't exist.",
       }
     }
 
@@ -197,21 +197,21 @@ export async function duplicateDraft(
     const user = await User.findById(userId)
     if (!user) {
       return {
-        errorMessage: "User doesn't exist",
+        errorMessage: "User doesn't exist.",
       }
     }
 
     const target = user.drafts.find((item: PinDraft) => item._id === OriginaldraftId)
     if (!target) {
       return {
-        errorMessage: "Draft doesn't exist",
+        errorMessage: "Draft doesn't exist.",
       }
     }
 
     const duplicatedImage = await duplicateImage(target.imageUrl)
     if (!duplicatedImage) {
       return {
-        errorMessage: "Duplication went wrong",
+        errorMessage: "Duplication went wrong.",
       }
     }
 

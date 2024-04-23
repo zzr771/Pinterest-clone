@@ -18,12 +18,15 @@ export async function createPins(userId: string, drafts: PinDraft[]): Promise<Pi
       link: item.link,
       createdAt: Date.now(),
     }))
+
     const [res, user] = await Promise.all([Pin.insertMany(newPins), User.findById(userId)])
     const pinIds = res.map((item) => item._id)
 
+    // remove drafts from user.drafts
     const draftIds = drafts.map((item) => item._id)
     user.drafts = user.drafts.filter((item: PinDraft) => !draftIds.includes(item._id))
-    user.created.push([...pinIds])
+
+    user.created.push(...pinIds)
     await user.save()
     return JSON.parse(JSON.stringify(res))
   } catch (error) {

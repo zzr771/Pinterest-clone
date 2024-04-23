@@ -7,7 +7,6 @@ import Button from "@/components/shared/Button"
 import dynamic from "next/dynamic"
 import { dialog } from "@/components/shared/Dialog"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
-import imagePlaceholder from "@/public/assets/image-placeholder"
 
 interface Props {
   draft: PinDraft
@@ -86,11 +85,11 @@ export default function DraftCard({
         className="flex-none border-2 border-gray-font-4 bg-white data-[state=checked]:border-black data-[state=checked]:bg-black data-[state=checked]:text-white"
       />
       <Image
-        src={draft.imageUrl || imagePlaceholder}
+        src={draft.imageUrl}
         alt="draft thumbnail"
         width={72}
         height={72}
-        className="flex-none w-[72px] h-[72px] object-cover rounded-xl"
+        className="flex-none w-[72px] h-[72px] object-cover rounded-xl bg-gray-bg-4"
       />
       <div className="flex-1">
         {draft.title && <p className="font-semibold text-sm">{draft.title}</p>}

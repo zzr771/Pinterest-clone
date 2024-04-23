@@ -16,11 +16,7 @@ import type { PinDraft, DraftState } from "@/lib/types"
 import { getErrorMessage } from "@/lib/utils"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { upsertDraft } from "@/lib/actions/user.actions"
-import imagePlaceholder from "@/public/assets/image-placeholder"
 import { useAppSelector } from "@/lib/store/hook"
-import { createPins } from "@/lib/actions/pin.actions"
-import showMessageBox from "@/components/shared/showMessageBox"
-import { useRouter } from "next/navigation"
 
 /*
     When a user edits a draft, one request that updates the database will be sent. But the UI doesn't refresh.
@@ -31,7 +27,7 @@ interface Props {
   draftList: PinDraft[]
   currentDraft: PinDraft
   setCurrentDraft: React.Dispatch<React.SetStateAction<PinDraft>>
-  genEmptyDraft: () => PinDraft
+  publishDrafts: (drafts: PinDraft[]) => Promise<void>
 }
 export default function PinForm({
   getDraftList,
@@ -39,7 +35,7 @@ export default function PinForm({
   draftList,
   currentDraft,
   setCurrentDraft,
-  genEmptyDraft,
+  publishDrafts,
 }: Props) {
   // Use Ref to provide newest state value to functions in closure
   const currentDraftRef = useRef(currentDraft)
@@ -55,7 +51,14 @@ export default function PinForm({
   const formDisplayContainerRef = useRef<HTMLDivElement>(null)
   const formDisplayDivRef = useRef<HTMLDivElement>(null)
   const uploadRef = useRef<HTMLInputElement>(null)
-  const isInitialLoading = useRef(true) // when 'currentDraft' changes, this value will be set to 'true' to avoid submitting
+  const isInitialLoading = useRef(true) // when 'currentDraft' changes, this flag will be set to 'true' to avoid submitting
+  /*
+      When a user switches between two identical drafts (title, description and link are the same),
+    the useEffect listening to form changes won't be triggered, which is unwanted (we need it to set 
+    isInitialLoading.current). To prevent this special case, introduce prevDraft to compare with 
+    currentDraft. If they are identical, set isInitialLoading.current to false.
+  */
+  const prevDraft = useRef<PinDraft>(currentDraft)
 
   const handleSrceenResize = useCallback(
     debounce(() => {
@@ -122,9 +125,19 @@ export default function PinForm({
     form.setValue("description", currentDraft?.description || "")
     form.setValue("title", currentDraft?.title || "")
     form.setValue("link", currentDraft?.link || "")
-    isInitialLoading.current = true
+
+    if (diffDrafts(prevDraft.current, currentDraft)) {
+      isInitialLoading.current = true
+    } else {
+      isInitialLoading.current = false
+    }
+
     setCurrentDraft({ ...currentDraft, prevImageUrl: currentDraft.imageUrl })
+    prevDraft.current = currentDraft
   }, [currentDraft._id])
+  function diffDrafts(prev: PinDraft, next: PinDraft) {
+    return prev.title !== next.title || prev.description !== next.description || prev.link !== next.link
+  }
 
   // ---------------------------------------------------------------------- Listen to image changes
   const [files, setFiles] = useState<File[]>([])
@@ -210,24 +223,24 @@ export default function PinForm({
   // ---------------------------------------------------------------------- Listen to form changes
   const timer = useRef(0)
   useEffect(() => {
+    console.log("isInitialLoading", isInitialLoading)
+    if (isInitialLoading.current) {
+      isInitialLoading.current = false
+      return
+    }
+
     if (timer.current > 0) {
       clearTimeout(timer.current)
     }
     timer.current = window.setTimeout(() => {
       timer.current = 0
-
-      if (isInitialLoading.current) {
-        isInitialLoading.current = false
-        return
-      }
-
       /*
           Pass in the draft to guarantee that following manipulations and requests
         will only affect this draft even if 'currentDraft' changes.
       */
       const draftOnEdit = { ...currentDraft, title, description, link }
       submit(draftOnEdit)
-    }, 500)
+    }, 300)
   }, [title, description, link])
 
   // ---------------------------------------------------------------------- Submit form changes
@@ -261,6 +274,7 @@ export default function PinForm({
     */
     if (res._id === currentDraftRef.current._id) {
       setCurrentDraft({ ...res, state: "Changes stored!" })
+      prevDraft.current = res
     }
 
     /*
@@ -275,46 +289,6 @@ export default function PinForm({
     })
   }
 
-  // ---------------------------------------------------------------------- Publish
-  const router = useRouter()
-  async function publish() {
-    if (!user) return
-    if (currentDraft.state === "Saving...") {
-      toast("Please wait until the saving operation is completed.")
-      return
-    }
-
-    // the newest data is in draftList, not currentDraft
-    const targetDraft = draftList.find((item) => item._id === currentDraft?._id)
-    if (!targetDraft) return
-
-    handleDraftState(targetDraft, "Publishing...")
-    const res = await createPins(user._id, [targetDraft])
-    if (res && "errorMessage" in res) {
-      toast.error(res.errorMessage)
-      return
-    }
-
-    await getDraftList()
-
-    // wait until new draftList is set
-    setTimeout(() => {
-      // reset currentDraft
-      if (!draftListRef.current.find((item) => item._id === currentDraftRef.current?._id)) {
-        setCurrentDraft(draftListRef.current[0] || genEmptyDraft())
-      }
-      showMessageBox({
-        message: "Your Pin has been published!",
-        button: {
-          text: "View",
-          callback: () => {
-            router.push(`/pin/${res[0]._id}`)
-          },
-        },
-      })
-    })
-  }
-
   return (
     <section className="flex-1 flex flex-col border-t main-content border-gray-bg-6">
       <div className="flex flex-none h-20 justify-between items-center px-[1.875rem]">
@@ -322,7 +296,16 @@ export default function PinForm({
         <div className="loader"></div>
         <div className="flex items-center gap-3">
           <span className="text-gray-font-4">{draftState}</span>
-          {imageUrl.length > 0 && <Button text="Publish" bgColor="red" hover click={publish} />}
+          {imageUrl.length > 0 && (
+            <Button
+              text="Publish"
+              bgColor="red"
+              hover
+              click={() => {
+                publishDrafts([currentDraft])
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -353,14 +336,14 @@ export default function PinForm({
               className="flex-none w-[375px] min-h-[100px] max-h-[900px] cursor-pointer"
               onClick={handleClickImage}>
               <Image
+                key={imageUrl}
                 src={imageUrl}
                 alt="uploaded image"
-                className="object-contain rounded-[2rem] mx-auto max-w-[375px]"
+                className="object-contain rounded-[2rem] mx-auto max-w-[375px] bg-gray-bg-4"
                 width={currentDraft.imageSize.width}
                 height={currentDraft.imageSize.height}
                 quality={100}
                 sizes="375px"
-                placeholder={imagePlaceholder}
               />
             </div>
           )}

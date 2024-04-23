@@ -1,4 +1,0 @@
-publish之后重置currentDraft的逻辑
-
-Pinterest里可以同时publish两个草稿，互不干扰
-
