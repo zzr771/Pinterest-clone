@@ -1,5 +1,6 @@
 import * as z from "zod"
 
+const urlRegExp = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^/\s]*)*$/
 export const ProfileValidation = z.object({
   imageUrl: z.string(),
   firstName: z
@@ -14,5 +15,12 @@ export const ProfileValidation = z.object({
     .trim()
     .min(1, { message: "Your profile needs a username" })
     .max(50, { message: "Please enter no more than 50 characters." }),
-  website: z.string().trim().url({ message: "Not a valid URL" }).optional().or(z.literal("")),
+  website: z
+    .string()
+    .trim()
+    .refine((value) => urlRegExp.test(value), {
+      message: "Oops! That URL isn't valid—please try again!",
+    })
+    .optional()
+    .or(z.literal("")),
 })

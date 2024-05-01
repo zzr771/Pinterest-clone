@@ -1,5 +1,6 @@
 import * as z from "zod"
 
+const urlRegExp = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^/\s]*)*$/
 export const PinDraftValidation = z.object({
   imageUrl: z.string(),
   title: z
@@ -15,7 +16,9 @@ export const PinDraftValidation = z.object({
   link: z
     .string()
     .trim()
-    .url({ message: "Oops! That URL isn't valid—please try again!" })
+    .refine((value) => urlRegExp.test(value), {
+      message: "Oops! That URL isn't valid—please try again!",
+    })
     .optional()
     .or(z.literal("")),
 })
