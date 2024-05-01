@@ -13,6 +13,7 @@ import { useAppSelector } from "@/lib/store/hook"
 import toast from "react-hot-toast"
 import Loading from "../shared/Loading"
 import pinRequests from "@/lib/apolloRequests/pin.request"
+import userRequests from "@/lib/apolloRequests/user.request"
 import showMessageBox from "../shared/showMessageBox"
 
 interface PinCard {
@@ -188,7 +189,7 @@ export default function WaterFall({ requestName }: { requestName: string }) {
       setSavedPins(user.saved)
     }
   }, [user])
-  const [savePinRequest] = useMutation(pinRequests.SAVE_PIN, {
+  const [savePinRequest] = useMutation(userRequests.SAVE_PIN, {
     onError: (error) => {
       handleApolloRequestError(error)
     },
@@ -218,7 +219,7 @@ export default function WaterFall({ requestName }: { requestName: string }) {
     setSavedPins(res.data.savePin)
   }
 
-  const [unsavePinRequest] = useMutation(pinRequests.UNSAVE_PIN, {
+  const [unsavePinRequest] = useMutation(userRequests.UNSAVE_PIN, {
     onError: (error) => {
       handleApolloRequestError(error)
     },

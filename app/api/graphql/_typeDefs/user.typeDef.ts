@@ -23,6 +23,11 @@ export const userDefs = `#graphql
   type Query {
     user(id:ID!): User
   }
+  
+  type Mutation {
+    savePin(userId:ID!, pinId: ID! ): [ID]
+    unsavePin(userId:ID!, pinId: ID! ): [ID]
+  }
 
 `
 export default userDefs

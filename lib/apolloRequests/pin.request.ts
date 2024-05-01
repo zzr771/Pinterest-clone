@@ -24,21 +24,7 @@ export const FETCH_PINS = gql`
     }
   }
 `
-
-export const SAVE_PIN = gql`
-  mutation SavePin($userId: ID!, $pinId: ID!) {
-    savePin(userId: $userId, pinId: $pinId)
-  }
-`
-export const UNSAVE_PIN = gql`
-  mutation UnsavePin($userId: ID!, $pinId: ID!) {
-    unsavePin(userId: $userId, pinId: $pinId)
-  }
-`
-
 const pinRequests: ApolloRequest = {
   FETCH_PINS,
-  SAVE_PIN,
-  UNSAVE_PIN,
 }
 export default pinRequests
