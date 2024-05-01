@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { UserSettings } from "@/lib/types"
+import { UserInfo } from "@/lib/types"
 
-type UserState = null | UserSettings
+type UserState = null | UserInfo
 const userSlice = createSlice({
   name: "user",
   initialState: {

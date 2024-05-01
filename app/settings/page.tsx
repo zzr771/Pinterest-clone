@@ -22,17 +22,17 @@ import { useUploadThing } from "@/lib/uploadthing"
 import showMessageBox from "@/components/shared/showMessageBox"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
-import { UserSettings } from "@/lib/types"
+import { UserSetting } from "@/lib/types"
 import { storeUserInfo } from "@/lib/store/features/user"
 
-type Keys = keyof UserSettings
+type Keys = keyof UserSetting
 const FORM_FIELDS = ["imageUrl", "username", "firstName", "lastName", "about", "website"]
 export default function Page() {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(true)
 
-  const defaultValues = useRef<UserSettings>({
+  const defaultValues = useRef<UserSetting>({
     _id: "",
     id: "",
     imageUrl: "",
@@ -69,7 +69,7 @@ export default function Page() {
       toast.error(res.errorMessage)
       return
     }
-    dispatch(storeUserInfo(res))
+    dispatch(storeUserInfo({ ...user, ...res }))
   }
   useEffect(() => {
     if (user) loadUserSettings()
@@ -153,7 +153,7 @@ export default function Page() {
         return
       }
     }
-    const res = await updateUserSetting({ _id: user._id, ...values, path: "/settings" })
+    const res = await updateUserSetting({ _id: user._id, ...values })
     if (res === void 0) {
       showMessageBox({ message: "Profile saved!" })
       getUserSettings()

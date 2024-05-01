@@ -1,5 +1,3 @@
-import { Types } from "mongoose"
-
 export interface Option {
   label: string
   callback?: () => void
@@ -9,7 +7,7 @@ export interface RequestError {
   errorMessage: string
 }
 
-export interface UserSettings {
+export interface UserSetting {
   _id: string
   id?: string
   username: string
@@ -18,7 +16,17 @@ export interface UserSettings {
   lastName?: string
   about?: string
   website?: string
-  path?: string
+}
+
+export interface UserInfo extends UserSetting {
+  created: [string?]
+  saved: [string?]
+  following: [string?]
+  follower: [string?]
+
+  // To be implemented
+  hidePins?: [string?]
+  blockUsers?: [string?]
 }
 
 export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
@@ -40,7 +48,7 @@ export interface PinDraft {
   isUnsaved?: boolean // only drafts created by 'genEmptyDraft' has this property, and drafts from the database don't
 }
 
-export interface PinParams {
+export interface PinInfo {
   _id: string
   author: string
   imageUrl: string

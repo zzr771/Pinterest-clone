@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache"
 import { connectToDB } from "../mongoose"
 import User from "../models/user.model"
 import { getErrorMessage } from "../utils"
-import { RequestError, UserSettings, PinDraft } from "../types"
+import { RequestError, UserInfo, UserSetting, PinDraft } from "../types"
 import { duplicateImage } from "./uploadthing.actions"
+
+connectToDB()
 
 interface initUserParams {
   id: string
@@ -18,8 +20,7 @@ export async function createUserIfNeeded({
   id,
   username,
   imageUrl,
-}: initUserParams): Promise<void | UserSettings | RequestError> {
-  connectToDB()
+}: initUserParams): Promise<UserInfo | RequestError> {
   try {
     // Note the parameter is 'id' instead of '_id"
     let user = await User.findOne({ id }, [
@@ -30,6 +31,10 @@ export async function createUserIfNeeded({
       "lastName",
       "about",
       "website",
+      "created",
+      "saved",
+      "following",
+      "follower",
     ])
 
     if (!user) {
@@ -41,12 +46,15 @@ export async function createUserIfNeeded({
         lastName: "",
         about: "",
         website: "",
+        created: [],
+        saved: [],
+        following: [],
+        follower: [],
       })
-      await newUser.save()
-    } else {
-      user = JSON.parse(JSON.stringify(user))
-      return user
+      user = await newUser.save()
     }
+    user = JSON.parse(JSON.stringify(user))
+    return user
   } catch (error: any) {
     return {
       errorMessage: getErrorMessage(error),
@@ -65,9 +73,7 @@ export async function updateUserSetting({
   lastName = "",
   about = "",
   website = "",
-  path = "",
-}: UserSettings): Promise<void | RequestError | DuplicateUsername> {
-  connectToDB()
+}: UserSetting): Promise<void | RequestError | DuplicateUsername> {
   try {
     const existingUser = await User.findOne({ username })
     if (existingUser && String(existingUser._id) !== _id) {
@@ -77,9 +83,7 @@ export async function updateUserSetting({
     }
 
     await User.findByIdAndUpdate(_id, { imageUrl, firstName, lastName, about, website, username })
-    if (path === "/settings") {
-      revalidatePath(path)
-    }
+    revalidatePath("/settings")
   } catch (error) {
     return {
       errorMessage: getErrorMessage(error),
@@ -87,8 +91,7 @@ export async function updateUserSetting({
   }
 }
 
-export async function fetchUserSettings(userId: string): Promise<UserSettings | RequestError> {
-  connectToDB()
+export async function fetchUserSettings(userId: string): Promise<UserSetting | RequestError> {
   try {
     let user = await User.findById(userId, [
       "id",
@@ -116,7 +119,6 @@ export async function fetchUserSettings(userId: string): Promise<UserSettings | 
 }
 
 export async function fetchUserDrafts(userId: string): Promise<PinDraft[] | RequestError> {
-  connectToDB()
   try {
     const user = await User.findById(userId)
     if (!user) {
@@ -138,7 +140,6 @@ export async function fetchUserDrafts(userId: string): Promise<PinDraft[] | Requ
 }
 
 export async function upsertDraft(userId: string, draft: PinDraft): Promise<PinDraft | RequestError> {
-  connectToDB()
   try {
     const user = await User.findById(userId)
     if (!user) {
@@ -169,7 +170,6 @@ export async function upsertDraft(userId: string, draft: PinDraft): Promise<PinD
 }
 
 export async function deleteDrafts(userId: string, draftId: string[]): Promise<void | RequestError> {
-  connectToDB()
   try {
     const user = await User.findById(userId)
     if (!user) {
@@ -192,7 +192,6 @@ export async function duplicateDraft(
   OriginaldraftId: string,
   newDraftId: string
 ): Promise<void | RequestError> {
-  connectToDB()
   try {
     const user = await User.findById(userId)
     if (!user) {
@@ -231,7 +230,6 @@ export async function duplicateDraft(
 
 // For adjusting documents
 export async function adjustUserProperties() {
-  connectToDB()
   try {
     const res = await User.updateMany({}, { $set: { drafts: [] } })
   } catch (err) {}
