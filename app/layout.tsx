@@ -11,6 +11,7 @@ import StoreProvider from "@/components/StoreProvider"
 import ScreenReziseMonitor from "@/components/shared/ScreenReziseMonitor"
 import Modal from "@/components/shared/Modal"
 import SignInMonitor from "@/components/shared/SignInMonitor"
+import { ApolloWrapper } from "@/components/ApolloWrapper"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,22 +22,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
-          <StoreProvider>
-            <NavBarTop />
-            <NavBarBottom />
-            <Modal />
-            {children}
+    <html lang="en">
+      <body className={inter.className}>
+        <ApolloWrapper>
+          <ClerkProvider>
+            <StoreProvider>
+              <NavBarTop />
+              <NavBarBottom />
+              <Modal />
+              {children}
 
-            <ScreenReziseMonitor />
-            <SignInMonitor />
-          </StoreProvider>
-
-          <Toaster position="top-right" containerClassName="toaster-container" />
-        </body>
-      </html>
-    </ClerkProvider>
+              <ScreenReziseMonitor />
+              <SignInMonitor />
+              <Toaster position="top-right" containerClassName="toaster-container" />
+            </StoreProvider>
+          </ClerkProvider>
+        </ApolloWrapper>
+      </body>
+    </html>
   )
 }

@@ -117,7 +117,7 @@ export default function Page({ params }: { params: { userId: string } }) {
       <div className="py-3">
         <Tabs tabs={tabs} setSelectedTab={setSelectedTab} />
       </div>
-      <WaterFall />
+      <WaterFall requestName={"FETCH_PINS"} />
     </section>
   )
 }
