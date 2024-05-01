@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx"
+import toast from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -8,14 +9,15 @@ export function cn(...inputs: ClassValue[]) {
 export function getImageDisplaySize(imageSize: { width: number; height: number }) {
   const ratio = imageSize.height / imageSize.width
   const containerPadding = 16
+  const pinCardPadding = 8
   let width, height
 
   if (window.innerWidth >= 820) {
     width = 236
   } else if (window.innerWidth >= 540 && window.innerWidth < 820) {
-    width = Math.round((window.innerWidth - containerPadding) / 3)
+    width = Math.round((window.innerWidth - containerPadding) / 3) - pinCardPadding
   } else {
-    width = Math.round((window.innerWidth - containerPadding) / 2)
+    width = Math.round((window.innerWidth - containerPadding) / 2) - pinCardPadding
   }
   height = Math.round(width * ratio)
 
@@ -35,15 +37,15 @@ export function getRandomColorHex() {
   return `#${hexR}${hexG}${hexB}`
 }
 
-export function getCardNumber(screenWidth: number) {
+export function getCardNumberLimit(screenSize: number) {
   switch (true) {
-    case screenWidth <= 540:
+    case screenSize <= 540:
       return 12
-    case screenWidth <= 1024:
+    case screenSize <= 1024:
       return 15
-    case screenWidth <= 1440:
+    case screenSize <= 1440:
       return 25
-    case screenWidth <= 1920:
+    case screenSize <= 1920:
       return 30
     default:
       return 40
@@ -91,6 +93,40 @@ export function isBase64Image(imageData: string) {
 export function isValidUrl(str: string | undefined | null) {
   if (!str) return false
 
-  const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+  const regexp = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^/\s]*)*$/
   return regexp.test(str)
+}
+
+// remove 'http(s)' and 'www' from a url
+export function removeHttpAndWww(url: string) {
+  const regexp1 = /^(https?:\/\/)?(www\.)?/i
+  const regexp2 = /\/$/i
+  return url.replace(regexp1, "").replace(regexp2, "")
+}
+
+export async function handleDownloadImage(imageUrl: string, title: string) {
+  const response = await fetch(imageUrl)
+  const blobImage = await response.blob()
+  const href = URL.createObjectURL(blobImage)
+
+  const anchorElement = document.createElement("a")
+  const extension = imageUrl.split(".").pop()
+  anchorElement.href = href
+  anchorElement.download = `${title}.${extension}`
+  document.body.appendChild(anchorElement)
+  anchorElement.click()
+  document.body.removeChild(anchorElement)
+}
+
+interface ApolloError {
+  message: string
+}
+export function handleApolloRequestError(error: ApolloError | ApolloError[]) {
+  if (Array.isArray(error)) {
+    error.forEach((e) => {
+      toast.error(e.message)
+    })
+  } else {
+    toast.error(error.message)
+  }
 }

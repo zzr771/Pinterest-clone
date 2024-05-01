@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
         <h4 className="w3:p-3 w3:mb-1 w3:text-center w3:text-xl max-w3:mt-4 max-w3:mb-2 max-w3:px-2 font-medium ">
           More to explore
         </h4>
-        <WaterFall />
+        <WaterFall requestName={"FETCH_PINS"} />
       </div>
     </div>
   )
