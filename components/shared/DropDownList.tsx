@@ -1,13 +1,13 @@
 // this component will add a dropdown list directly to document.body
 "use client"
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { FaCheck } from "react-icons/fa"
 import { Option } from "@/lib/types"
 import { throttle } from "lodash"
 
 interface Position {
-  // offsetX and horizontalMiddle are incompatible, neither are offsetY and verticalMiddle
+  // offsetX and horizontalMiddle are incompatible, so are offsetY and verticalMiddle
   offsetX?: number
   offsetY?: number
   horizontalMiddle?: boolean

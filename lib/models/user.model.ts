@@ -6,7 +6,7 @@ import mongoose from "mongoose"
  */
 const userSchema = new mongoose.Schema({
   id: { type: String, required: true },
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String, required: true }, // avatar
   firstName: { type: String, required: true },
   lastName: String,
   about: String,
