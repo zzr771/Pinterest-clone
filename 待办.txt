@@ -1,0 +1,2 @@
+Pin详情页:
+delete pin

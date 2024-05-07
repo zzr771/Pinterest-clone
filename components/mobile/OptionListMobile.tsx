@@ -19,6 +19,7 @@ export default function OptionListMobile({ options, children }: Props) {
   }
   return (
     <>
+      {/* The button that toggles the dropdown list. */}
       <div
         onClick={(event: React.MouseEvent) => {
           event.stopPropagation()
@@ -44,7 +45,13 @@ export default function OptionListMobile({ options, children }: Props) {
               {/* list */}
               <div className="p-3 text-base">
                 {options.map((item) => (
-                  <div key={item.label} onClick={item?.callback} className="py-2 font-medium">
+                  <div
+                    key={item.label}
+                    onClick={() => {
+                      item?.callback && item?.callback()
+                      setShowList(false)
+                    }}
+                    className="py-2 font-medium">
                     {item.label}
                   </div>
                 ))}

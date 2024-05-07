@@ -53,7 +53,7 @@ export function getCardNumberLimit(screenSize: number) {
 }
 
 export function abbreviateNumber(num: number) {
-  if (num === 0) return ""
+  if (num === 0) return "0"
 
   if (num < 1000) {
     return String(num)
@@ -98,7 +98,7 @@ export function isValidUrl(str: string | undefined | null) {
 }
 
 // remove 'http(s)' and 'www' from a url
-export function removeHttpAndWww(url: string) {
+export function shortenURL(url: string) {
   const regexp1 = /^(https?:\/\/)?(www\.)?/i
   const regexp2 = /\/$/i
   return url.replace(regexp1, "").replace(regexp2, "")
