@@ -18,14 +18,29 @@ const pinDefs = `#graphql
     height: Int!
   }
   type Reaction {
-    user: ID!
+    user: User!
     reaction: String!
+  }
+  input updatePinInput {
+    _id: ID!
+    title: String
+    description: String
+    link: String
+  }
+  type PinInfoBasic{
+    _id: ID!
+    title: String
+    description: String
+    link: String
   }
 
   # --------------------------------------------------------------------------------------------------
   type Query {
     pins(currentNumber: Int!, limit: Int!): [Pin]
-    pin(id:ID!): Pin
+    pin(pinId:ID!): Pin
+  }
+  type Mutation {
+    updatePin(pin: updatePinInput!): PinInfoBasic
   }
 `
 

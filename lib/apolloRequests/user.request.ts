@@ -6,15 +6,39 @@ interface ApolloRequest {
 }
 
 export const SAVE_PIN = gql`
-  mutation SavePin($userId: ID!, $pinId: ID!) {
-    savePin(userId: $userId, pinId: $pinId)
+  mutation savePin($userId: ID!, $pinId: ID!) {
+    savePin(userId: $userId, pinId: $pinId) {
+      success
+      message
+    }
   }
 `
 export const UNSAVE_PIN = gql`
-  mutation UnsavePin($userId: ID!, $pinId: ID!) {
-    unsavePin(userId: $userId, pinId: $pinId)
+  mutation unsavePin($userId: ID!, $pinId: ID!) {
+    unsavePin(userId: $userId, pinId: $pinId) {
+      success
+      message
+    }
   }
 `
+
+export const FOLLOW = gql`
+  mutation followUser($userId: ID!, $targetUserId: ID!) {
+    followUser(userId: $userId, targetUserId: $targetUserId) {
+      success
+      message
+    }
+  }
+`
+export const UNFOLLOW = gql`
+  mutation unfollowUser($userId: ID!, $targetUserId: ID!) {
+    unfollowUser(userId: $userId, targetUserId: $targetUserId) {
+      success
+      message
+    }
+  }
+`
+
 const userRequests: ApolloRequest = {
   SAVE_PIN,
   UNSAVE_PIN,

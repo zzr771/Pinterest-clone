@@ -1,18 +1,69 @@
-import Pin from "@/lib/models/pin.model"
 import User from "@/lib/models/user.model"
 
 const userResolver = {
   Mutation: {
     async savePin(_: any, args: { userId: number; pinId: number }) {
-      // $addToSet: if an item is already in the array, it won't be added again
-      await User.findOneAndUpdate({ _id: args.userId }, { $addToSet: { saved: args.pinId } })
-      const user = await User.findOne({ _id: args.userId }, ["saved"])
-      return user.saved
+      try {
+        // $addToSet: if an item is already in the array, it won't be added again
+        await User.findOneAndUpdate({ _id: args.userId }, { $addToSet: { saved: args.pinId } })
+        return {
+          success: true,
+          message: "Pin saved",
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: "Failed to save the pin",
+        }
+      }
     },
     async unsavePin(_: any, args: { userId: number; pinId: number }) {
-      await User.findOneAndUpdate({ _id: args.userId }, { $pull: { saved: args.pinId } })
-      const user = await User.findOne({ _id: args.userId }, ["saved"])
-      return user.saved
+      try {
+        await User.findOneAndUpdate({ _id: args.userId }, { $pull: { saved: args.pinId } })
+        return {
+          success: true,
+          message: "Pin unsaved",
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: "Failed to unsave the pin",
+        }
+      }
+    },
+
+    async followUser(_: any, args: { userId: number; targetUserId: number }) {
+      try {
+        await User.findOneAndUpdate({ _id: args.userId }, { $addToSet: { following: args.targetUserId } })
+        await User.findOneAndUpdate(
+          { _id: args.targetUserId },
+          { $addToSet: { follower: args.targetUserId } }
+        )
+        return {
+          success: true,
+          message: "Following",
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: "Failed to follow the user",
+        }
+      }
+    },
+    async unfollowUser(_: any, args: { userId: number; targetUserId: number }) {
+      try {
+        await User.findOneAndUpdate({ _id: args.userId }, { $pull: { following: args.targetUserId } })
+        await User.findOneAndUpdate({ _id: args.targetUserId }, { $pull: { follower: args.targetUserId } })
+        return {
+          success: true,
+          message: "Unfollowed",
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: "Failed to unfollow the user",
+        }
+      }
     },
   },
 }

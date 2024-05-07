@@ -31,6 +31,13 @@ export interface UserInfo extends UserSetting {
 
 export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
 
+export interface PinInfoBasic {
+  _id: string
+  title: string | undefined
+  description: string | undefined
+  link: string | undefined
+}
+
 export interface PinDraft {
   _id: string
   imageUrl: string
@@ -48,7 +55,7 @@ export interface PinDraft {
   isUnsaved?: boolean // only drafts created by 'genEmptyDraft' has this property, and drafts from the database don't
 }
 
-export interface PinInfo {
+export interface PinInfoShallow {
   _id: string
   author: string
   imageUrl: string
@@ -60,13 +67,18 @@ export interface PinInfo {
   description?: string
   link?: string
   createdAt: number
-  comments?: Comment[]
+  comments?: string[]
   reactions?: [
     {
       user: string
       reaction: string
     }
   ]
+}
+
+export type PinInfoDeep = PinInfoShallow & {
+  author: UserInfo
+  comments: [Comment?]
 }
 
 export interface Comment {

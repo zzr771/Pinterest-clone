@@ -25,9 +25,16 @@ export const userDefs = `#graphql
   }
   
   type Mutation {
-    savePin(userId:ID!, pinId: ID! ): [ID]
-    unsavePin(userId:ID!, pinId: ID! ): [ID]
+    savePin(userId:ID!, pinId: ID! ): MutationResult
+    unsavePin(userId:ID!, pinId: ID! ): MutationResult
+
+    followUser(userId:ID!,targetUserId: ID!): MutationResult
+    unfollowUser(userId:ID!,,targetUserId: ID!): MutationResult
   }
 
+  type MutationResult {
+    success: Boolean!
+    message: String
+  }
 `
 export default userDefs
