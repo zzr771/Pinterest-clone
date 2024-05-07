@@ -47,7 +47,7 @@ export default function Page() {
     defaultValues: defaultValues.current,
   })
 
-  const user = useAppSelector((state) => state.user.user)
+  const user = useAppSelector((store) => store.user.user)
   function loadUserSettings() {
     if (user === null) return
     defaultValues.current = user

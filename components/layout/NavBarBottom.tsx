@@ -26,7 +26,7 @@ export default function NavBarBottom() {
     signOutButton.click()
   }
 
-  const user = useAppSelector((state) => state.user.user)
+  const user = useAppSelector((store) => store.user.user)
 
   return (
     <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white">

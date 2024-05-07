@@ -6,11 +6,11 @@ import Image from "next/image"
 import { useLayoutEffect, useState } from "react"
 
 interface Props {
-  src: string
+  imageUrl: string
   width: number
   height: number
 }
-export default function PinImage({ src, width, height }: Props) {
+export default function PinImage({ imageUrl, width, height }: Props) {
   /*
     The displayed width of the image should not exceed 508. If it does, the size of 
       the image should be minified while the aspect-ratio remains the same.
@@ -53,7 +53,7 @@ export default function PinImage({ src, width, height }: Props) {
       <div className="relative hover-visible-container w5:max-h-[902px] overflow-hidden">
         <Image
           className={`object-cover ${isBigImage ? "" : "rounded-2xl"} bg-gray-bg-4`}
-          src={src}
+          src={imageUrl}
           alt="pin image"
           width={displaySize.width}
           height={displaySize.height}
@@ -62,7 +62,7 @@ export default function PinImage({ src, width, height }: Props) {
           sizes="(max-width: 820px) 100vw, (min-width: 820px) 508px"
         />
         <div className="absolute bottom-4 px-5 flex w-full justify-between">
-          <a href={src} target="_blank" className="hover-content-visible">
+          <a href={imageUrl} target="_blank" className="hover-content-visible">
             <Button bgColor="translucent" hover className="!h-11">
               <div className="flex gap-1 items-center font-medium">
                 <LuArrowUpRight className="text-2xl" />

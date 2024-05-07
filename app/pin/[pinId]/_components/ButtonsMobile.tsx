@@ -7,7 +7,7 @@ interface Props {
   setshowCommentsMobile: React.Dispatch<React.SetStateAction<boolean>>
 }
 export default function ButtonsMobile({ setshowCommentsMobile }: Props) {
-  const intersectionState = useAppSelector((state) => state.intersection.observers.NavBarBottom)
+  const intersectionState = useAppSelector((store) => store.intersection.observers.NavBarBottom)
   const [positionClass, setPositionClass] = useState("")
 
   useEffect(() => {

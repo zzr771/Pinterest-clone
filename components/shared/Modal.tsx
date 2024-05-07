@@ -3,7 +3,7 @@
 import { useAppSelector } from "@/lib/store/hook"
 
 export default function Modal() {
-  const showModal = useAppSelector((state: any) => state.modal.showModal)
+  const showModal = useAppSelector((store) => store.modal.showModal)
 
   if (!showModal) return null
 

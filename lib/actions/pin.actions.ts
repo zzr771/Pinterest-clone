@@ -4,11 +4,14 @@ import Pin from "../models/pin.model"
 import User from "../models/user.model"
 import { connectToDB } from "../mongoose"
 import { getErrorMessage } from "../utils"
-import { RequestError, PinDraft, PinInfo } from "../types"
+import { RequestError, PinDraft, PinInfoShallow } from "../types"
 
 connectToDB()
 
-export async function createPins(userId: string, drafts: PinDraft[]): Promise<PinInfo[] | RequestError> {
+export async function createPins(
+  userId: string,
+  drafts: PinDraft[]
+): Promise<PinInfoShallow[] | RequestError> {
   try {
     const newPins = drafts.map((item) => ({
       author: userId,

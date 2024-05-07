@@ -64,7 +64,7 @@ export default function NavBarTop() {
     }
   }, [pathname])
 
-  const user = useAppSelector((state) => state.user.user)
+  const user = useAppSelector((store) => store.user.user)
 
   const hiddenClerkButtonsRef = useRef<HTMLDivElement>(null)
   function handleSignIn() {
