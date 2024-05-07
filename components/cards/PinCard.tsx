@@ -5,17 +5,19 @@ import { LuArrowUpRight } from "react-icons/lu"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import { useAppSelector } from "@/lib/store/hook"
-import { getRandomColorHex, handleDownloadImage, removeHttpAndWww } from "@/lib/utils"
+import { getRandomColorHex, handleDownloadImage, shortenURL } from "@/lib/utils"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import OptionListMobile from "../mobile/OptionListMobile"
+import useSavePin from "@/lib/hooks/useSavePin"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 interface PinCard {
   _id: string
   author: {
     _id: string
-    username: string
+    firstName: string
+    lastName: string
     imageUrl: string
   }
   imageUrl: string
@@ -28,18 +30,19 @@ interface PinCard {
 }
 interface Props {
   pin: PinCard
-  isSaved: boolean
-  savePin: (pinId: string) => void
-  unsavePin: (pinId: string) => void
+  isSavedInitial: boolean
 }
-export default function PinCard({ pin, savePin, unsavePin, isSaved }: Props) {
+export default function PinCard({ pin, isSavedInitial }: Props) {
   const router = useRouter()
-  const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
+  const user = useAppSelector((store) => store.user.user)
+  const screenSize = useAppSelector((store) => store.screenSize.screenSize)
   const cardBody = useRef<HTMLDivElement>(null)
   const cardContainer = useRef<HTMLDivElement>(null)
 
   const { _id, author, imageUrl, imageSize, title, link } = pin
-  const shortLink = removeHttpAndWww(link)
+  const shortLink = shortenURL(link)
+
+  const { isSaved, savePin, unsavePin } = useSavePin(isSavedInitial)
 
   const options = [
     {
@@ -90,29 +93,16 @@ export default function PinCard({ pin, savePin, unsavePin, isSaved }: Props) {
           className="absolute inset-0 h-full flex flex-col justify-between p-3 rounded-2xl cursor-pointer max-w3:hidden hover:bg-gray-tp-1 hover-show-container"
           onClick={() => router.push(`/pin/${_id}`)}>
           <div className="flex justify-end hover-content-flex">
-            {isSaved ? (
-              <Button
-                text="Saved"
-                bgColor="black"
-                hover
-                clickEffect
-                click={(event) => {
-                  event.stopPropagation()
-                  unsavePin(_id)
-                }}
-              />
-            ) : (
-              <Button
-                text="Save"
-                bgColor="red"
-                hover
-                clickEffect
-                click={(event) => {
-                  event.stopPropagation()
-                  savePin(_id)
-                }}
-              />
-            )}
+            <Button
+              text={isSaved ? "Saved" : "Save"}
+              bgColor={isSaved ? "black" : "red"}
+              hover
+              clickEffect
+              click={(event) => {
+                event.stopPropagation()
+                isSaved ? unsavePin(_id) : savePin(_id)
+              }}
+            />
           </div>
           <div className="flex justify-between hover-content-flex">
             {link ? (
@@ -167,7 +157,9 @@ export default function PinCard({ pin, savePin, unsavePin, isSaved }: Props) {
             width={32}
             height={32}
           />
-          <div className="flex-1 truncate max-w3:text-xs text-sm font-normal pr-5 ">{author.username}</div>
+          <div className="flex-1 truncate max-w3:text-xs text-sm font-normal pr-5 ">
+            {author.firstName + " " + author.lastName}
+          </div>
         </Link>
       </div>
     </div>

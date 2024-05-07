@@ -6,21 +6,19 @@
 */
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { DocumentNode, useMutation, useQuery } from "@apollo/client"
+import { DocumentNode, useQuery } from "@apollo/client"
 import PinCard from "@/components/cards/PinCard"
 import { getCardNumberLimit, getImageDisplaySize, handleApolloRequestError } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
-import toast from "react-hot-toast"
 import Loading from "../shared/Loading"
 import pinRequests from "@/lib/apolloRequests/pin.request"
-import userRequests from "@/lib/apolloRequests/user.request"
-import showMessageBox from "../shared/showMessageBox"
 
 interface PinCard {
   _id: string
   author: {
     _id: string
-    username: string
+    firstName: string
+    lastName: string
     imageUrl: string
   }
   imageUrl: string
@@ -37,9 +35,9 @@ interface Props {
 }
 
 export default function WaterFall({ requestName }: { requestName: string }) {
-  const user = useAppSelector((state: any) => state.user.user)
+  const user = useAppSelector((store) => store.user.user)
   const [pins, setPins] = useState<PinCard[]>([])
-  const screenSize = useAppSelector((state: any) => state.screenSize.screenSize)
+  const screenSize = useAppSelector((store) => store.screenSize.screenSize)
   const containterRef = useRef<HTMLDivElement>(null)
   const observerRef = useRef<HTMLDivElement>(null)
   const requestMethod = useRef<DocumentNode>(pinRequests[requestName])
@@ -182,81 +180,13 @@ export default function WaterFall({ requestName }: { requestName: string }) {
     placeCardsFromIndex(0)
   }, [screenSize])
 
-  // ---------------------------------------------------------------------------- Save/Unsave Pin
-  const [savedPins, setSavedPins] = useState<string[]>([])
-  useEffect(() => {
-    if (user?.saved?.length) {
-      setSavedPins(user.saved)
-    }
-  }, [user])
-  const [savePinRequest] = useMutation(userRequests.SAVE_PIN, {
-    onError: (error) => {
-      handleApolloRequestError(error)
-    },
-  })
-  async function savePin(pinId: string) {
-    if (!user) {
-      toast("Please sign in to save a Pin")
-      return
-    }
-
-    const res = await savePinRequest({
-      variables: {
-        pinId,
-        userId: user._id,
-      },
-    })
-    showMessageBox({
-      message: "Pin saved",
-      button: {
-        text: "Undo",
-        callback: () => {
-          unsavePin(pinId)
-        },
-      },
-    })
-    console.log("savePin", res.data.savePin)
-    setSavedPins(res.data.savePin)
-  }
-
-  const [unsavePinRequest] = useMutation(userRequests.UNSAVE_PIN, {
-    onError: (error) => {
-      handleApolloRequestError(error)
-    },
-  })
-  async function unsavePin(pinId: string) {
-    if (!user) {
-      toast("Please sign in to save a Pin")
-      return
-    }
-
-    const res = await unsavePinRequest({
-      variables: {
-        pinId,
-        userId: user._id,
-      },
-    })
-    console.log("unsavePin", res.data.unsavePin)
-    setSavedPins(res.data.unsavePin)
-  }
-
   return (
     <section className="w-full relative">
       {initialLoading && <Loading />}
       <div ref={containterRef} className="relative w3:mx-auto px-1">
         {pins.length > 0 &&
           pins.map((pin) => (
-            <PinCard
-              key={pin._id}
-              pin={pin}
-              savePin={savePin}
-              unsavePin={unsavePin}
-              // isSaved={savedPins.includes(pin._id)}
-              isSaved={(() => {
-                // console.log("savedPins", savedPins)
-                return savedPins.includes(pin._id)
-              })()}
-            />
+            <PinCard key={pin._id} pin={pin} isSavedInitial={user?.saved?.includes(pin._id) || false} />
           ))}
       </div>
       <div ref={observerRef} className="w-full h-screen absolute bottom-0 z-[-1]"></div>
