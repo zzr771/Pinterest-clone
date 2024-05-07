@@ -7,7 +7,7 @@ import mongoose from "mongoose"
 const commentSchema = new mongoose.Schema({
   // common fields
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  content: { type: String, required: true },
+  content: { type: String, required: true, trim: true },
   createdAt: { type: Number, required: true },
   likes: { type: Number, required: true },
 

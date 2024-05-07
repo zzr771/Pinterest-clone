@@ -14,9 +14,9 @@ const pinSchema = new mongoose.Schema({
     },
     required: true,
   },
-  title: String,
-  description: String,
-  link: String,
+  title: { type: String, trim: true },
+  description: { type: String, trim: true },
+  link: { type: String, trim: true },
   createdAt: { type: Number, required: true },
 
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
