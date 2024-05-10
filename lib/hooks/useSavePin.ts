@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { SAVE_PIN, UNSAVE_PIN } from "../apolloRequests/user.request"
 import { useAppSelector } from "../store/hook"
 import toast from "react-hot-toast"
@@ -10,6 +10,12 @@ export default function useSavePin(isSavedInitial: boolean) {
   const [isSaved, setIsSaved] = useState(isSavedInitial)
   const [savePinMutation] = useMutation(SAVE_PIN)
   const [unsavePinMutation] = useMutation(UNSAVE_PIN)
+
+  useEffect(() => {
+    if (isSavedInitial) {
+      setIsSaved(isSavedInitial)
+    }
+  }, [isSavedInitial])
 
   async function savePin(pinId: string) {
     if (!user) {
