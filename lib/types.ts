@@ -7,6 +7,14 @@ export interface RequestError {
   errorMessage: string
 }
 
+export interface UserInfoBasic {
+  _id: string
+  firstName: string
+  lastName?: string
+  imageUrl?: string
+  follower?: [string?]
+}
+
 export interface UserSetting {
   _id: string
   id?: string
@@ -33,9 +41,9 @@ export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | 
 
 export interface PinInfoBasic {
   _id: string
-  title: string | undefined
-  description: string | undefined
-  link: string | undefined
+  title: string
+  description: string
+  link: string
 }
 
 export interface PinDraft {
@@ -47,12 +55,12 @@ export interface PinDraft {
     height: number
   }
   expiredAt: number // millisecond
-  title?: string
-  description?: string
-  link?: string
+  title: string
+  description: string
+  link: string
 
-  state: DraftState
-  isUnsaved?: boolean // only drafts created by 'genEmptyDraft' has this property, and drafts from the database don't
+  state: DraftState // Doesn't exist in database. Only for client-side use
+  isUnsaved?: boolean // Doesn't exist in database. Only drafts created by 'genEmptyDraft' has this property
 }
 
 export interface PinInfoShallow {
@@ -63,30 +71,48 @@ export interface PinInfoShallow {
     width: number
     height: number
   }
-  title?: string
-  description?: string
-  link?: string
-  createdAt: number
-  comments?: string[]
-  reactions?: [
-    {
-      user: string
-      reaction: string
-    }
-  ]
+  title: string
+  description: string
+  link: string
+  createdAt: string
+  comments: [string?]
+  reactions: [Reaction?]
 }
 
-export type PinInfoDeep = PinInfoShallow & {
-  author: UserInfo
-  comments: [Comment?]
+export interface PinInfoDeep {
+  _id: string
+  author: UserInfoBasic
+  imageUrl: string
+  imageSize: {
+    width: number
+    height: number
+  }
+  title: string
+  description: string
+  link: string
+  createdAt: string
+  comments: [CommentInfo?]
+  reactions: [Reaction?]
 }
 
-export interface Comment {
-  author: string
+export interface Reaction {
+  user: string
+  reaction: string
+}
+
+export interface CommentInfo {
+  _id: string
+  author: UserInfoBasic
   content: string
-  createdAt: number
+  createdAt: string
   likes: number
+  isReply: boolean
 
-  replyTo?: string
-  replies?: Comment[]
+  replies: [CommentInfo?]
+  commentOnPin: string | null
+
+  replyToUser: UserInfoBasic | null
+  replyToComment: string | null
+
+  collapseReplies?: boolean // Doesn't exist in database. Only for client-side use
 }

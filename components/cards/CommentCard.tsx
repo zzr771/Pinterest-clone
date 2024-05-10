@@ -9,13 +9,18 @@ const OptionListMobile = dynamic(() => import("../mobile/OptionListMobile"), { s
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 import Reply from "../form/Reply"
 import InputModal from "../mobile/InputModal"
+import { CommentInfo } from "@/lib/types"
+import { useAppSelector } from "@/lib/store/hook"
 
-export default function CommentCard() {
+export default function CommentCard({ comment }: { comment: CommentInfo }) {
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false) // PC
   const [showInputModal, setShowInputModal] = useState(false) // mobile
   const authorOptions = useRef([{ label: "Edit" }, { label: "Delete" }])
 
-  const [isMobileDevice, setIsMobileDevice] = useState(false)
+  const { author, content, likes, replies, replyToUser, createdAt } = comment
+  const user = useAppSelector((store) => store.user.user)
+  const isAuthor = author._id === user?._id
 
   useEffect(() => {
     if (window.innerWidth < 820) {
@@ -48,10 +53,8 @@ export default function CommentCard() {
           {/* main content */}
           <p>
             {/* user name */}
-            <a className="font-semibold mr-1 hover:underline cursor-pointer">Louis</a>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Assumenda tempora delectus asperiores,
-            error nam nulla rem, saepe nobis excepturi officia, libero ad nesciunt a officiis sint totam
-            laborum dolorem? Ipsa?
+            <a className="font-semibold mr-1 hover:underline cursor-pointer">{author.firstName}</a>
+            {content}
           </p>
 
           {/* buttons */}
@@ -62,11 +65,11 @@ export default function CommentCard() {
             </div>
             <div className="flex items-center font-medium gap-1">
               <HiOutlineHeart className="w-5 h-5 cursor-pointer" />
-              13
+              {likes}
             </div>
             {/* show this button if the current user is the author of the comment */}
             <div className="relative">
-              {!isMobileDevice && (
+              {isAuthor && !isMobileDevice && (
                 <DropDownList
                   options={authorOptions.current}
                   position={{ offsetY: 30 }}
@@ -78,7 +81,7 @@ export default function CommentCard() {
                 </DropDownList>
               )}
 
-              {isMobileDevice && (
+              {isAuthor && isMobileDevice && (
                 <OptionListMobile options={authorOptions.current}>
                   <Button size="tiny" clickEffect hover rounded>
                     <TfiMoreAlt className="text-gray-font-4" />
@@ -92,11 +95,7 @@ export default function CommentCard() {
 
       {!isMobileDevice && showReplyInput && (
         <div className="mt-3 ml-12">
-          <Reply
-            close={() => {
-              setShowReplyInput(false)
-            }}
-          />
+          <Reply setShowReplyInput={setShowReplyInput} replyTo={comment} />
         </div>
       )}
 

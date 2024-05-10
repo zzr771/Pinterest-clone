@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
 import useSavePin from "@/lib/hooks/useSavePin"
 import useFollowUser from "@/lib/hooks/useFollowUser"
 import { setShowEditPinForm } from "@/lib/store/features/modal"
-import { setPinInfo } from "@/lib/store/features/pinInfo"
+import { setPinBasicInfo, setPinComments, setPinReactions } from "@/lib/store/features/pinInfo"
 
 export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   const dispatch = useAppDispatch()
@@ -31,19 +31,41 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   const [showDropDownList, setShowDropDownList] = useState(false)
   const [showCommentsMobile, setshowCommentsMobile] = useState(false)
 
-  // console.log(pin)
-
-  const pinInfoInStore = useAppSelector((store) => store.pinInfo.pinInfo)
+  const pinBasicInfo = useAppSelector((store) => store.pinInfo.pinBasicInfo)
+  const pinComments = useAppSelector((store) => store.pinInfo.pinComments)
+  const pinReactions = useAppSelector((store) => store.pinInfo.pinReactions)
   const { _id, imageUrl } = pin
-  const title = pinInfoInStore.title || pin.title
-  const link = pinInfoInStore.link || pin.link
-  const description = pinInfoInStore.description || pin.description
-  const author = pinInfoInStore?.author || pin.author
-  const comments = pinInfoInStore?.comments || pin.comments
-  const reactions = pinInfoInStore?.reactions || pin.reactions
+  /*
+      To reflect changes (edit, comment, reply ) and update the page partially,
+    store the Pin and update it in part. When rendering, 'pinInfoInStore' takes 
+    priority over prior 'pin', because pin is the original data from the server.
+  */
+  const title = pinBasicInfo.title || pin.title
+  const link = pinBasicInfo.link || pin.link
+  const description = pinBasicInfo.description || pin.description
+  const author = pinBasicInfo.author || pin.author
 
-  useEffect(() => {
-    dispatch(setPinInfo(pin))
+  const comments = pinComments || pin.comments
+  const reactions = pinReactions || pin.reactions
+
+  useLayoutEffect(() => {
+    pin.comments.forEach((comment) => {
+      if (comment?.replies.length && comment.replies.length > 3) {
+        comment.collapseReplies = true
+      }
+    })
+    dispatch(
+      setPinBasicInfo({
+        _id,
+        imageUrl,
+        title,
+        link,
+        description,
+        author,
+      })
+    )
+    dispatch(setPinComments(pin.comments))
+    dispatch(setPinReactions(pin.reactions))
   }, [])
 
   const options = useMemo(() => {
@@ -90,6 +112,19 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   const { isFollowing, followUser, unfollowUser } = useFollowUser(
     user?.following.includes(author._id) || false
   )
+  const [displayedFollowerNum, setDisplayedFollowerNum] = useState(author?.follower?.length || 0)
+  async function handleFollowUser() {
+    const res = await followUser(author._id)
+    if (res === true) {
+      setDisplayedFollowerNum((prev) => prev + 1)
+    }
+  }
+  async function handleUnfollowUser() {
+    const res = await unfollowUser(author._id)
+    if (res === true) {
+      setDisplayedFollowerNum((prev) => prev - 1)
+    }
+  }
 
   return (
     <div className="flex flex-col pin-image-width min-h-[205px] w5:min-h-[592px] w5:max-h-[902px] w3:max-w5:rounded-b-[2rem] w5:rounded-r-[2rem]">
@@ -112,20 +147,22 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               </DropDownList>
             </Suspense>
             <div className="flex items-center">
-              <Button
-                text={isSaved ? "Saved" : "Save"}
-                bgColor={isSaved ? "black" : "red"}
-                hover
-                clickEffect
-                click={() => {
-                  isSaved ? unsavePin(_id) : savePin(_id)
-                }}
-              />
+              {user?.saved && (
+                <Button
+                  text={isSaved ? "Saved" : "Save"}
+                  bgColor={isSaved ? "black" : "red"}
+                  hover
+                  clickEffect
+                  click={() => {
+                    isSaved ? unsavePin(_id) : savePin(_id)
+                  }}
+                />
+              )}
             </div>
           </div>
         )}
 
-        {/* 323px: total height of navBarTop(80), top bar(92), comment input(151) */}
+        {/* 323px: navBarTop(80) + top bar(92) + comment input(151) */}
         {/* 659px: max-height(902) - top bar(92) - comment input(151) */}
         <div className="flex flex-col flex-1 max-h-[calc(100vh-323px)] w5:max-h-[659px] overflow-y-auto w3:pr-8 pr-4">
           {/* link */}
@@ -146,30 +183,31 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
           {/* author */}
           <div className="flex max-w3:order-1 justify-between mt-[1.1rem]">
             <div className="flex">
-              <Image
-                src={author.imageUrl}
-                width={48}
-                height={48}
-                alt="avatar"
-                className="rounded-full mr-1 object-cover h-12"
-              />
-
+              {author.imageUrl && (
+                <Image
+                  src={author.imageUrl}
+                  width={48}
+                  height={48}
+                  alt="avatar"
+                  className="rounded-full mr-1 object-cover h-12"
+                />
+              )}
               <div className="flex flex-col justify-center px-1 text-sm">
                 <span className="font-medium">{`${author.firstName} ${author.lastName}`}</span>
                 <span>
-                  {abbreviateNumber(author?.follower?.length || 0)} follower
-                  {author.follower.length > 1 ? "s" : ""}
+                  {abbreviateNumber(displayedFollowerNum)} follower
+                  {displayedFollowerNum > 1 ? "s" : ""}
                 </span>
               </div>
             </div>
-            {user?._id !== author._id && (
+            {user?._id !== author._id && user?.following && (
               <Button
                 text={isFollowing ? "Following" : "Follow"}
                 bgColor={isFollowing ? "black" : "gray"}
                 hover
                 clickEffect
                 click={() => {
-                  isFollowing ? unfollowUser(author._id) : followUser(author._id)
+                  isFollowing ? handleUnfollowUser() : handleFollowUser()
                 }}
               />
             )}
@@ -188,12 +226,10 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               </div>
               {/* max-h-0: prvent the expanded comments from stretching the whole component which will influence the layout */}
               <div className={`${isCommentsFolded ? "hidden" : ""} flex flex-col max-h-0`}>
-                <CommentCard />
-                <CommentCard />
-                <CommentCard />
-                <CommentCard />
-                <CommentCard />
-                <CommentCard />
+                {comments.length > 0 &&
+                  comments.map((comment) => {
+                    return comment && <CommentCard key={comment?._id} comment={comment} />
+                  })}
                 <div className="py-4"></div>
               </div>
             </div>
@@ -202,10 +238,10 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
 
         {isMobileDevice && <ButtonsMobile setshowCommentsMobile={setshowCommentsMobile} />}
 
-        {/* monitor the screen scrolling position and control the position method of ButtonsForMobile */}
+        {/* monitor the screen scrolling position and trigger the positioning of ButtonsMobile */}
         {isMobileDevice && (
           <div className="absolute z-[-1] bottom-0">
-            {/* h-20: the height of ButtonsForMobile */}
+            {/* h-20: the height of ButtonsMobile */}
             <div className="h-16"></div>
             <IntersectionMonitor name="NavBarBottom" />
           </div>
@@ -217,7 +253,9 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
         <div className="border-top sticky bottom-0 z-[4] py-2 px-8 bg-white w3:max-w5:rounded-b-[2rem] w5:rounded-br-[2rem]">
           <div className="flex justify-between items-center mt-1 mb-3">
             {/* No comment: What do you think? */}
-            <span className="font-medium text-xl">7 Comments</span>
+            <span className="font-medium text-xl">
+              {comments.length} Comment{comments.length > 1 ? "s" : ""}
+            </span>
             <div className="flex items-center gap-3">
               <div className="flex gap-1 cursor-pointer">
                 <div
@@ -228,7 +266,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               <Reaction />
             </div>
           </div>
-          <Comment />
+          <Comment pinId={_id} />
         </div>
       )}
 

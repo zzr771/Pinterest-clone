@@ -51,6 +51,7 @@ export const FETCH_PIN = gql`
       }
 
       comments {
+        _id
         author {
           _id
           firstName
@@ -59,6 +60,7 @@ export const FETCH_PIN = gql`
         content
         createdAt
         likes
+        isReply
 
         replies {
           author {

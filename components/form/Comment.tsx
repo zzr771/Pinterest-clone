@@ -9,9 +9,18 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CommentValidation } from "@/lib/validations/comment"
 import { VirtualTextarea } from "./VirtualTextarea"
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
+import { useMutation } from "@apollo/client"
+import { COMMENT } from "@/lib/apolloRequests/comment.request"
+import { handleApolloRequestError } from "@/lib/utils"
+import { setPinComments } from "@/lib/store/features/pinInfo"
 
-export default function Comment() {
-  const [isFocused, setIsFocused] = useState(false)
+interface Props {
+  pinId: string
+}
+export default function Comment({ pinId }: Props) {
+  const dispatch = useAppDispatch()
+  const user = useAppSelector((store) => store.user.user)
 
   const form = useForm({
     resolver: zodResolver(CommentValidation),
@@ -21,7 +30,32 @@ export default function Comment() {
   })
   const userInput: string = form.watch("comment")
 
-  async function onSubmit(values: z.infer<typeof CommentValidation>) {}
+  const [commentMutation] = useMutation(COMMENT, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  async function onSubmit(values: z.infer<typeof CommentValidation>) {
+    const isValid = await form.trigger()
+    if (!isValid || !user) return
+
+    const {
+      data: { comment: res },
+    } = await commentMutation({
+      variables: {
+        input: {
+          pinId,
+          userId: user._id,
+          content: values.comment,
+          isReply: false,
+          replyToUser: null,
+          replyToComment: null,
+        },
+      },
+    })
+    dispatch(setPinComments(res))
+    form.reset()
+  }
 
   return (
     <div className="flex items-center gap-2 mb-3">
@@ -36,31 +70,22 @@ export default function Comment() {
       </div>
 
       <Form {...form}>
-        <form
-          className={`flex flex-1 rounded-3xl items-center border-solid border 
-          ${
-            isFocused
-              ? "bg-white hover:bg-white border-gray-bg-4"
-              : "bg-gray-bg-4 hover:bg-gray-bg-5 border-transparent"
-          }
-          `}>
+        <form className="flex flex-1 rounded-3xl items-center border-solid border-2 border-gray-bg-4">
           <FormField
             control={form.control}
             name="comment"
             render={({ field }) => (
               <FormItem className="flex-1 space-y-0">
                 <FormControl>
-                  <div onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}>
-                    <VirtualTextarea
-                      className="p-4 w-[330px]"
-                      minRows={1}
-                      maxRows={5}
-                      placeHolder="Add a comment"
-                      {...field}
-                    />
-                  </div>
+                  <VirtualTextarea
+                    className="p-4 w-[330px]"
+                    minRows={1}
+                    maxRows={5}
+                    placeHolder="Add a comment"
+                    {...field}
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="ml-4 pb-2" />
               </FormItem>
             )}
           />
