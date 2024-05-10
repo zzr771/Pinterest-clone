@@ -23,16 +23,16 @@ export const UNSAVE_PIN = gql`
 `
 
 export const FOLLOW = gql`
-  mutation followUser($userId: ID!, $targetUserId: ID!) {
-    followUser(userId: $userId, targetUserId: $targetUserId) {
+  mutation followUser($userId: ID!, $targetUserId: ID!, $path: String) {
+    followUser(userId: $userId, targetUserId: $targetUserId, path: $path) {
       success
       message
     }
   }
 `
 export const UNFOLLOW = gql`
-  mutation unfollowUser($userId: ID!, $targetUserId: ID!) {
-    unfollowUser(userId: $userId, targetUserId: $targetUserId) {
+  mutation unfollowUser($userId: ID!, $targetUserId: ID!, $path: String) {
+    unfollowUser(userId: $userId, targetUserId: $targetUserId, path: $path) {
       success
       message
     }

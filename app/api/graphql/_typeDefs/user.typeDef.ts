@@ -28,8 +28,8 @@ export const userDefs = `#graphql
     savePin(userId:ID!, pinId: ID! ): MutationResult
     unsavePin(userId:ID!, pinId: ID! ): MutationResult
 
-    followUser(userId:ID!,targetUserId: ID!): MutationResult
-    unfollowUser(userId:ID!,,targetUserId: ID!): MutationResult
+    followUser(userId:ID!,targetUserId: ID!, path: String): MutationResult
+    unfollowUser(userId:ID!,,targetUserId: ID!, path: String): MutationResult
   }
 
   type MutationResult {
