@@ -14,19 +14,19 @@ import { setShowEditPinForm } from "@/lib/store/features/modal"
 import { useMutation } from "@apollo/client"
 import { UPDATE_PIN } from "@/lib/apolloRequests/pin.request"
 import { handleApolloRequestError } from "@/lib/utils"
-import { setPinInfo } from "@/lib/store/features/pinInfo"
+import { setPinBasicInfo } from "@/lib/store/features/pinInfo"
 
 const FORM_FIELDS = ["title", "description", "link"]
 type Keys = keyof PinInfoBasic
 export default function EditForm() {
   const dispatch = useAppDispatch()
   const [allowSave, setAllowSave] = useState(false)
-  const pinInfoInStore = useAppSelector((store) => store.pinInfo.pinInfo)
+  const pinBasicInfo = useAppSelector((store) => store.pinInfo.pinBasicInfo)
   const pin = {
-    _id: pinInfoInStore._id,
-    title: pinInfoInStore.title,
-    description: pinInfoInStore.description,
-    link: pinInfoInStore.link,
+    _id: pinBasicInfo._id,
+    title: pinBasicInfo.title,
+    description: pinBasicInfo.description,
+    link: pinBasicInfo.link,
   }
 
   const form = useForm({
@@ -76,7 +76,7 @@ export default function EditForm() {
       },
     })
     dispatch(setShowEditPinForm(false))
-    dispatch(setPinInfo({ ...pinInfoInStore, ...res }))
+    dispatch(setPinBasicInfo({ ...pinBasicInfo, ...res }))
   }
 
   return (

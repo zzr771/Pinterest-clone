@@ -3,27 +3,28 @@ import { createSlice } from "@reduxjs/toolkit"
 const pinInfoSlice = createSlice({
   name: "pinInfo",
   initialState: {
-    pinInfo: {
+    pinBasicInfo: {
       _id: "",
       imageUrl: "",
       title: "",
       link: "",
       description: "",
-      imageSize: {
-        width: 0,
-        height: 0,
-      },
-      createdAt: 0,
       author: null,
-      comments: null,
-      reactions: null,
     },
+    pinComments: null,
+    pinReactions: null,
   },
   reducers: {
-    setPinInfo(state, action) {
-      state.pinInfo = action.payload
+    setPinBasicInfo(state, action) {
+      state.pinBasicInfo = action.payload
+    },
+    setPinComments(state, action) {
+      state.pinComments = action.payload
+    },
+    setPinReactions(state, action) {
+      state.pinReactions = action.payload
     },
   },
 })
-export const { setPinInfo } = pinInfoSlice.actions
+export const { setPinBasicInfo, setPinComments, setPinReactions } = pinInfoSlice.actions
 export default pinInfoSlice.reducer

@@ -223,7 +223,6 @@ export default function PinForm({
   // ---------------------------------------------------------------------- Listen to form changes
   const timer = useRef(0)
   useEffect(() => {
-    console.log("isInitialLoading", isInitialLoading)
     if (isInitialLoading.current) {
       isInitialLoading.current = false
       return
