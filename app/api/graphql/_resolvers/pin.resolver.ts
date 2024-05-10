@@ -1,7 +1,6 @@
 import Pin from "@/lib/models/pin.model"
 import User from "@/lib/models/user.model"
 import Comment from "@/lib/models/comment.model"
-import mongoose from "mongoose"
 import { PinInfoBasic } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 

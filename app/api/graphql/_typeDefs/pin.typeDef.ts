@@ -7,7 +7,7 @@ const pinDefs = `#graphql
     title: String
     description: String
     link: String
-    createdAt: Int!
+    createdAt: String!
 
     comments: [Comment]
     reactions: [Reaction]

@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
       */
       _id: { type: String, required: true },
       imageUrl: { type: String, required: true },
-      expiredAt: { type: Number, required: true },
+      expiredAt: { type: Number, required: true }, // milliseconds
       title: { type: String, trim: true },
       description: { type: String, trim: true },
       link: { type: String, trim: true },

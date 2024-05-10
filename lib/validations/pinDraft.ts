@@ -2,7 +2,7 @@ import * as z from "zod"
 
 const urlRegExp = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^/\s]*)*$/
 export const PinDraftValidation = z.object({
-  imageUrl: z.string(),
+  imageUrl: z.string().min(1),
   title: z
     .string()
     .trim()

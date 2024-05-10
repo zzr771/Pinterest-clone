@@ -1,4 +1,5 @@
 import User from "@/lib/models/user.model"
+import { revalidatePath } from "next/cache"
 
 const userResolver = {
   Mutation: {
@@ -32,13 +33,14 @@ const userResolver = {
       }
     },
 
-    async followUser(_: any, args: { userId: number; targetUserId: number }) {
+    async followUser(_: any, args: { userId: number; targetUserId: number; path: string }) {
       try {
         await User.findOneAndUpdate({ _id: args.userId }, { $addToSet: { following: args.targetUserId } })
         await User.findOneAndUpdate(
           { _id: args.targetUserId },
           { $addToSet: { follower: args.targetUserId } }
         )
+        revalidatePath(args.path)
         return {
           success: true,
           message: "Following",
@@ -50,10 +52,11 @@ const userResolver = {
         }
       }
     },
-    async unfollowUser(_: any, args: { userId: number; targetUserId: number }) {
+    async unfollowUser(_: any, args: { userId: number; targetUserId: number; path: string }) {
       try {
         await User.findOneAndUpdate({ _id: args.userId }, { $pull: { following: args.targetUserId } })
         await User.findOneAndUpdate({ _id: args.targetUserId }, { $pull: { follower: args.targetUserId } })
+        revalidatePath(args.path)
         return {
           success: true,
           message: "Unfollowed",

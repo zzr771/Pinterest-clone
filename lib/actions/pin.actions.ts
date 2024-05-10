@@ -20,7 +20,6 @@ export async function createPins(
       title: item.title,
       description: item.description,
       link: item.link,
-      createdAt: Date.now(),
     }))
 
     const [res, user] = await Promise.all([Pin.insertMany(newPins), User.findById(userId)])
