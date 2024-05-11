@@ -5,6 +5,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "../shadcn/f
 import Button from "../shared/Button"
 import { IoIosSend } from "react-icons/io"
 
+import { FaUser } from "react-icons/fa"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CommentValidation } from "@/lib/validations/comment"
@@ -14,6 +15,7 @@ import { useMutation } from "@apollo/client"
 import { COMMENT } from "@/lib/apolloRequests/comment.request"
 import { handleApolloRequestError } from "@/lib/utils"
 import { setPinComments } from "@/lib/store/features/pinInfo"
+import toast from "react-hot-toast"
 
 interface Props {
   pinId: string
@@ -36,6 +38,11 @@ export default function Comment({ pinId }: Props) {
     },
   })
   async function onSubmit(values: z.infer<typeof CommentValidation>) {
+    if (!user) {
+      toast("Please sign in before operation")
+      return
+    }
+
     const isValid = await form.trigger()
     if (!isValid || !user) return
 
@@ -60,13 +67,17 @@ export default function Comment({ pinId }: Props) {
   return (
     <div className="flex items-center gap-2 mb-3">
       <div className="flex flex-none justify-center items-center h-12 w-12 bg-gray-bg-1 rounded-full">
-        <Image
-          className="rounded-full object-cover"
-          src="/assets/test/avatar2.jpg"
-          width={48}
-          height={48}
-          alt="user avatar"
-        />
+        {user?.imageUrl ? (
+          <Image
+            className="rounded-full object-cover h-12"
+            src={user.imageUrl}
+            width={48}
+            height={48}
+            alt="user avatar"
+          />
+        ) : (
+          <FaUser className="text-gray-font-3 w-7 h-7" />
+        )}
       </div>
 
       <Form {...form}>

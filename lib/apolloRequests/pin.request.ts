@@ -61,8 +61,15 @@ export const FETCH_PIN = gql`
         createdAt
         likes
         isReply
+        replyToUser {
+          _id
+          firstName
+        }
+        commentOnPin
+        replyToComment
 
         replies {
+          _id
           author {
             _id
             firstName
@@ -71,13 +78,14 @@ export const FETCH_PIN = gql`
           content
           createdAt
           likes
+          isReply
+          replyToUser {
+            _id
+            firstName
+          }
+          commentOnPin
+          replyToComment
         }
-        replyToUser {
-          _id
-          firstName
-        }
-        commentOnPin
-        replyToComment
       }
 
       reactions {

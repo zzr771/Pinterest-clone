@@ -28,8 +28,14 @@ const pinResolver = {
           model: Comment,
           populate: [
             { path: "author", model: User },
-            { path: "replies", model: Comment },
-            { path: "replyToUser", model: User },
+            {
+              path: "replies",
+              model: Comment,
+              populate: [
+                { path: "author", model: User },
+                { path: "replyToUser", model: User },
+              ],
+            },
           ],
         })
         .populate({

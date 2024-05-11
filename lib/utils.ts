@@ -130,3 +130,27 @@ export function handleApolloRequestError(error: ApolloError | ApolloError[]) {
     toast.error(error.message)
   }
 }
+
+export function calculateTimefromNow(timestamp: number | string) {
+  if (typeof timestamp === "string") {
+    timestamp = parseInt(timestamp)
+  }
+
+  const timeDiff = Math.floor((Date.now() - timestamp) / 1000)
+  if (timeDiff >= 31536000) {
+    return `${Math.floor(timeDiff / 31536000)}y`
+  }
+  if (timeDiff >= 604800) {
+    return `${Math.floor(timeDiff / 604800)}w`
+  }
+  if (timeDiff >= 86400) {
+    return `${Math.floor(timeDiff / 86400)}d`
+  }
+  if (timeDiff >= 3600) {
+    return `${Math.floor(timeDiff / 3600)}h`
+  }
+  if (timeDiff >= 60) {
+    return `${Math.floor(timeDiff / 60)}m`
+  }
+  return "just now"
+}

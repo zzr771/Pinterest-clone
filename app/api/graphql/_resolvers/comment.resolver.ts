@@ -28,18 +28,15 @@ const commentResolver = {
         replyToUser,
         replyToComment,
         likes: 0,
-        replies: isReply ? null : [],
-        commentOnPin: isReply ? null : pinId,
+        commentOnPin: pinId,
+        replies: [],
       })
 
-      let pin = await Pin.findById(pinId)
       if (!isReply) {
-        pin.comments.push(newComment._id)
+        await Pin.findByIdAndUpdate(pinId, { $push: { comments: newComment._id } })
       } else {
-        const replyTarget = pin.comments.find((item: string) => item === replyToComment)
-        replyTarget.replies.push(newComment._id)
+        await Comment.findByIdAndUpdate(replyToComment, { $push: { replies: newComment._id } })
       }
-      await pin.save()
 
       revalidatePath(`/pin/${pinId}`)
 
@@ -87,8 +84,14 @@ async function fetchComments(pinId: string) {
     model: Comment,
     populate: [
       { path: "author", model: User },
-      { path: "replies", model: Comment },
-      { path: "replyToUser", model: User },
+      {
+        path: "replies",
+        model: Comment,
+        populate: [
+          { path: "author", model: User },
+          { path: "replyToUser", model: User },
+        ],
+      },
     ],
   })
   return pin.comments

@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
-import { HiOutlineHeart } from "react-icons/hi"
+import { HiOutlineHeart, HiHeart } from "react-icons/hi"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import dynamic from "next/dynamic"
@@ -11,8 +11,15 @@ import Reply from "../form/Reply"
 import InputModal from "../mobile/InputModal"
 import { CommentInfo } from "@/lib/types"
 import { useAppSelector } from "@/lib/store/hook"
+import toast from "react-hot-toast"
+import { calculateTimefromNow } from "@/lib/utils"
+import Link from "next/link"
 
-export default function CommentCard({ comment }: { comment: CommentInfo }) {
+interface Props {
+  comment: CommentInfo
+  rootCommentId: string
+}
+export default function CommentCard({ comment, rootCommentId }: Props) {
   const [isMobileDevice, setIsMobileDevice] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false) // PC
   const [showInputModal, setShowInputModal] = useState(false) // mobile
@@ -30,41 +37,64 @@ export default function CommentCard({ comment }: { comment: CommentInfo }) {
     }
   }, [])
 
-  function handleClick() {
+  function handleClickReply() {
+    if (!user) {
+      toast("Please sign in before operation")
+      return
+    }
     setShowReplyInput((prev) => !prev)
     setShowInputModal(true)
   }
+
+  const [hasLiked, setHasLiked] = useState(user?.likedComments.includes(comment._id))
+  function handleLike() {}
+  function handleUnlike() {}
 
   return (
     <div className="my-2.5">
       <div className="flex">
         {/* avatar image */}
         <div className="min-w-8 mr-2">
-          <Image
-            src="/assets/test/avatar2.jpg"
-            width={32}
-            height={32}
-            alt="user avatar"
-            className="rounded-full object-cover"
-          />
+          {author.imageUrl && (
+            <Image
+              src={author.imageUrl}
+              width={32}
+              height={32}
+              alt="user avatar"
+              className="rounded-full object-cover h-8"
+            />
+          )}
         </div>
 
         <div>
           {/* main content */}
           <p>
             {/* user name */}
-            <a className="font-semibold mr-1 hover:underline cursor-pointer">{author.firstName}</a>
-            {content}
+            <Link href={`/user/${author._id}`} className="font-medium mr-1 hover:underline cursor-pointer">
+              {author.firstName}
+            </Link>
+            {replyToUser && (
+              <Link
+                href={`/user/${replyToUser._id}`}
+                className="font-medium mr-1 hover:underline cursor-pointer text-[#0074EA]">
+                {replyToUser.firstName}
+              </Link>
+            )}
+            <span className="ml-1">{content}</span>
           </p>
 
           {/* buttons */}
           <div className="flex text-gray-font-4 gap-5 text-sm">
-            <div>13d</div>
-            <div className="font-medium cursor-pointer" onClick={() => handleClick()}>
+            <div>{calculateTimefromNow(createdAt)}</div>
+            <div className="font-medium cursor-pointer" onClick={() => handleClickReply()}>
               Reply
             </div>
             <div className="flex items-center font-medium gap-1">
-              <HiOutlineHeart className="w-5 h-5 cursor-pointer" />
+              {hasLiked ? (
+                <HiHeart className="w-5 h-5 cursor-pointer text-red" />
+              ) : (
+                <HiOutlineHeart className="w-5 h-5 cursor-pointer" />
+              )}
               {likes}
             </div>
             {/* show this button if the current user is the author of the comment */}
@@ -93,9 +123,17 @@ export default function CommentCard({ comment }: { comment: CommentInfo }) {
         </div>
       </div>
 
+      {/* replies */}
+      <div className="mt-4 ml-12">
+        {replies &&
+          replies.map((reply) => {
+            return reply && <CommentCard key={reply._id} comment={reply} rootCommentId={rootCommentId} />
+          })}
+      </div>
+
       {!isMobileDevice && showReplyInput && (
         <div className="mt-3 ml-12">
-          <Reply setShowReplyInput={setShowReplyInput} replyTo={comment} />
+          <Reply setShowReplyInput={setShowReplyInput} replyTo={comment} rootCommentId={rootCommentId} />
         </div>
       )}
 

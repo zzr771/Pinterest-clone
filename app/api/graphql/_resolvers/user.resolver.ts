@@ -1,4 +1,6 @@
 import User from "@/lib/models/user.model"
+import Comment from "@/lib/models/comment.model"
+import { getErrorMessage } from "@/lib/utils"
 import { revalidatePath } from "next/cache"
 
 const userResolver = {
@@ -14,7 +16,7 @@ const userResolver = {
       } catch (error) {
         return {
           success: false,
-          message: "Failed to save the pin",
+          message: getErrorMessage(error),
         }
       }
     },
@@ -28,7 +30,7 @@ const userResolver = {
       } catch (error) {
         return {
           success: false,
-          message: "Failed to unsave the pin",
+          message: getErrorMessage(error),
         }
       }
     },
@@ -48,7 +50,7 @@ const userResolver = {
       } catch (error) {
         return {
           success: false,
-          message: "Failed to follow the user",
+          message: getErrorMessage(error),
         }
       }
     },
@@ -64,7 +66,61 @@ const userResolver = {
       } catch (error) {
         return {
           success: false,
-          message: "Failed to unfollow the user",
+          message: getErrorMessage(error),
+        }
+      }
+    },
+
+    async likeComment(_: any, args: { userId: string; commentId: string; pinId: string }) {
+      try {
+        const user = await User.findById(args.userId)
+        if (user.likedComments.includes(args.commentId)) {
+          throw new Error("Already liked")
+        }
+
+        await Comment.findByIdAndUpdate(args.commentId, { $inc: { likes: 1 } })
+
+        user.likedComments.push(args.commentId)
+        if (user.likedComments.length >= 100) {
+          user.likedComments.shift()
+        }
+        await user.save()
+
+        revalidatePath(`/pins/${args.pinId}`)
+        return {
+          success: true,
+          message: "",
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: getErrorMessage(error),
+        }
+      }
+    },
+
+    async unlikeComment(_: any, args: { userId: string; commentId: string; pinId: string }) {
+      try {
+        const user = await User.findById(args.userId)
+        const index = user.likedComments.indexOf(args.commentId)
+        if (index === -1) {
+          throw new Error("Already unliked")
+        }
+
+        await Comment.findByIdAndUpdate(args.commentId, { $inc: { likes: -1 } })
+
+        user.likedComments.splice(index, 1)
+        await user.save()
+
+        revalidatePath(`/pins/${args.pinId}`)
+        return {
+          success: true,
+          message: "",
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: getErrorMessage(error),
         }
       }
     },

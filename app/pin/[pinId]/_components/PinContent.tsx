@@ -49,11 +49,6 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   const reactions = pinReactions || pin.reactions
 
   useLayoutEffect(() => {
-    pin.comments.forEach((comment) => {
-      if (comment?.replies.length && comment.replies.length > 3) {
-        comment.collapseReplies = true
-      }
-    })
     dispatch(
       setPinBasicInfo({
         _id,
@@ -228,7 +223,11 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               <div className={`${isCommentsFolded ? "hidden" : ""} flex flex-col max-h-0`}>
                 {comments.length > 0 &&
                   comments.map((comment) => {
-                    return comment && <CommentCard key={comment?._id} comment={comment} />
+                    return (
+                      comment && (
+                        <CommentCard key={comment?._id} comment={comment} rootCommentId={comment._id} />
+                      )
+                    )
                   })}
                 <div className="py-4"></div>
               </div>
