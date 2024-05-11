@@ -39,8 +39,20 @@ export const UNFOLLOW = gql`
   }
 `
 
-const userRequests: ApolloRequest = {
-  SAVE_PIN,
-  UNSAVE_PIN,
-}
-export default userRequests
+export const LIKE_COMMENT = gql`
+  mutation likeComment($userId: ID!, $commentId: ID!, $pinId: ID!) {
+    likeComment(userId: $userId, commentId: $commentId, pinId: $pinId) {
+      success
+      message
+    }
+  }
+`
+
+export const UNLIKE_COMMENT = gql`
+  mutation unlikeComment($userId: ID!, $commentId: ID!, $pinId: ID!) {
+    unlikeComment(userId: $userId, commentId: $commentId, pinId: $pinId) {
+      success
+      message
+    }
+  }
+`

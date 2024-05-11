@@ -19,6 +19,8 @@ const userSchema = new mongoose.Schema({
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   follower: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
+  likedComments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+
   hidePins: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pin" }],
   blockUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 

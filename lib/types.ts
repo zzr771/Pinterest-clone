@@ -31,6 +31,7 @@ export interface UserInfo extends UserSetting {
   saved: [string?]
   following: [string?]
   follower: [string?]
+  likedComments: [string?]
 
   // To be implemented
   hidePins?: [string?]
@@ -113,6 +114,4 @@ export interface CommentInfo {
 
   replyToUser: UserInfoBasic | null
   replyToComment: string | null
-
-  collapseReplies?: boolean // Doesn't exist in database. Only for client-side use
 }

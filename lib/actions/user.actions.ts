@@ -35,6 +35,7 @@ export async function createUserIfNeeded({
       "saved",
       "following",
       "follower",
+      "likedComments",
     ])
 
     if (!user) {
@@ -50,6 +51,7 @@ export async function createUserIfNeeded({
         saved: [],
         following: [],
         follower: [],
+        likedComments: [],
       })
       user = await newUser.save()
     }

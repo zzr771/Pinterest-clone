@@ -15,6 +15,8 @@ export const userDefs = `#graphql
     following: [User]
     follower: [User]
 
+    likedComments: [String]
+
     hidePins: [Pin]
     blockUsers: [User]
   }
@@ -25,11 +27,15 @@ export const userDefs = `#graphql
   }
   
   type Mutation {
-    savePin(userId:ID!, pinId: ID! ): MutationResult
-    unsavePin(userId:ID!, pinId: ID! ): MutationResult
+    savePin(userId: ID!, pinId: ID! ): MutationResult
+    unsavePin(userId: ID!, pinId: ID! ): MutationResult
 
-    followUser(userId:ID!,targetUserId: ID!, path: String): MutationResult
-    unfollowUser(userId:ID!,,targetUserId: ID!, path: String): MutationResult
+    followUser(userId: ID!, targetUserId: ID!, path: String): MutationResult
+    unfollowUser(userId: ID!, targetUserId: ID!, path: String): MutationResult
+
+    
+    likeComment(userId: ID!, commentId: ID!, pinId: ID!): MutationResult
+    unlikeComment(userId: ID!, commentId: ID!, pinId: ID!): MutationResult
   }
 
   type MutationResult {
