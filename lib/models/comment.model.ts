@@ -12,15 +12,14 @@ const commentSchema = new mongoose.Schema(
     likes: { type: Number, required: true },
     isReply: { type: Boolean, required: true },
 
-    // This field is null in a 'reply'
+    // This field is always an empty array in a 'reply'
     replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
-    // This field is null in a 'reply'
     // When this 'comment' is deleted, use this field to modify the Pin's 'comments' array
     commentOnPin: { type: mongoose.Schema.Types.ObjectId, ref: "Pin" },
 
     // This field is null in a 'comment'
-    // When this 'reply' is deleted, use this field to modify the "comment"'s 'replies' array
     replyToComment: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
+
     replyToUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }

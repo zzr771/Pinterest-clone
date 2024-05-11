@@ -17,7 +17,7 @@ export default function SignInMonitor() {
 
       const { id, imageUrl, username } = user
       const res = await createUserIfNeeded({ id, imageUrl, username: username || "anonymous" })
-      if (res && "id" in res) {
+      if (res && "_id" in res) {
         dispatch(storeUserInfo(res))
       } else if (res && "errorMessage" in res) {
         toast.error(res.errorMessage)
