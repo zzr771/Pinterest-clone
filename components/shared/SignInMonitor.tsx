@@ -1,7 +1,13 @@
 "use client"
 
 import { createUserIfNeeded } from "@/lib/actions/user.actions"
-import { storeUserInfo } from "@/lib/store/features/user"
+import {
+  setUserInfo,
+  setUserSaved,
+  setUserFollowing,
+  setUserFollower,
+  setUserLikedComments,
+} from "@/lib/store/features/user"
 import { useAppDispatch } from "@/lib/store/hook"
 import { useUser } from "@clerk/nextjs"
 import { useEffect } from "react"
@@ -18,7 +24,22 @@ export default function SignInMonitor() {
       const { id, imageUrl, username } = user
       const res = await createUserIfNeeded({ id, imageUrl, username: username || "anonymous" })
       if (res && "_id" in res) {
-        dispatch(storeUserInfo(res))
+        dispatch(
+          setUserInfo({
+            _id: res._id,
+            id: res.id,
+            username: res.username,
+            imageUrl: res.imageUrl,
+            firstName: res.firstName,
+            lastName: res.lastName,
+            about: res.about,
+            website: res.website,
+          })
+        )
+        dispatch(setUserSaved(res.saved))
+        dispatch(setUserFollowing(res.following))
+        dispatch(setUserFollower(res.follower))
+        dispatch(setUserLikedComments(res.likedComments))
       } else if (res && "errorMessage" in res) {
         toast.error(res.errorMessage)
       }
@@ -27,7 +48,7 @@ export default function SignInMonitor() {
     if (isSignedIn) {
       request()
     } else {
-      dispatch(storeUserInfo(null))
+      dispatch(setUserInfo(null))
     }
   }, [isSignedIn])
 

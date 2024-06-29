@@ -30,9 +30,9 @@ interface PinCard {
 }
 interface Props {
   pin: PinCard
-  isSavedInitial: boolean
+  isSaved: boolean
 }
-export default function PinCard({ pin, isSavedInitial }: Props) {
+export default function PinCard({ pin, isSaved }: Props) {
   const router = useRouter()
   const user = useAppSelector((store) => store.user.user)
   const screenSize = useAppSelector((store) => store.screenSize.screenSize)
@@ -42,7 +42,7 @@ export default function PinCard({ pin, isSavedInitial }: Props) {
   const { _id, author, imageUrl, imageSize, title, link } = pin
   const shortLink = shortenURL(link)
 
-  const { isSaved, savePin, unsavePin } = useSavePin(isSavedInitial)
+  const { savePin, unsavePin } = useSavePin()
 
   const options = [
     {

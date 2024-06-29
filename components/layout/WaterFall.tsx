@@ -36,6 +36,7 @@ interface Props {
 
 export default function WaterFall({ requestName }: { requestName: string }) {
   const user = useAppSelector((store) => store.user.user)
+  const userSaved = useAppSelector((store) => store.user.saved)
   const [pins, setPins] = useState<PinCard[]>([])
   const screenSize = useAppSelector((store) => store.screenSize.screenSize)
   const containterRef = useRef<HTMLDivElement>(null)
@@ -186,7 +187,7 @@ export default function WaterFall({ requestName }: { requestName: string }) {
       <div ref={containterRef} className="relative w3:mx-auto px-1">
         {pins.length > 0 &&
           pins.map((pin) => (
-            <PinCard key={pin._id} pin={pin} isSavedInitial={user?.saved?.includes(pin._id) || false} />
+            <PinCard key={pin._id} pin={pin} isSaved={(userSaved && userSaved.includes(pin._id)) || false} />
           ))}
       </div>
       <div ref={observerRef} className="w-full h-screen absolute bottom-0 z-[-1]"></div>

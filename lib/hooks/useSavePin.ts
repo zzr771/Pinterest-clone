@@ -1,21 +1,24 @@
 import { useMutation } from "@apollo/client"
-import { useEffect, useState } from "react"
 import { SAVE_PIN, UNSAVE_PIN } from "../apolloRequests/user.request"
-import { useAppSelector } from "../store/hook"
+import { useAppDispatch, useAppSelector } from "../store/hook"
 import toast from "react-hot-toast"
 import showMessageBox from "@/components/shared/showMessageBox"
+import { handleApolloRequestError } from "../utils"
+import { setUserSaved } from "../store/features/user"
 
-export default function useSavePin(isSavedInitial: boolean) {
+export default function useSavePin() {
+  const dispatch = useAppDispatch()
   const user = useAppSelector((store) => store.user.user)
-  const [isSaved, setIsSaved] = useState(isSavedInitial)
-  const [savePinMutation] = useMutation(SAVE_PIN)
-  const [unsavePinMutation] = useMutation(UNSAVE_PIN)
-
-  useEffect(() => {
-    if (isSavedInitial) {
-      setIsSaved(isSavedInitial)
-    }
-  }, [isSavedInitial])
+  const [savePinMutation] = useMutation(SAVE_PIN, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  const [unsavePinMutation] = useMutation(UNSAVE_PIN, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
 
   async function savePin(pinId: string) {
     if (!user) {
@@ -31,20 +34,18 @@ export default function useSavePin(isSavedInitial: boolean) {
         pinId,
       },
     })
-    if (res.success) {
-      showMessageBox({
-        message: "Pin saved",
-        button: {
-          text: "Undo",
-          callback: () => {
-            unsavePin(pinId)
-          },
+
+    if (!Array.isArray(res)) return
+    showMessageBox({
+      message: "Pin saved",
+      button: {
+        text: "Undo",
+        callback: () => {
+          unsavePin(pinId)
         },
-      })
-      setIsSaved(true)
-    } else {
-      toast.error(res.message)
-    }
+      },
+    })
+    dispatch(setUserSaved(res))
   }
   async function unsavePin(pinId: string) {
     if (!user) {
@@ -60,12 +61,10 @@ export default function useSavePin(isSavedInitial: boolean) {
         pinId,
       },
     })
-    if (res.success) {
-      setIsSaved(false)
-    } else {
-      toast.error(res.message)
-    }
+
+    if (!Array.isArray(res)) return
+    dispatch(setUserSaved(res))
   }
 
-  return { isSaved, savePin, unsavePin }
+  return { savePin, unsavePin }
 }

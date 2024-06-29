@@ -85,7 +85,6 @@ export async function updateUserSetting({
     }
 
     await User.findByIdAndUpdate(_id, { imageUrl, firstName, lastName, about, website, username })
-    revalidatePath("/settings")
   } catch (error) {
     return {
       errorMessage: getErrorMessage(error),
