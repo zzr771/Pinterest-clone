@@ -9,7 +9,7 @@ export const { getClient } = registerApolloClient(() => {
     link: new HttpLink({
       // todo: replace this uri with deployed address
       // this needs to be an absolute url, as relative urls cannot be used in SSR
-      uri: "http://localhost:3000//api/graphql",
+      uri: "http://localhost:3000/api/graphql",
     }),
   })
 })

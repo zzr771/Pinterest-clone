@@ -23,7 +23,7 @@ import showMessageBox from "@/components/shared/showMessageBox"
 import { deleteFiles } from "@/lib/actions/uploadthing.actions"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
 import { UserSetting } from "@/lib/types"
-import { storeUserInfo } from "@/lib/store/features/user"
+import { setUserInfo } from "@/lib/store/features/user"
 
 type Keys = keyof UserSetting
 const FORM_FIELDS = ["imageUrl", "username", "firstName", "lastName", "about", "website"]
@@ -69,7 +69,7 @@ export default function Page() {
       toast.error(res.errorMessage)
       return
     }
-    dispatch(storeUserInfo({ ...user, ...res }))
+    dispatch(setUserInfo({ ...user, ...res }))
   }
   useEffect(() => {
     if (user) loadUserSettings()

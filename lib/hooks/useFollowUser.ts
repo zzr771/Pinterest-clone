@@ -1,25 +1,29 @@
 import { useMutation } from "@apollo/client"
-import { useAppSelector } from "../store/hook"
+import { useAppDispatch, useAppSelector } from "../store/hook"
 import { FOLLOW, UNFOLLOW } from "../apolloRequests/user.request"
-import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import showMessageBox from "@/components/shared/showMessageBox"
 import { usePathname } from "next/navigation"
+import { handleApolloRequestError } from "../utils"
+import { setUserFollowing } from "../store/features/user"
+import { useRef } from "react"
 
-export default function useFollowUser(isFollowingInitial: boolean) {
-  const path = usePathname()
+export default function useFollowUser() {
+  const dispatch = useAppDispatch()
+  const path = useRef(usePathname())
   const user = useAppSelector((store) => store.user.user)
-  const [isFollowing, setIsFollowing] = useState(isFollowingInitial)
-  const [followUserMutation] = useMutation(FOLLOW)
-  const [unfollowUserMutation] = useMutation(UNFOLLOW)
+  const [followUserMutation] = useMutation(FOLLOW, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  const [unfollowUserMutation] = useMutation(UNFOLLOW, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
 
-  useEffect(() => {
-    if (isFollowingInitial) {
-      setIsFollowing(isFollowingInitial)
-    }
-  }, [isFollowingInitial])
-
-  async function followUser(targetUserId: string): Promise<boolean> {
+  async function followUser(targetUserId: string) {
     if (!user) {
       toast("Please sign in before operation")
       return false
@@ -31,29 +35,25 @@ export default function useFollowUser(isFollowingInitial: boolean) {
       variables: {
         userId: user._id,
         targetUserId,
-        path,
+        path: path.current,
       },
     })
 
-    if (res.success) {
-      showMessageBox({
-        message: "Following",
-        button: {
-          text: "Undo",
-          callback: () => {
-            unfollowUser(targetUserId)
-          },
+    if (!Array.isArray(res)) return false
+    showMessageBox({
+      message: "Following",
+      button: {
+        text: "Undo",
+        callback: () => {
+          unfollowUser(targetUserId)
         },
-      })
-      setIsFollowing(true)
-      return true // operation succeeded
-    } else {
-      toast.error(res.message)
-      return false // operation failed
-    }
+      },
+    })
+    dispatch(setUserFollowing(res))
+    return true
   }
 
-  async function unfollowUser(targetUserId: string): Promise<boolean> {
+  async function unfollowUser(targetUserId: string) {
     if (!user) {
       toast("Please sign in before operation")
       return false
@@ -65,18 +65,14 @@ export default function useFollowUser(isFollowingInitial: boolean) {
       variables: {
         userId: user._id,
         targetUserId,
-        path,
+        path: path.current,
       },
     })
 
-    if (res.success) {
-      setIsFollowing(false)
-      return true // operation succeeded
-    } else {
-      toast.error(res.message)
-      return false // operation failed
-    }
+    if (!Array.isArray(res)) return false
+    dispatch(setUserFollowing(res))
+    return true
   }
 
-  return { isFollowing, followUser, unfollowUser }
+  return { followUser, unfollowUser }
 }

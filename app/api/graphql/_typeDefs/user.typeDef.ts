@@ -22,25 +22,16 @@ export const userDefs = `#graphql
   }
 
   # --------------------------------------------------------------------------------------------------
-  type Query {
-    user(id:ID!): User
-  }
-  
   type Mutation {
-    savePin(userId: ID!, pinId: ID! ): MutationResult
-    unsavePin(userId: ID!, pinId: ID! ): MutationResult
+    savePin(userId: ID!, pinId: ID! ): [String]
+    unsavePin(userId: ID!, pinId: ID! ): [String]
 
-    followUser(userId: ID!, targetUserId: ID!, path: String): MutationResult
-    unfollowUser(userId: ID!, targetUserId: ID!, path: String): MutationResult
+    followUser(userId: ID!, targetUserId: ID!, path: String): [String]
+    unfollowUser(userId: ID!, targetUserId: ID!, path: String): [String]
 
     
-    likeComment(userId: ID!, commentId: ID!, pinId: ID!): MutationResult
-    unlikeComment(userId: ID!, commentId: ID!, pinId: ID!): MutationResult
-  }
-
-  type MutationResult {
-    success: Boolean!
-    message: String
+    likeComment(userId: ID!, commentId: ID!, path: ID!): [String]
+    unlikeComment(userId: ID!, commentId: ID!, path: ID!): [String]
   }
 `
 export default userDefs
