@@ -41,3 +41,9 @@ export const COMMENT = gql`
     }
   }
 `
+
+export const DELETE_COMMENT = gql`
+  mutation deleteComment($commentId: ID!, $commentOnPin: ID!, $replyToComment: ID) {
+    deleteComment(commentId: $commentId, commentOnPin: $commentOnPin, replyToComment: $replyToComment)
+  }
+`

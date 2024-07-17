@@ -1,4 +1,3 @@
-import { useState } from "react"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../shadcn/form" // 这些组件来自库 shadcn
@@ -10,18 +9,18 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CommentValidation } from "@/lib/validations/comment"
 import { VirtualTextarea } from "./VirtualTextarea"
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
+import { useAppSelector } from "@/lib/store/hook"
 import { useMutation } from "@apollo/client"
 import { COMMENT } from "@/lib/apolloRequests/comment.request"
 import { handleApolloRequestError } from "@/lib/utils"
-import { setPinComments } from "@/lib/store/features/pinInfo"
 import toast from "react-hot-toast"
+import { CommentInfo } from "@/lib/types"
 
 interface Props {
   pinId: string
+  setComments: React.Dispatch<React.SetStateAction<CommentInfo[]>>
 }
-export default function Comment({ pinId }: Props) {
-  const dispatch = useAppDispatch()
+export default function Comment({ pinId, setComments }: Props) {
   const user = useAppSelector((store) => store.user.user)
 
   const form = useForm({
@@ -60,7 +59,12 @@ export default function Comment({ pinId }: Props) {
         },
       },
     })
-    dispatch(setPinComments(res))
+    setComments((prev) => {
+      if (!prev.includes(res)) {
+        return [...prev, res]
+      }
+      return prev
+    })
     form.reset()
   }
 

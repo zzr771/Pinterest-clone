@@ -23,9 +23,9 @@ export const commentDefs = `#graphql
   }
   # --------------------------------------------------------------------------------------------------
   type Mutation {
-    comment(input: commentInput!): [Comment]
-    editComment(pinId: ID!, commentId: ID!, content: String!): [Comment]
-    deleteComment(pinId: ID!, commentId: ID!, commentOnPin: ID!, replyToComment: ID): [Comment]
+    comment(input: commentInput!): Comment
+    editComment(pinId: ID!, commentId: ID!, content: String!): Comment
+    deleteComment(commentId: ID!, commentOnPin: ID!, replyToComment: ID): Boolean
   }
 `
 export default commentDefs

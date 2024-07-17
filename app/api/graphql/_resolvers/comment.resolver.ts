@@ -25,23 +25,31 @@ const commentResolver = {
         author: userId,
         content,
         isReply,
-        replyToUser,
-        replyToComment,
         likes: 0,
         commentOnPin: pinId,
         replies: [],
+
+        replyToUser,
+        replyToComment,
       })
 
       if (!isReply) {
-        await Pin.findByIdAndUpdate(pinId, { $push: { comments: newComment._id } })
+        const target = await Pin.findByIdAndUpdate(pinId, { $push: { comments: newComment._id } })
+        if (!target) {
+          throw new Error("Pin does not exist")
+        }
       } else {
-        await Comment.findByIdAndUpdate(replyToComment, { $push: { replies: newComment._id } })
+        const target = await Comment.findByIdAndUpdate(replyToComment, { $push: { replies: newComment._id } })
+        if (!target) {
+          throw new Error("Pin does not exist")
+        }
       }
 
-      revalidatePath(`/pin/${pinId}`)
+      const author = await User.findById(userId).select("firstName imageUrl")
+      newComment.author = author
 
-      const comments = await fetchComments(pinId)
-      return comments
+      revalidatePath(`/pin/${pinId}`)
+      return newComment
     },
 
     async editComment(_: any, args: { pinId: string; commentId: string; content: string }) {
@@ -55,25 +63,33 @@ const commentResolver = {
 
     async deleteComment(
       _: any,
-      args: { pinId: string; commentId: string; commentOnPin: string; replyToComment: string | null }
+      args: { commentId: string; commentOnPin: string; replyToComment: string | null }
     ) {
       const commentsToDelete = [args.commentId]
 
       // If this comment is a 'reply'
       if (args.replyToComment) {
-        await Comment.findByIdAndUpdate(args.replyToComment, { $pull: { replies: args.commentId } })
+        const target = await Comment.findByIdAndUpdate(args.replyToComment, {
+          $pull: { replies: args.commentId },
+        })
+        if (!target) {
+          throw new Error("Comment does not exist")
+        }
       }
       // If this comment is a 'comment'
       else {
-        await Pin.findByIdAndUpdate(args.pinId, { $pull: { comments: args.commentId } })
+        const target = await Pin.findByIdAndUpdate(args.commentOnPin, { $pull: { comments: args.commentId } })
+        if (!target) {
+          throw new Error("Pin does not exist")
+        }
         const { replies } = await Comment.findById(args.commentId)
         commentsToDelete.push(...replies)
       }
 
       await Comment.deleteMany({ _id: { $in: commentsToDelete } })
+      revalidatePath(`/pin/${args.commentOnPin}`)
 
-      const comments = await fetchComments(args.pinId)
-      return comments
+      return true
     },
   },
 }

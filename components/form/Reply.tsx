@@ -7,21 +7,20 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CommentValidation } from "@/lib/validations/comment"
 import { useEffect, useRef } from "react"
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
+import { useAppSelector } from "@/lib/store/hook"
 import { useMutation } from "@apollo/client"
 import { handleApolloRequestError } from "@/lib/utils"
-import { setPinComments } from "@/lib/store/features/pinInfo"
 import { CommentInfo } from "@/lib/types"
 import { COMMENT } from "@/lib/apolloRequests/comment.request"
 import { usePathname } from "next/navigation"
 
 interface Props {
-  setShowReplyInput: React.Dispatch<React.SetStateAction<boolean>>
   replyTo: CommentInfo
   rootCommentId: string
+  setShowReplyInput: React.Dispatch<React.SetStateAction<boolean>>
+  setComments: React.Dispatch<React.SetStateAction<CommentInfo[]>>
 }
-export default function Reply({ setShowReplyInput, replyTo, rootCommentId }: Props) {
-  const dispatch = useAppDispatch()
+export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setComments }: Props) {
   const user = useAppSelector((store) => store.user.user)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -64,7 +63,20 @@ export default function Reply({ setShowReplyInput, replyTo, rootCommentId }: Pro
         },
       },
     })
-    dispatch(setPinComments(res))
+
+    setComments((prev) => {
+      return prev.map((item) => {
+        /*
+            In React 18 strict mode, the callback passed to setState will be called twice to check if
+          it is a pure function.
+            "!item.replies.includes(res)" is necessary to prevent adding 'res' to 'item.replies' for a second time.
+        */
+        if (item._id === rootCommentId && !item.replies.includes(res)) {
+          item.replies = [...item.replies, res]
+        }
+        return item
+      })
+    })
     setShowReplyInput(false)
     form.reset()
   }

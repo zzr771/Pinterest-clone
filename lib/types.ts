@@ -12,7 +12,7 @@ export interface UserInfoBasic {
   firstName: string
   lastName?: string
   imageUrl?: string
-  follower?: [string?]
+  follower?: string[]
 }
 
 export interface UserSetting {
@@ -27,15 +27,15 @@ export interface UserSetting {
 }
 
 export interface UserInfo extends UserSetting {
-  created: [string?]
-  saved: [string?]
-  following: [string?]
-  follower: [string?]
-  likedComments: [string?]
+  created: string[]
+  saved: string[]
+  following: string[]
+  follower: string[]
+  likedComments: string[]
 
   // To be implemented
-  hidePins?: [string?]
-  blockUsers?: [string?]
+  hidePins?: string[]
+  blockUsers?: string[]
 }
 
 export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
@@ -76,8 +76,8 @@ export interface PinInfoShallow {
   description: string
   link: string
   createdAt: string
-  comments: [string?]
-  reactions: [Reaction?]
+  comments: string[]
+  reactions: Reaction[]
 }
 
 export interface PinInfoDeep {
@@ -92,8 +92,8 @@ export interface PinInfoDeep {
   description: string
   link: string
   createdAt: string
-  comments: [CommentInfo?]
-  reactions: [Reaction?]
+  comments: CommentInfo[]
+  reactions: Reaction[]
 }
 
 export interface Reaction {
@@ -109,7 +109,7 @@ export interface CommentInfo {
   likes: number
   isReply: boolean
 
-  replies: [CommentInfo?]
+  replies: CommentInfo[]
   commentOnPin: string | null
 
   replyToUser: UserInfoBasic | null

@@ -1,12 +1,10 @@
 "use client"
 import dynamic from "next/dynamic"
-import { Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { Suspense, useLayoutEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { TfiMoreAlt } from "react-icons/tfi"
-import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import Button from "@/components/shared/Button"
 import Paragraph from "@/components/shared/Paragraph"
-import CommentCard from "@/components/cards/CommentCard"
 import { reactionIcons } from "@/constants/index"
 import Reaction from "@/components/shared/Reaction"
 import Comment from "@/components/form/Comment"
@@ -14,38 +12,33 @@ import ToolTip from "@/components/shared/ToolTip"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 const IntersectionMonitor = dynamic(() => import("@/components/mobile/IntersectionMonitor"), { ssr: false })
 const ButtonsMobile = dynamic(() => import("./ButtonsMobile"))
-const CommentsMobile = dynamic(() => import("./CommentsMobile"))
-import { PinInfoDeep } from "@/lib/types"
+const CommentList = dynamic(() => import("./CommentList"))
+const CommentListMobile = dynamic(() => import("./CommentListMobile"))
+import { CommentInfo, PinInfoDeep } from "@/lib/types"
 import { abbreviateNumber, handleDownloadImage, shortenURL } from "@/lib/utils"
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
 import useSavePin from "@/lib/hooks/useSavePin"
 import useFollowUser from "@/lib/hooks/useFollowUser"
 import { setShowEditPinForm } from "@/lib/store/features/modal"
-import { setPinBasicInfo, setPinComments, setPinReactions } from "@/lib/store/features/pinInfo"
+import { setPinBasicInfo, setPinReactions } from "@/lib/store/features/pinInfo"
+import useInvalidateRouterCache from "@/lib/hooks/useInvalidateRouterCache"
 
 export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   const dispatch = useAppDispatch()
   const user = useAppSelector((store) => store.user.user)
   const [isMobileDevice, setIsMobileDevice] = useState(false)
-  const [isCommentsFolded, setIsCommentsFolded] = useState(false)
   const [showDropDownList, setShowDropDownList] = useState(false)
   const [showCommentsMobile, setshowCommentsMobile] = useState(false)
 
+  const [comments, setComments] = useState<CommentInfo[]>((pin.comments as CommentInfo[]) || [])
   const pinBasicInfo = useAppSelector((store) => store.pinInfo.pinBasicInfo)
-  const pinComments = useAppSelector((store) => store.pinInfo.pinComments)
   const pinReactions = useAppSelector((store) => store.pinInfo.pinReactions)
-  const { _id, imageUrl } = pin
-  /*
-      To reflect changes (edit, comment, reply ) and update the page partially,
-    store the Pin and update it in part. When rendering, 'pinInfoInStore' takes 
-    priority over prior 'pin', because pin is the original data from the server.
-  */
+  const { _id, imageUrl, author } = pin
+
   const title = pinBasicInfo.title || pin.title
   const link = pinBasicInfo.link || pin.link
   const description = pinBasicInfo.description || pin.description
-  const author = pinBasicInfo.author || pin.author
 
-  const comments = pinComments || pin.comments
   const reactions = pinReactions || pin.reactions
 
   useLayoutEffect(() => {
@@ -59,7 +52,6 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
         author,
       })
     )
-    dispatch(setPinComments(pin.comments))
     dispatch(setPinReactions(pin.reactions))
   }, [])
 
@@ -90,34 +82,38 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
     return arr
   }, [user])
 
-  function foldComments() {
-    setIsCommentsFolded(true)
-  }
-  function unfoldComments() {
-    setIsCommentsFolded(false)
-  }
-
   useLayoutEffect(() => {
     if (window.innerWidth < 820) {
       setIsMobileDevice(true)
     }
   }, [])
 
-  const { isSaved, savePin, unsavePin } = useSavePin(user?.saved.includes(_id) || false)
-  const { isFollowing, followUser, unfollowUser } = useFollowUser(
-    user?.following.includes(author._id) || false
+  // --------------------------------------------------------------------------------- Save & Unsave
+  const userSaved = useAppSelector((store) => store.user.saved)
+  const { savePin, unsavePin } = useSavePin()
+  const isSaved = useMemo(() => userSaved && userSaved.includes(_id), [userSaved])
+
+  // --------------------------------------------------------------------------------- Follow & Unfollow
+  const { needInvalidate } = useInvalidateRouterCache()
+  const userFollowing = useAppSelector((store) => store.user.following)
+  const isFollowing = useMemo(
+    () => userFollowing && userFollowing.includes(author._id),
+    [userFollowing, user?._id]
   )
+  const { followUser, unfollowUser } = useFollowUser()
   const [displayedFollowerNum, setDisplayedFollowerNum] = useState(author?.follower?.length || 0)
   async function handleFollowUser() {
     const res = await followUser(author._id)
     if (res === true) {
       setDisplayedFollowerNum((prev) => prev + 1)
+      needInvalidate.current = true
     }
   }
   async function handleUnfollowUser() {
     const res = await unfollowUser(author._id)
     if (res === true) {
       setDisplayedFollowerNum((prev) => prev - 1)
+      needInvalidate.current = true
     }
   }
 
@@ -142,7 +138,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               </DropDownList>
             </Suspense>
             <div className="flex items-center">
-              {user?.saved && (
+              {userSaved && (
                 <Button
                   text={isSaved ? "Saved" : "Save"}
                   bgColor={isSaved ? "black" : "red"}
@@ -195,7 +191,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
                 </span>
               </div>
             </div>
-            {user?._id !== author._id && user?.following && (
+            {user?._id !== author._id && userFollowing && (
               <Button
                 text={isFollowing ? "Following" : "Follow"}
                 bgColor={isFollowing ? "black" : "gray"}
@@ -209,30 +205,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
           </div>
 
           {/* comments */}
-          {!isMobileDevice && (
-            <div className="mt-[4rem]">
-              <div className="flex items-center justify-between pr-4">
-                <h3 className="font-medium my-3">Comments</h3>
-                {isCommentsFolded ? (
-                  <FaChevronDown onClick={unfoldComments} className="cursor-pointer w-[1.1rem] h-[1.1rem]" />
-                ) : (
-                  <FaChevronUp onClick={foldComments} className="cursor-pointer w-[1.1rem] h-[1.1rem]" />
-                )}
-              </div>
-              {/* max-h-0: prvent the expanded comments from stretching the whole component which will influence the layout */}
-              <div className={`${isCommentsFolded ? "hidden" : ""} flex flex-col max-h-0`}>
-                {comments.length > 0 &&
-                  comments.map((comment) => {
-                    return (
-                      comment && (
-                        <CommentCard key={comment?._id} comment={comment} rootCommentId={comment._id} />
-                      )
-                    )
-                  })}
-                <div className="py-4"></div>
-              </div>
-            </div>
-          )}
+          {!isMobileDevice && <CommentList comments={comments} setComments={setComments} />}
         </div>
 
         {isMobileDevice && <ButtonsMobile setshowCommentsMobile={setshowCommentsMobile} />}
@@ -250,11 +223,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
       {/* comment input */}
       {!isMobileDevice && (
         <div className="border-top sticky bottom-0 z-[4] py-2 px-8 bg-white w3:max-w5:rounded-b-[2rem] w5:rounded-br-[2rem]">
-          <div className="flex justify-between items-center mt-1 mb-3">
-            {/* No comment: What do you think? */}
-            <span className="font-medium text-xl">
-              {comments.length} Comment{comments.length > 1 ? "s" : ""}
-            </span>
+          <div className="flex justify-end items-center mt-1 mb-2">
             <div className="flex items-center gap-3">
               <div className="flex gap-1 cursor-pointer">
                 <div
@@ -265,12 +234,12 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               <Reaction />
             </div>
           </div>
-          <Comment pinId={_id} />
+          <Comment pinId={_id} setComments={setComments} />
         </div>
       )}
 
       {isMobileDevice && showCommentsMobile && (
-        <CommentsMobile setshowCommentsMobile={setshowCommentsMobile} />
+        <CommentListMobile setshowCommentsMobile={setshowCommentsMobile} />
       )}
     </div>
   )
