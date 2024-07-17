@@ -7,8 +7,7 @@ import { revalidatePath } from "next/cache"
 const pinResolver = {
   Query: {
     async pins(_: any, { currentNumber, limit }: { currentNumber: number; limit: number }) {
-      // Test this out:
-      // we don't use field resolver here, because it will send one request for each pin. While we need to fetch dozens of pins
+      // No need to use field resolver here, because it requires to populate every property.
       const pins = await Pin.find({})
         .sort({ createdAt: "desc" })
         .skip(currentNumber)
@@ -45,6 +44,7 @@ const pinResolver = {
       return pin
     },
   },
+
   Mutation: {
     async updatePin(_: any, { pin }: { pin: PinInfoBasic }) {
       const updatedPin = await Pin.findByIdAndUpdate(pin._id, pin, {

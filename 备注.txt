@@ -67,8 +67,8 @@ notifications
 z-index:
 Dialog: 120
 MessageBox: 120
+OptionListMobile: 120
 CommentsMobile: 110
-OptionListMobile: 110
 DropDownList: 110
 ButtonsMobile(pin detail page): 110
 EditPinForm: 110
@@ -78,8 +78,8 @@ Modal（for SearchSuggestion）: 99
 followListMobile: 90
 
 Components worth mentioning：
-PinForm: （最难）所有草稿互不干扰，编辑/新建/发布一个草稿的请求发送过程中，可以编辑/新建/发布另一个草稿
+PinForm（最难）: 所有草稿互不干扰，编辑/新建/发布一个草稿的请求发送过程中，可以编辑/新建/发布另一个草稿
 WaterFall：简洁的布局算法
-VirtualTextarea：低回流、可调高度文本框
+VirtualTextarea：低回流、自适应高度文本框
 Dialog：调用一个函数，命令式地将组件显示在屏幕上
 IntersectionMonitor：全面监听屏幕滚动，满足移动端组件对屏幕位置的所有需求

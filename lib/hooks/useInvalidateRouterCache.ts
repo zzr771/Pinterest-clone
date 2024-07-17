@@ -1,9 +1,9 @@
 /*
     When a route is rendered for the first time, it will be cached on the client side for 30s.
-  In the next 30s, any data or cache changes on the server side can not be reflected on the
-  client side, because the router cache takes over.
-    This hook is used to invalidate the router cache to sync the data on the server and the
-  UI on the client in the first 30s.
+  In this 30s, any data or cache changes on the server side can not be reflected on the client
+  side, even if refreshing the page, because the router cache takes over.
+    This hook is used to invalidate the router cache (when a user refreshes the page) to sync 
+  the data on the server and the UI on the client in the first 30s.
 */
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
