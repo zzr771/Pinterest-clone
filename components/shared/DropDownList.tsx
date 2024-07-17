@@ -162,7 +162,7 @@ export default function DropDownList({
         createPortal(
           <div
             ref={containerRef}
-            className={`absolute top-0 left-0 z-[110] bg-white p-2 rounded-2xl shadow-small ${className}`}
+            className={`absolute top-0 left-0 z-[120] bg-white p-2 rounded-2xl shadow-small ${className}`}
             onMouseEnter={handleMouseEnter}>
             {title && <div className="p-2 text-xs font-light">{title}</div>}
             {options.map((item, index) => (

@@ -44,7 +44,7 @@ export default function Reaction() {
   return (
     <div ref={containerRef} className="relative">
       <ToolTip text="React">
-        <Button bgColor="gray" rounded>
+        <Button bgColor="gray" rounded className="!h-11">
           <HiOutlineHeart className="w-7 h-7" />
         </Button>
       </ToolTip>
