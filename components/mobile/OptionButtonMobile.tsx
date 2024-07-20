@@ -8,12 +8,10 @@ const OptionListMobile = dynamic(() => import("../mobile/OptionListMobile"), { s
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
 import { handleDownloadImage } from "@/lib/utils"
 import { PinInfoDeep } from "@/lib/types"
-import { setShowEditPinForm } from "@/lib/store/features/modal"
 
 export default function OptionButtonMobile({ pin }: { pin: PinInfoDeep }) {
   if (window.innerWidth >= 820) return null
 
-  const dispatch = useAppDispatch()
   const user = useAppSelector((store) => store.user.user)
   const { imageUrl, title, author } = pin
   const intersectionState = useAppSelector((store) => store.intersection.observers.OptionButtonMobile)
@@ -31,9 +29,7 @@ export default function OptionButtonMobile({ pin }: { pin: PinInfoDeep }) {
         ...[
           {
             label: "Edit Pin",
-            callback: () => {
-              dispatch(setShowEditPinForm(true))
-            },
+            callback: () => {},
           },
           { label: "Delete Pin", callback: () => {} },
         ]

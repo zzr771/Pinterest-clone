@@ -3,7 +3,6 @@ import screenSizeReducer from "./features/screenSize"
 import modalReducer from "./features/modal"
 import intersectionReducer from "./features/intersection"
 import userReducer from "./features/user"
-import pinInfoReducer from "./features/pinInfo"
 
 export const makeStore = () => {
   return configureStore({
@@ -12,7 +11,6 @@ export const makeStore = () => {
       modal: modalReducer,
       intersection: intersectionReducer,
       user: userReducer,
-      pinInfo: pinInfoReducer,
     },
   })
 }

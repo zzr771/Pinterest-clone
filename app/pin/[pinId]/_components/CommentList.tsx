@@ -33,7 +33,6 @@ export default function Comments({ comments, setComments }: Props) {
   }
 
   useEffect(() => {
-    console.log("comments", comments)
     setCommentNumber(countComments())
   }, [comments])
 

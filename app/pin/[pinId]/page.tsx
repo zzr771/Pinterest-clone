@@ -7,10 +7,9 @@ import WaterFall from "@/components/layout/WaterFall"
 const InterSectionMonitor = dynamic(() => import("@/components/mobile/IntersectionMonitor"), { ssr: false })
 const OptionButtonMobile = dynamic(() => import("@/components/mobile/OptionButtonMobile"), { ssr: false })
 import { FETCH_PIN } from "@/lib/apolloRequests/pin.request"
-import EditPinContainer from "./_components/EditPinContainer"
 
 export default async function Page({ params }: { params: { pinId: string } }) {
-  // For unknown reasons, sometimes, params.pinId can be a string 'installHook.js.map'
+  // For unknown reasons, sometimes, params.pinId can be a string: 'installHook.js.map'
   if (!params.pinId.match(/^[0-9a-fA-F]{24}$/)) return null
 
   const {
@@ -40,10 +39,6 @@ export default async function Page({ params }: { params: { pinId: string } }) {
         <InterSectionMonitor name="OptionButtonMobile" />
         <PinContent pin={pin} />
       </section>
-
-      <EditPinContainer
-        pin={{ _id: pin._id, title: pin.title, description: pin.description, link: pin.link }}
-      />
 
       <div className="relative w3:mt-4 max-w3:border-t max-w3:border-gray-bg-4">
         <h4 className="w3:p-3 w3:mb-1 w3:text-center w3:text-xl max-w3:mt-4 max-w3:mb-2 max-w3:px-2 font-medium ">

@@ -9,29 +9,23 @@ import { PinInfoBasic } from "@/lib/types"
 import { IoMdClose } from "react-icons/io"
 import Button from "@/components/shared/Button"
 import { useEffect, useState } from "react"
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
-import { setShowEditPinForm } from "@/lib/store/features/modal"
 import { useMutation } from "@apollo/client"
 import { UPDATE_PIN } from "@/lib/apolloRequests/pin.request"
 import { handleApolloRequestError } from "@/lib/utils"
-import { setPinBasicInfo } from "@/lib/store/features/pinInfo"
 
 const FORM_FIELDS = ["title", "description", "link"]
 type Keys = keyof PinInfoBasic
-export default function EditForm() {
-  const dispatch = useAppDispatch()
+interface Props {
+  pinInfoBasic: PinInfoBasic
+  setPinBasicInfo: React.Dispatch<React.SetStateAction<PinInfoBasic>>
+  setShowEditPinForm: React.Dispatch<React.SetStateAction<boolean>>
+}
+export default function EditForm({ pinInfoBasic, setPinBasicInfo, setShowEditPinForm }: Props) {
   const [allowSave, setAllowSave] = useState(false)
-  const pinBasicInfo = useAppSelector((store) => store.pinInfo.pinBasicInfo)
-  const pin = {
-    _id: pinBasicInfo._id,
-    title: pinBasicInfo.title,
-    description: pinBasicInfo.description,
-    link: pinBasicInfo.link,
-  }
 
   const form = useForm({
     resolver: zodResolver(PinEditValidation),
-    defaultValues: pin,
+    defaultValues: pinInfoBasic,
   })
 
   const [title, description, link] = form.watch(["title", "description", "link"])
@@ -47,7 +41,7 @@ export default function EditForm() {
 
   function checkValuesChange() {
     let haveValuesChanged = false
-    Object.entries(pin).forEach(([key, value]) => {
+    Object.entries(pinInfoBasic).forEach(([key, value]) => {
       if (!haveValuesChanged && FORM_FIELDS.includes(key) && form.getValues(key as Keys) !== value) {
         haveValuesChanged = true
         return
@@ -68,22 +62,22 @@ export default function EditForm() {
     } = await updatePinMutation({
       variables: {
         pin: {
-          _id: pin._id,
+          _id: pinInfoBasic._id,
           title,
           description,
           link,
         },
       },
     })
-    dispatch(setShowEditPinForm(false))
-    dispatch(setPinBasicInfo({ ...pinBasicInfo, ...res }))
+    setShowEditPinForm(false)
+    setPinBasicInfo(res)
   }
 
   return (
     <div className="flex flex-col h-screen">
       <h2 className="flex items-center justify-between h-24 py-7 px-6 shadow-small">
         <span className="font-medium text-[28px]">Edit Pin</span>
-        <IoMdClose className="w-8 h-8 cursor-pointer" onClick={() => dispatch(setShowEditPinForm(false))} />
+        <IoMdClose className="w-8 h-8 cursor-pointer" onClick={() => setShowEditPinForm(false)} />
       </h2>
 
       <div className="flex-1 p-6 overflow-y-auto">
