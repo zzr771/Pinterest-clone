@@ -1,7 +1,7 @@
 import Pin from "@/lib/models/pin.model"
 import User from "@/lib/models/user.model"
 import Comment from "@/lib/models/comment.model"
-import { PinInfoBasic } from "@/lib/types"
+import { PinInfoBasic, ReactionInfo } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
 const pinResolver = {
@@ -53,6 +53,39 @@ const pinResolver = {
       })
       revalidatePath(`/pin/${updatedPin._id}`)
       return updatedPin
+    },
+
+    // If the user has already given a reaction, remove the old one and add the new one.
+    async addReaction(
+      _: any,
+      { pinId, reactionId, userId }: { pinId: string; reactionId: string; userId: string }
+    ) {
+      try {
+        const pin = await Pin.findById(pinId)
+        const indexToRemove = pin.reactions.findIndex(
+          (reaction: ReactionInfo) => reaction.user.toString() === userId
+        )
+        if (indexToRemove !== -1) {
+          pin.reactions.splice(indexToRemove, 1)
+        }
+        pin.reactions.unshift({ reactionId: reactionId, user: userId })
+        await pin.save()
+
+        revalidatePath(`/pin/${pinId}`)
+        return true
+      } catch (_) {
+        return false
+      }
+    },
+
+    async removeReaction(_: any, { pinId, userId }: { pinId: string; userId: string }) {
+      try {
+        await Pin.findByIdAndUpdate(pinId, { $pull: { reactions: { user: userId } } })
+        revalidatePath(`/pin/${pinId}`)
+        return true
+      } catch (_) {
+        return false
+      }
     },
   },
 }

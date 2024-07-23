@@ -23,7 +23,7 @@ const pinSchema = new mongoose.Schema(
     reactions: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        reaction: { type: Number, required: true },
+        reactionId: { type: String, required: true },
       },
     ],
   },

@@ -92,10 +92,9 @@ export const FETCH_PIN = gql`
         user {
           _id
           firstName
-          lastName
           imageUrl
         }
-        reaction
+        reactionId
       }
     }
   }
@@ -109,6 +108,17 @@ export const UPDATE_PIN = gql`
       description
       link
     }
+  }
+`
+
+export const ADD_REACTION = gql`
+  mutation addReaction($pinId: ID!, $reactionId: String!, $userId: ID!) {
+    addReaction(pinId: $pinId, reactionId: $reactionId, userId: $userId)
+  }
+`
+export const REMOVE_REACTION = gql`
+  mutation removeReaction($pinId: ID!, $userId: ID!) {
+    removeReaction(pinId: $pinId, userId: $userId)
   }
 `
 

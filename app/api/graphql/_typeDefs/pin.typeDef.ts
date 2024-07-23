@@ -19,7 +19,7 @@ const pinDefs = `#graphql
   }
   type Reaction {
     user: User!
-    reaction: String!
+    reactionId: String!
   }
   input updatePinInput {
     _id: ID!
@@ -41,6 +41,8 @@ const pinDefs = `#graphql
   }
   type Mutation {
     updatePin(pin: updatePinInput!): PinInfoBasic
+    addReaction(pinId: ID!, reactionId: String!, userId: ID!): Boolean
+    removeReaction(pinId: ID!, userId: ID!): Boolean
   }
 `
 

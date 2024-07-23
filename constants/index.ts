@@ -1,9 +1,9 @@
 const reactionIcons = [
-  { name: "Good idea", src: "/assets/reactions/good-idea.svg" },
-  { name: "Love", src: "/assets/reactions/love.svg" },
-  { name: "Thanks", src: "/assets/reactions/thanks.svg" },
-  { name: "Wow", src: "/assets/reactions/wow.svg" },
-  { name: "Haha", src: "/assets/reactions/haha.svg" },
+  { id: "goodIdea", name: "Good idea", src: "/assets/reactions/good-idea.svg", bgColor: "#FFFEBB" },
+  { id: "love", name: "Love", src: "/assets/reactions/love.svg", bgColor: "#FFE0E0" },
+  { id: "thanks", name: "Thanks", src: "/assets/reactions/thanks.svg", bgColor: "#CCF6EE" },
+  { id: "wow", name: "Wow", src: "/assets/reactions/wow.svg", bgColor: "#FFF0DB" },
+  { id: "haha", name: "Haha", src: "/assets/reactions/haha.svg", bgColor: "#E9E4FF" },
 ]
 
 const ideasArray = [

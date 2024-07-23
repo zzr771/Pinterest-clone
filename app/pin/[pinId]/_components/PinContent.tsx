@@ -38,8 +38,6 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
 
   const { _id, imageUrl, author } = pin
 
-  const reactions = pin.reactions
-
   const [showEditPinForm, setShowEditPinForm] = useState(false)
   const options = useMemo(() => {
     const arr = [
@@ -222,15 +220,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
         {!isMobileDevice && (
           <div className="border-top sticky bottom-0 z-[4] py-2 px-8 bg-white w3:max-w5:rounded-b-[2rem] w5:rounded-br-[2rem]">
             <div className="flex justify-end items-center mt-1 mb-2">
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1 cursor-pointer">
-                  <div
-                    style={{ backgroundImage: `url(${reactionIcons[0].src})` }}
-                    className="h-5 w-5 bg-no-repeat bg-cover"></div>
-                  {"21"}
-                </div>
-                <Reaction />
-              </div>
+              <Reaction initialReactions={pin.reactions} />
             </div>
             <Comment pinId={_id} setComments={setComments} />
           </div>

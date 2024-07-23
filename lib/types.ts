@@ -77,7 +77,7 @@ export interface PinInfoShallow {
   link: string
   createdAt: string
   comments: string[]
-  reactions: Reaction[]
+  reactions: ReactionInfo[]
 }
 
 export interface PinInfoDeep {
@@ -93,12 +93,21 @@ export interface PinInfoDeep {
   link: string
   createdAt: string
   comments: CommentInfo[]
-  reactions: Reaction[]
+  reactions: ReactionInfo[]
 }
 
-export interface Reaction {
+export interface ReactionInfo {
   user: string
-  reaction: string
+  reactionId: string
+}
+
+export interface ReactionInfoDeep {
+  user: {
+    _id: string
+    firstName: string
+    imageUrl?: string
+  }
+  reactionId: string
 }
 
 export interface CommentInfo {
