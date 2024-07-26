@@ -41,6 +41,7 @@ const pinDefs = `#graphql
   }
   type Mutation {
     updatePin(pin: updatePinInput!): PinInfoBasic
+    deletePin(pinId: ID!, userId: ID!): Boolean
     addReaction(pinId: ID!, reactionId: String!, userId: ID!): Boolean
     removeReaction(pinId: ID!, userId: ID!): Boolean
   }

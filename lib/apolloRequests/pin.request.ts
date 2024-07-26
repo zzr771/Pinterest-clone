@@ -111,6 +111,12 @@ export const UPDATE_PIN = gql`
   }
 `
 
+export const DELETE_PIN = gql`
+  mutation deletePin($pinId: ID!, $userId: ID!) {
+    deletePin(pinId: $pinId, userId: $userId)
+  }
+`
+
 export const ADD_REACTION = gql`
   mutation addReaction($pinId: ID!, $reactionId: String!, $userId: ID!) {
     addReaction(pinId: $pinId, reactionId: $reactionId, userId: $userId)

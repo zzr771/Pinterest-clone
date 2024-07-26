@@ -55,7 +55,7 @@ export default function Dialog() {
               <div className="p-6 text-[28px] font-medium text-center leading-tight">{props.title}</div>
               <div className="p-4">
                 <p className="text-center text-[15px]">{props.content}</p>
-                <div className="mt-12 flex justify-between">
+                <div className={`flex justify-between ${props.content ? "mt-12" : "mt-6"}`}>
                   {props.cancelText && (
                     <Button
                       text={props.cancelText}

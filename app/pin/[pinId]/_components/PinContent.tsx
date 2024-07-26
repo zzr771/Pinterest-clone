@@ -5,7 +5,6 @@ import Image from "next/image"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "@/components/shared/Button"
 import Paragraph from "@/components/shared/Paragraph"
-import { reactionIcons } from "@/constants/index"
 import Reaction from "@/components/shared/Reaction"
 import Comment from "@/components/form/Comment"
 import ToolTip from "@/components/shared/ToolTip"
@@ -15,14 +14,23 @@ const ButtonsMobile = dynamic(() => import("./ButtonsMobile"))
 const CommentList = dynamic(() => import("./CommentList"))
 const CommentListMobile = dynamic(() => import("./CommentListMobile"))
 import { CommentInfo, PinInfoBasic, PinInfoDeep } from "@/lib/types"
-import { abbreviateNumber, handleDownloadImage, shortenURL } from "@/lib/utils"
+import { abbreviateNumber, handleApolloRequestError, handleDownloadImage, shortenURL } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
 import useSavePin from "@/lib/hooks/useSavePin"
 import useFollowUser from "@/lib/hooks/useFollowUser"
 import useInvalidateRouterCache from "@/lib/hooks/useInvalidateRouterCache"
 import EditPinContainer from "./EditPinContainer"
+import { DELETE_PIN } from "@/lib/apolloRequests/pin.request"
+import { useMutation } from "@apollo/client"
+import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
+import Dialog, { dialog } from "@/components/shared/Dialog"
+import { deleteFiles } from "@/lib/actions/uploadthing.actions"
+import showMessageBox from "@/components/shared/showMessageBox"
 
 export default function PinContent({ pin }: { pin: PinInfoDeep }) {
+  const { _id, imageUrl, author } = pin
+  const router = useRouter()
   const user = useAppSelector((store) => store.user.user)
   const [isMobileDevice, setIsMobileDevice] = useState(false)
   const [showDropDownList, setShowDropDownList] = useState(false)
@@ -36,9 +44,56 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   })
   const [comments, setComments] = useState<CommentInfo[]>((pin.comments as CommentInfo[]) || [])
 
-  const { _id, imageUrl, author } = pin
-
   const [showEditPinForm, setShowEditPinForm] = useState(false)
+  const [deletePinMutation] = useMutation(DELETE_PIN, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  async function handleDeletePin() {
+    if (!user) {
+      toast("Please sign in before operation")
+      return false
+    }
+
+    const {
+      data: { deletePin: res },
+    } = await deletePinMutation({
+      variables: {
+        pinId: _id,
+        userId: user._id,
+      },
+    })
+
+    if (!res) {
+      toast.error("Something went wrong")
+      return
+    }
+
+    const res2 = await deleteFiles([imageUrl])
+    if (res2 && "errorMessage" in res) {
+      toast.error(res.errorMessage)
+    }
+
+    showMessageBox({
+      message: "Pin deleted",
+    })
+    /*
+        If a user clicks his Pin on Home page, gets into this Pin's content page and deletes this
+      Pin, he will be redirected to Home page. However, due to router cache, the deleted Pin will
+      still be displayed on Home page. If he clicks this Pin, he will see the Pin's content again
+      (router cache).
+        What we want is that when the user clicks the deleted Pin's card on Home page, he can get
+      into the Pin's content page, but the page should be taken over by 'error.tsx' and tell the user
+      that this Pin has been deleted.
+        To achieve this, we need to refresh the router cache. 
+        Note that 'router.refresh()' must go after 'router.replace()', otherwise the cache of Pin
+      content page won't be invalidated.
+    */
+    router.replace("/")
+    router.refresh()
+  }
+
   const options = useMemo(() => {
     const arr = [
       {
@@ -59,7 +114,17 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
               setShowDropDownList(false)
             },
           },
-          { label: "Delete Pin", callback: () => {} },
+          {
+            label: "Delete Pin",
+            callback: () => {
+              dialog({
+                title: "Delete your Pin?",
+                confirmText: "Delete",
+                cancelText: "Cancel",
+                confirmCallback: handleDeletePin,
+              })
+            },
+          },
         ]
       )
     }
@@ -230,6 +295,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
           <CommentListMobile setshowCommentsMobile={setshowCommentsMobile} />
         )}
       </div>
+      <Dialog />
     </>
   )
 }

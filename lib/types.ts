@@ -38,14 +38,14 @@ export interface UserInfo extends UserSetting {
   blockUsers?: string[]
 }
 
-export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
-
 export interface PinInfoBasic {
   _id: string
   title: string
   description: string
   link: string
 }
+
+export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
 
 export interface PinDraft {
   _id: string
@@ -93,7 +93,7 @@ export interface PinInfoDeep {
   link: string
   createdAt: string
   comments: CommentInfo[]
-  reactions: ReactionInfo[]
+  reactions: ReactionInfoDeep[]
 }
 
 export interface ReactionInfo {

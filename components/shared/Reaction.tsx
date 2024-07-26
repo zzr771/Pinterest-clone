@@ -133,8 +133,6 @@ export default function Reaction({ initialReactions }: Props) {
   }, [user])
 
   useEffect(() => {
-    console.log("reactions", reactions)
-
     setReactionKinds(getReactionKinds())
 
     const result = getCurrentReactionIcon()

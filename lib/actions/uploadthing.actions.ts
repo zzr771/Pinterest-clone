@@ -4,9 +4,9 @@ import { RequestError } from "../types"
 import { getErrorMessage } from "../utils"
 
 const utapi = new UTApi()
-export async function deleteFiles(arr: string[]): Promise<void | RequestError> {
-  const keys = arr.map((url) => url.split("/").pop() || "")
-  if (keys.length !== arr.length) {
+export async function deleteFiles(fileUrls: string[]): Promise<void | RequestError> {
+  const keys = fileUrls.map((url) => url.split("/").pop() || "")
+  if (keys.length !== fileUrls.length) {
     return {
       errorMessage: "Invalid Image URL.",
     }

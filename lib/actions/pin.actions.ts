@@ -5,6 +5,7 @@ import User from "../models/user.model"
 import { connectToDB } from "../mongoose"
 import { getErrorMessage } from "../utils"
 import { RequestError, PinDraft, PinInfoShallow } from "../types"
+import { revalidatePath } from "next/cache"
 
 connectToDB()
 
@@ -31,6 +32,7 @@ export async function createPins(
 
     user.created.push(...pinIds)
     await user.save()
+    revalidatePath("/")
     return JSON.parse(JSON.stringify(res))
   } catch (error) {
     return {

@@ -87,8 +87,8 @@ export default function PinDraftList({
     deleteImages(draftsToDelete)
   }
 
-  async function deleteImages(drafts: PinDraft[]) {
-    let imageUrls = drafts.map((draft) => draft.imageUrl)
+  async function deleteImages(draftsToDelete: PinDraft[]) {
+    let imageUrls = draftsToDelete.map((draft) => draft.imageUrl)
     imageUrls = [...new Set(imageUrls)]
     const res = await deleteFiles(imageUrls)
     if (res && "errorMessage" in res) {

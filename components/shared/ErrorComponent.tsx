@@ -10,7 +10,7 @@ export default function ErrorComponent({
   return (
     <main className="flex h-screen w-screen items-center justify-center">
       <div className="flex flex-col items-center">
-        <h2 className="text-center text-lg">Oops, something went wrong.</h2>
+        <h2 className="text-center text-lg">{error.message || "Oops, something went wrong."}</h2>
         <Button text="Try again" bgColor="red" hover clickEffect click={() => reset()} className="mt-4" />
       </div>
     </main>

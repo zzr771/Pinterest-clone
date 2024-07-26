@@ -4,6 +4,21 @@ import Comment from "@/lib/models/comment.model"
 import { PinInfoBasic, ReactionInfo } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
+interface CommentInfoShallow {
+  _id: string
+  author: string
+  content: string
+  createdAt: string
+  likes: number
+  isReply: boolean
+
+  replies: string[]
+  commentOnPin: string | null
+
+  replyToUser: string | null
+  replyToComment: string | null
+}
+
 const pinResolver = {
   Query: {
     async pins(_: any, { currentNumber, limit }: { currentNumber: number; limit: number }) {
@@ -41,6 +56,8 @@ const pinResolver = {
           path: "reactions",
           populate: { path: "user", model: User, select: "firstName imageUrl" },
         })
+
+      if (!pin) throw new Error("Sorry, this Pin has been deleted") // This error can trigger 'error.tsx' to take over the page.
       return pin
     },
   },
@@ -53,6 +70,37 @@ const pinResolver = {
       })
       revalidatePath(`/pin/${updatedPin._id}`)
       return updatedPin
+    },
+
+    async deletePin(_: any, { pinId, userId }: { pinId: string; userId: string }) {
+      const pin = await Pin.findById(pinId).populate({ path: "comments", model: Comment })
+      const commentsToDelete: string[] = []
+
+      // Delete all comments and replies of the pin.
+      pin.comments.forEach((comment: CommentInfoShallow) => {
+        commentsToDelete.push(comment._id)
+        commentsToDelete.push(...comment.replies)
+      })
+
+      try {
+        const p1 = new Promise(async (resolve) => {
+          await Pin.deleteOne({ _id: pinId })
+          resolve(true)
+        })
+        const p2 = new Promise(async (resolve) => {
+          await Comment.deleteMany({ _id: { $in: commentsToDelete } })
+          resolve(true)
+        })
+        const p3 = new Promise(async (resolve) => {
+          await User.findByIdAndUpdate(userId, { $pull: { created: pinId } })
+          resolve(true)
+        })
+        await Promise.all([p1, p2, p3])
+        revalidatePath(`/pin/${pinId}`)
+        return true
+      } catch (_) {
+        return false
+      }
     },
 
     // If the user has already given a reaction, remove the old one and add the new one.

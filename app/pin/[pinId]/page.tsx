@@ -10,7 +10,9 @@ import { FETCH_PIN } from "@/lib/apolloRequests/pin.request"
 
 export default async function Page({ params }: { params: { pinId: string } }) {
   // For unknown reasons, sometimes, params.pinId can be a string: 'installHook.js.map'
-  if (!params.pinId.match(/^[0-9a-fA-F]{24}$/)) return null
+  if (!params.pinId.match(/^[0-9a-fA-F]{24}$/)) {
+    throw new Error("Invalid Pin ID")
+  }
 
   const {
     data: { pin },
@@ -21,9 +23,6 @@ export default async function Page({ params }: { params: { pinId: string } }) {
       pinId: params.pinId,
     },
   })
-  if (error) {
-    throw new Error(error.message) // trigger error.tsx to take over
-  }
 
   return (
     <div className="relative w3:mt-[90px]">
