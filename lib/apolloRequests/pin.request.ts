@@ -26,6 +26,68 @@ export const FETCH_PINS = gql`
   }
 `
 
+export const FETCH_USER_CREATED_PINS = gql`
+  query fetchUserCreatedPins($userId: ID!, $currentNumber: Int!, $limit: Int!) {
+    userCreatedPins(userId: $userId, currentNumber: $currentNumber, limit: $limit) {
+      _id
+      author {
+        _id
+        firstName
+        lastName
+        imageUrl
+      }
+      imageUrl
+      imageSize {
+        width
+        height
+      }
+      title
+      link
+    }
+  }
+`
+
+export const FETCH_USER_SAVED_PINS = gql`
+  query fetchUserSavedPins($userId: ID!, $currentNumber: Int!, $limit: Int!) {
+    userSavedPins(userId: $userId, currentNumber: $currentNumber, limit: $limit) {
+      _id
+      author {
+        _id
+        firstName
+        lastName
+        imageUrl
+      }
+      imageUrl
+      imageSize {
+        width
+        height
+      }
+      title
+      link
+    }
+  }
+`
+export const SEARCH_PINS = gql`
+  query searchPins($keyword: String!, $currentNumber: Int!, $limit: Int!) {
+    searchPins(keyword: $keyword, currentNumber: $currentNumber, limit: $limit) {
+      _id
+      author {
+        _id
+        firstName
+        lastName
+        imageUrl
+      }
+      imageUrl
+      imageSize {
+        width
+        height
+      }
+      title
+      link
+    }
+  }
+`
+
 export const FETCH_PIN = gql`
   query fetchPin($pinId: ID!) {
     pin(pinId: $pinId) {
@@ -130,6 +192,8 @@ export const REMOVE_REACTION = gql`
 
 const pinRequests: ApolloRequest = {
   FETCH_PINS,
-  FETCH_PIN,
+  FETCH_USER_CREATED_PINS,
+  FETCH_USER_SAVED_PINS,
+  SEARCH_PINS,
 }
 export default pinRequests

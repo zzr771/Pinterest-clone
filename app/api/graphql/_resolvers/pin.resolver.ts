@@ -21,16 +21,6 @@ interface CommentInfoShallow {
 
 const pinResolver = {
   Query: {
-    async pins(_: any, { currentNumber, limit }: { currentNumber: number; limit: number }) {
-      // No need to use field resolver here, because it requires to populate every property.
-      const pins = await Pin.find({})
-        .sort({ createdAt: "desc" })
-        .skip(currentNumber)
-        .limit(limit)
-        .populate({ path: "author", model: User })
-      return pins
-    },
-
     async pin(_: any, { pinId }: { pinId: string }) {
       const pin = await Pin.findById(pinId)
         .populate({
@@ -54,11 +44,67 @@ const pinResolver = {
         })
         .populate({
           path: "reactions",
-          populate: { path: "user", model: User, select: "firstName imageUrl" },
+          populate: { path: "user", model: User, select: "firstName lastName imageUrl" },
         })
 
       if (!pin) throw new Error("Sorry, this Pin has been deleted") // This error can trigger 'error.tsx' to take over the page.
       return pin
+    },
+
+    async pins(_: any, { currentNumber, limit }: { currentNumber: number; limit: number }) {
+      // No need to use field resolver here, because it requires to populate every property.
+      const pins = await Pin.find({})
+        .sort({ createdAt: "desc" })
+        .skip(currentNumber)
+        .limit(limit)
+        .populate({ path: "author", model: User, select: "firstName lastName imageUrl" })
+      return pins
+    },
+
+    async userCreatedPins(
+      _: any,
+      { userId, currentNumber, limit }: { userId: string; currentNumber: number; limit: number }
+    ) {
+      const user = await User.findById(userId).populate({
+        path: "created",
+        model: Pin,
+        options: {
+          skip: currentNumber,
+          limit: limit,
+        },
+        populate: { path: "author", model: User, select: "firstName lastName imageUrl" },
+      })
+      return user.created
+    },
+
+    async userSavedPins(
+      _: any,
+      { userId, currentNumber, limit }: { userId: string; currentNumber: number; limit: number }
+    ) {
+      const user = await User.findById(userId).populate({
+        path: "saved",
+        model: Pin,
+        options: {
+          skip: currentNumber,
+          limit: limit,
+        },
+        populate: { path: "author", model: User, select: "firstName lastName imageUrl" },
+      })
+      return user.saved
+    },
+
+    async searchPins(
+      _: any,
+      { keyword, currentNumber, limit }: { keyword: string; currentNumber: number; limit: number }
+    ) {
+      const pins = await Pin.find({
+        title: { $regex: keyword, $options: "i" },
+      })
+        .sort({ createdAt: "desc" })
+        .skip(currentNumber)
+        .limit(limit)
+        .populate({ path: "author", model: User, select: "firstName lastName imageUrl" })
+      return pins
     },
   },
 

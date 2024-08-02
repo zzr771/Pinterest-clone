@@ -1,6 +1,6 @@
 "use client"
 
-import { createUserIfNeeded } from "@/lib/actions/user.actions"
+import { fetchOrCreateUser } from "@/lib/actions/user.actions"
 import {
   setUserInfo,
   setUserSaved,
@@ -22,7 +22,7 @@ export default function SignInMonitor() {
       if (!isSignedIn) return
 
       const { id, imageUrl, username } = user
-      const res = await createUserIfNeeded({ id, imageUrl, username: username || "anonymous" })
+      const res = await fetchOrCreateUser({ id, imageUrl, username: username || "anonymous" })
       if (res && "_id" in res) {
         dispatch(
           setUserInfo({

@@ -30,7 +30,7 @@ export async function createPins(
     const draftIds = drafts.map((item) => item._id)
     user.drafts = user.drafts.filter((item: PinDraft) => !draftIds.includes(item._id))
 
-    user.created.push(...pinIds)
+    user.created.unshift(...pinIds)
     await user.save()
     revalidatePath("/")
     return JSON.parse(JSON.stringify(res))

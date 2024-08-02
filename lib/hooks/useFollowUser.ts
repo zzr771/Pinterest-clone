@@ -8,7 +8,11 @@ import { handleApolloRequestError } from "../utils"
 import { setUserFollowing } from "../store/features/user"
 import { useRef } from "react"
 
-export default function useFollowUser() {
+interface Props {
+  followHandler: () => void
+  unfollowHandler: () => void
+}
+export default function useFollowUser({ followHandler, unfollowHandler }: Props) {
   const dispatch = useAppDispatch()
   const path = useRef(usePathname())
   const user = useAppSelector((store) => store.user.user)
@@ -25,8 +29,12 @@ export default function useFollowUser() {
 
   async function followUser(targetUserId: string) {
     if (!user) {
-      toast("Please sign in before operation")
-      return false
+      toast("Please sign in before operation.")
+      return
+    }
+    if (targetUserId === user._id) {
+      toast("You can't follow yourself.")
+      return
     }
 
     const {
@@ -39,7 +47,8 @@ export default function useFollowUser() {
       },
     })
 
-    if (!Array.isArray(res)) return false
+    if (!Array.isArray(res)) return
+
     showMessageBox({
       message: "Following",
       button: {
@@ -50,13 +59,13 @@ export default function useFollowUser() {
       },
     })
     dispatch(setUserFollowing(res))
-    return true
+    followHandler()
   }
 
   async function unfollowUser(targetUserId: string) {
     if (!user) {
-      toast("Please sign in before operation")
-      return false
+      toast("Please sign in before operation.")
+      return
     }
 
     const {
@@ -69,9 +78,9 @@ export default function useFollowUser() {
       },
     })
 
-    if (!Array.isArray(res)) return false
+    if (!Array.isArray(res)) return
     dispatch(setUserFollowing(res))
-    return true
+    unfollowHandler()
   }
 
   return { followUser, unfollowUser }

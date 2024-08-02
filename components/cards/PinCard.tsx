@@ -133,7 +133,7 @@ export default function PinCard({ pin, isSaved }: Props) {
       </div>
 
       {/* title & author */}
-      <div className="px-1 mt-1.5 bg-white">
+      <div className="px-1 mt-1.5 bg-white w3:hidden">
         <div className="flex items-center justify-between ">
           <Link href={`/pin/${_id}`}>
             <h5 className="truncate max-w3:text-xs text-sm font-medium cursor-pointer">{title}</h5>

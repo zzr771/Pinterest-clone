@@ -1,10 +1,9 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
 import { connectToDB } from "../mongoose"
 import User from "../models/user.model"
 import { getErrorMessage } from "../utils"
-import { RequestError, UserInfo, UserSetting, PinDraft } from "../types"
+import { RequestError, UserInfo, UserSetting, PinDraft, UserList } from "../types"
 import { duplicateImage } from "./uploadthing.actions"
 
 connectToDB()
@@ -15,14 +14,14 @@ interface initUserParams {
   imageUrl: string
 }
 
-// Match user by id. If not found, create a new user. If found, return the user.
-export async function createUserIfNeeded({
+// Match user by id. If not found, create a new user. If found, return the user's information.
+export async function fetchOrCreateUser({
   id,
   username,
   imageUrl,
 }: initUserParams): Promise<UserInfo | RequestError> {
   try {
-    // Note the parameter is 'id' instead of '_id"
+    // Note the parameter is 'id', not '_id'
     let user = await User.findOne({ id }, [
       "id",
       "imageUrl",
@@ -55,9 +54,66 @@ export async function createUserIfNeeded({
       })
       user = await newUser.save()
     }
-    user = JSON.parse(JSON.stringify(user))
-    return user
+    return JSON.parse(JSON.stringify(user))
   } catch (error: any) {
+    return {
+      errorMessage: getErrorMessage(error),
+    }
+  }
+}
+
+export async function fetchUserInfo(userId: string): Promise<UserInfo | RequestError> {
+  try {
+    const user = await User.findById(userId, [
+      "id",
+      "imageUrl",
+      "username",
+      "firstName",
+      "lastName",
+      "about",
+      "website",
+      "created",
+      "saved",
+      "following",
+      "follower",
+      "likedComments",
+    ])
+    if (user) {
+      return JSON.parse(JSON.stringify(user))
+    } else {
+      return {
+        errorMessage: "User not found.",
+      }
+    }
+  } catch (error) {
+    return {
+      errorMessage: getErrorMessage(error),
+    }
+  }
+}
+
+export async function fetchUserFollowList(
+  userId: string,
+  type: "following" | "follower"
+): Promise<UserList | RequestError> {
+  try {
+    let user
+    if (type === "following") {
+      user = await User.findById(userId).populate({
+        path: "following",
+        model: User,
+        select: "firstName lastName imageUrl",
+      })
+      return JSON.parse(JSON.stringify(user.following))
+    } else {
+      user = await User.findById(userId).populate({
+        path: "follower",
+        model: User,
+        select: "firstName lastName imageUrl",
+      })
+      return JSON.parse(JSON.stringify(user.follower))
+    }
+  } catch (error) {
     return {
       errorMessage: getErrorMessage(error),
     }

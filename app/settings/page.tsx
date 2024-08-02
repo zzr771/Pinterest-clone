@@ -218,7 +218,7 @@ export default function Page() {
           )}
 
           <Form {...form}>
-            <form className="max-w3:px-6 max-w3:pb-24">
+            <form className="max-w3:px-6 max-w3:pb-24 pb-10">
               {/* image upload */}
               <FormField
                 control={form.control}

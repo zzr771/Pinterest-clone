@@ -144,27 +144,19 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
 
   // --------------------------------------------------------------------------------- Follow & Unfollow
   const { needInvalidate } = useInvalidateRouterCache()
-  const userFollowing = useAppSelector((store) => store.user.following)
-  const isFollowing = useMemo(
-    () => userFollowing && userFollowing.includes(author._id),
-    [userFollowing, user?._id]
-  )
-  const { followUser, unfollowUser } = useFollowUser()
+  const following = useAppSelector((store) => store.user.following)
+  const isFollowing = useMemo(() => following && following.includes(author._id), [following, user?._id])
   const [displayedFollowerNum, setDisplayedFollowerNum] = useState(author?.follower?.length || 0)
-  async function handleFollowUser() {
-    const res = await followUser(author._id)
-    if (res === true) {
-      setDisplayedFollowerNum((prev) => prev + 1)
-      needInvalidate.current = true
-    }
+
+  async function followHandler() {
+    setDisplayedFollowerNum((prev) => prev + 1)
+    needInvalidate.current = true
   }
-  async function handleUnfollowUser() {
-    const res = await unfollowUser(author._id)
-    if (res === true) {
-      setDisplayedFollowerNum((prev) => prev - 1)
-      needInvalidate.current = true
-    }
+  async function unfollowHandler() {
+    setDisplayedFollowerNum((prev) => prev - 1)
+    needInvalidate.current = true
   }
+  const { followUser, unfollowUser } = useFollowUser({ followHandler, unfollowHandler })
 
   return (
     <>
@@ -241,25 +233,30 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
                     width={48}
                     height={48}
                     alt="avatar"
-                    className="rounded-full mr-1 object-cover h-12"
+                    className="rounded-full mr-1 object-cover h-12 cursor-pointer"
+                    onClick={() => router.push(`/user/${author._id}`)}
                   />
                 )}
                 <div className="flex flex-col justify-center px-1 text-sm">
-                  <span className="font-medium">{`${author.firstName} ${author.lastName}`}</span>
+                  <span
+                    className="font-medium cursor-pointer"
+                    onClick={() =>
+                      router.push(`/user/${author._id}`)
+                    }>{`${author.firstName} ${author.lastName}`}</span>
                   <span>
                     {abbreviateNumber(displayedFollowerNum)} follower
                     {displayedFollowerNum > 1 ? "s" : ""}
                   </span>
                 </div>
               </div>
-              {user?._id !== author._id && userFollowing && (
+              {user?._id !== author._id && following && (
                 <Button
                   text={isFollowing ? "Following" : "Follow"}
                   bgColor={isFollowing ? "black" : "gray"}
                   hover
                   clickEffect
                   click={() => {
-                    isFollowing ? handleUnfollowUser() : handleFollowUser()
+                    isFollowing ? unfollowUser(author._id) : followUser(author._id)
                   }}
                 />
               )}

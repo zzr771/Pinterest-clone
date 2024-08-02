@@ -6,8 +6,10 @@ import { useState, useRef, useCallback } from "react"
 import SearchSuggestion from "./SearchSuggestion"
 import { useAppDispatch } from "@/lib/store/hook"
 import { setShowModal } from "@/lib/store/features/modal"
+import { useRouter } from "next/navigation"
 
 export default function SearchBar() {
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -52,7 +54,8 @@ export default function SearchBar() {
       return
     }
 
-    // todo: start search and let searchbar blur
+    // todo: start search and blur the searchbar
+    router.push(`/search?q=${searchTerm}`)
 
     // save the search term in localStorage with LRU algorithm. Capacity: 10
     let recentResearches = JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")

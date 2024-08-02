@@ -36,8 +36,11 @@ const pinDefs = `#graphql
 
   # --------------------------------------------------------------------------------------------------
   type Query {
-    pins(currentNumber: Int!, limit: Int!): [Pin]
     pin(pinId:ID!): Pin
+    pins(currentNumber: Int!, limit: Int!): [Pin]
+    userCreatedPins(userId: ID!, currentNumber: Int!, limit: Int!): [Pin]
+    userSavedPins(userId: ID!, currentNumber: Int!, limit: Int!): [Pin]
+    searchPins(keyword: String!, currentNumber: Int!, limit: Int!): [Pin]
   }
   type Mutation {
     updatePin(pin: updatePinInput!): PinInfoBasic

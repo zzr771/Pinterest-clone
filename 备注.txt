@@ -72,10 +72,10 @@ CommentsMobile: 110
 DropDownList: 110
 ButtonsMobile(pin detail page): 110
 EditPinForm: 110
+followList(Mobile): 110
 NavBarTop: 100
 NavBarBottom: 100
 Modal（for SearchSuggestion）: 99
-followListMobile: 90
 
 Components worth mentioning：
 PinForm（最难）: 所有草稿互不干扰，编辑/新建/发布一个草稿的请求发送过程中，可以编辑/新建/发布另一个草稿

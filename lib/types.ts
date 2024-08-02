@@ -38,6 +38,8 @@ export interface UserInfo extends UserSetting {
   blockUsers?: string[]
 }
 
+export type UserList = { _id: string; firstName: string; lastName: string; imageUrl: string }[]
+
 export interface PinInfoBasic {
   _id: string
   title: string

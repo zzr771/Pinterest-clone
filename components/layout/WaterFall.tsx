@@ -6,13 +6,20 @@
 */
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { DocumentNode, useQuery } from "@apollo/client"
+import { DocumentNode, useLazyQuery, useQuery } from "@apollo/client"
 import PinCard from "@/components/cards/PinCard"
 import { getCardNumberLimit, getImageDisplaySize, handleApolloRequestError } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
 import Loading from "../shared/Loading"
 import pinRequests from "@/lib/apolloRequests/pin.request"
 
+// For taking out data from server's response
+const map = {
+  FETCH_PINS: "pins",
+  FETCH_USER_CREATED_PINS: "userCreatedPins",
+  FETCH_USER_SAVED_PINS: "userSavedPins",
+  SEARCH_PINS: "searchPins",
+}
 interface PinCard {
   _id: string
   author: {
@@ -30,11 +37,12 @@ interface PinCard {
   link: string
 }
 interface Props {
-  // Optional values are the keys of the 'pinRequests' object from "@/lib/apolloRequests/pin.request"
-  requestName: "FETCH_PINS"
+  // Optional values are the keys of the 'pinRequests' object in "@/lib/apolloRequests/pin.request"
+  requestName: "FETCH_PINS" | "FETCH_USER_CREATED_PINS" | "FETCH_USER_SAVED_PINS" | "SEARCH_PINS"
+  // Includes 'userId' or 'searchString'
+  param?: Object
 }
-
-export default function WaterFall({ requestName }: { requestName: string }) {
+export default function WaterFall({ requestName, param }: Props) {
   const user = useAppSelector((store) => store.user.user)
   const userSaved = useAppSelector((store) => store.user.saved)
   const [pins, setPins] = useState<PinCard[]>([])
@@ -43,7 +51,7 @@ export default function WaterFall({ requestName }: { requestName: string }) {
   const observerRef = useRef<HTMLDivElement>(null)
   const requestMethod = useRef<DocumentNode>(pinRequests[requestName])
 
-  // for position calculation
+  // ----------------------------------------------------------------------------------- Card Positioning
   const columnHeights = useRef<Array<number>>([])
   const columnNumber = useRef(0)
   const prevColumnNumber = useRef(-1)
@@ -51,16 +59,6 @@ export default function WaterFall({ requestName }: { requestName: string }) {
   const cardWidth = useRef(0)
   const cardPaddingBottom = useRef(0)
   const cardAuthorPartHeight = useRef(0)
-
-  const { loading: initialLoading, data: initialData } = useQuery(requestMethod.current, {
-    variables: {
-      currentNumber: 0,
-      limit: getCardNumberLimit(screenSize),
-    },
-    onError: (error) => {
-      handleApolloRequestError(error)
-    },
-  })
 
   function calculateCardSize() {
     const rem = parseInt(getComputedStyle(document.documentElement).fontSize)
@@ -75,7 +73,6 @@ export default function WaterFall({ requestName }: { requestName: string }) {
     } else {
       cardWidth.current = 252
       cardPaddingBottom.current = 16
-      cardAuthorPartHeight.current = 78
     }
   }
 
@@ -115,47 +112,6 @@ export default function WaterFall({ requestName }: { requestName: string }) {
     return Math.max(...columnHeights.current)
   }
 
-  async function addCards() {
-    // if (pins.length === 0) return
-    // const result = await getMorePinCardImgs(screenSize)
-    // result.forEach((item) => {
-    //   const { width, height } = getImageDisplaySize(item)
-    //   item.width = width
-    //   item.height = height
-    // })
-    // setPins((prev) => prev.concat(result))
-  }
-
-  // fetch initial data
-  useEffect(() => {
-    if (initialLoading || !initialData) return
-    let pins = initialData.pins
-    pins = pins.map((item: PinCard) => {
-      const { width, height } = getImageDisplaySize(item.imageSize)
-      return { ...item, imageSize: { width, height } }
-    })
-
-    setPins(pins)
-  }, [initialLoading])
-
-  /*
-      Every time the state pins changes, the IntersectionObserver must be recreated to update
-    its callback. Because the callback is in a closure where 'pins' will never change.
-      In the callback, we invoke 'addCards' in which 'pins' is used.
-  */
-  useEffect(() => {
-    const intersectionObserver = new IntersectionObserver((entries) => {
-      if (entries[0].intersectionRatio <= 0) return
-      addCards()
-    })
-    if (containterRef.current) {
-      intersectionObserver.observe(observerRef.current as Element)
-    }
-    return () => {
-      intersectionObserver.disconnect()
-    }
-  }, [pins])
-
   // place new cards when 'pins' changes
   useEffect(() => {
     if (!containterRef.current || !pins.length) return
@@ -180,6 +136,78 @@ export default function WaterFall({ requestName }: { requestName: string }) {
     if (!pins.length) return
     placeCardsFromIndex(0)
   }, [screenSize])
+
+  // ----------------------------------------------------------------------------------- Fetch Data
+  const [isInitialRequestOver, setIsInitialRequestOver] = useState(false)
+  const [isNoMoreCard, setIsNoMoreCard] = useState(false)
+  const { loading: initialLoading, data: initialData } = useQuery(requestMethod.current, {
+    variables: {
+      currentNumber: 0,
+      limit: getCardNumberLimit(screenSize),
+      ...param,
+    },
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  useEffect(() => {
+    if (initialLoading || !initialData) return
+
+    let initialPins = initialData[map[requestName]]
+    initialPins = initialPins.map((item: PinCard) => {
+      const { width, height } = getImageDisplaySize(item.imageSize)
+      return { ...item, imageSize: { width, height } }
+    })
+    setPins(initialPins)
+    setIsInitialRequestOver(true)
+  }, [initialLoading])
+
+  const [fetchMoreCards] = useLazyQuery(requestMethod.current, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  async function addCards() {
+    if (!isInitialRequestOver || isNoMoreCard) return
+
+    const { data } = await fetchMoreCards({
+      variables: {
+        currentNumber: pins.length,
+        limit: getCardNumberLimit(screenSize),
+        ...param,
+      },
+    })
+
+    let subsequentPins = data[map[requestName]]
+    if (subsequentPins.length === 0) {
+      setIsNoMoreCard(true)
+      return
+    }
+    subsequentPins = subsequentPins.map((item: PinCard) => {
+      const { width, height } = getImageDisplaySize(item.imageSize)
+      return { ...item, imageSize: { width, height } }
+    })
+    setPins((prev) => prev.concat(subsequentPins))
+  }
+
+  /*
+      Every time the state pins changes, the IntersectionObserver must be recreated to update
+    its callback. Because the callback is in a closure where 'pins' never changes.
+      In the callback, we invoke 'addCards' in which 'pins' is used.
+  */
+  useEffect(() => {
+    const intersectionObserver = new IntersectionObserver((entries) => {
+      if (entries[0].intersectionRatio > 0) {
+        addCards()
+      }
+    })
+    if (containterRef.current) {
+      intersectionObserver.observe(observerRef.current as Element)
+    }
+    return () => {
+      intersectionObserver.disconnect()
+    }
+  }, [pins])
 
   return (
     <section className="w-full relative">

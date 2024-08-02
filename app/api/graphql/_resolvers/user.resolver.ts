@@ -5,12 +5,11 @@ import { revalidatePath } from "next/cache"
 const userResolver = {
   Mutation: {
     async savePin(_: any, args: { userId: number; pinId: number }) {
-      // $addToSet: if an item is already in the array, it won't be added again
-      const user = await User.findByIdAndUpdate(
-        args.userId,
-        { $addToSet: { saved: args.pinId } },
-        { new: true }
-      )
+      const user = await User.findById(args.userId)
+      if (!user.saved.includes(args.pinId)) {
+        user.saved.unshift(args.pinId)
+        await user.save()
+      }
       return user.saved
     },
     async unsavePin(_: any, args: { userId: number; pinId: number }) {
@@ -24,7 +23,7 @@ const userResolver = {
         { $addToSet: { following: args.targetUserId } },
         { new: true }
       )
-      await User.findByIdAndUpdate(args.targetUserId, { $addToSet: { follower: args.targetUserId } })
+      await User.findByIdAndUpdate(args.targetUserId, { $addToSet: { follower: args.userId } })
 
       revalidatePath(args.path)
       return user.following
@@ -35,7 +34,7 @@ const userResolver = {
         { $pull: { following: args.targetUserId } },
         { new: true }
       )
-      await User.findByIdAndUpdate(args.targetUserId, { $pull: { follower: args.targetUserId } })
+      await User.findByIdAndUpdate(args.targetUserId, { $pull: { follower: args.userId } })
 
       revalidatePath(args.path)
       return user.following

@@ -6,7 +6,7 @@ import { separateNumberByComma } from "@/lib/utils"
 import Image from "next/image"
 
 interface Props {
-  type: "followers" | "following"
+  type: "follower" | "following"
   number: number
   setShowFollowList: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -23,7 +23,7 @@ const user: User = {
 }
 const list = new Array(15).fill(user)
 
-export default function FollowListMobile({ type, number, setShowFollowList }: Props) {
+export default function FollowerListMobile({ type, number, setShowFollowList }: Props) {
   const numberString = separateNumberByComma(number)
 
   function handleClick(event: React.MouseEvent) {
@@ -40,7 +40,7 @@ export default function FollowListMobile({ type, number, setShowFollowList }: Pr
           <FaAngleLeft className="w-5 h-5 text-black" />
         </Button>
         <span className="font-medium text-base">
-          {numberString} {type}
+          {numberString} {type} {type === "follower" && number > 1 && "s"}
         </span>
         <div className="h-10 w-10"></div>
       </div>
