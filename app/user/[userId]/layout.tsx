@@ -13,10 +13,10 @@ export default async function UserLayout({
   if ("errorMessage" in res) throw new Error(res.errorMessage)
 
   return (
-    <section className="relative pt-20 text-[15px] max-w3:pt-16">
+    <main className="relative pt-20 text-[15px] max-w3:pt-16">
       <UserInfoPart profileOwner={res} />
       <UserPinsPart profileOwner={res} />
       {children}
-    </section>
+    </main>
   )
 }

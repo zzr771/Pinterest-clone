@@ -177,7 +177,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex mt-20 main-content">
+    <main className="flex mt-20 main-content">
       {isLoading && <Loading />}
       <PinDraftList
         draftList={draftList}
@@ -198,6 +198,6 @@ export default function Page() {
         publishDrafts={publishDrafts}
       />
       <Dialog />
-    </div>
+    </main>
   )
 }

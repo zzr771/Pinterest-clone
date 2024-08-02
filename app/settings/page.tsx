@@ -183,7 +183,7 @@ export default function Page() {
   return (
     <>
       {isLoading && <Loading />}
-      <div className={`w3:mt-20 w3:h-[calc(100vh-160px)] w3:overflow-y-auto`}>
+      <main className={`w3:mt-20 w3:h-[calc(100vh-160px)] w3:overflow-y-auto`}>
         <div className="w3:w-[600px] w3:mx-auto w3:pt-4">
           {/* title */}
           <div className="mb-8 max-w3:hidden">
@@ -382,7 +382,7 @@ export default function Page() {
             />
           </div>
         </div>
-      </div>
+      </main>
     </>
   )
 }

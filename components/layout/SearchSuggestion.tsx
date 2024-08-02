@@ -2,8 +2,14 @@ import { useState } from "react"
 import { IoMdClose } from "react-icons/io"
 import SearchSuggestionCard from "../cards/SearchSuggestionCard"
 import { ideasArray, popularArray } from "@/constants/index"
+import { useRouter } from "next/navigation"
 
-export default function SearchSuggestion() {
+interface Props {
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>
+  hideSearchSuggestion: () => void
+}
+export default function SearchSuggestion({ setSearchTerm, hideSearchSuggestion }: Props) {
+  const router = useRouter()
   const [recentSearches, setRecentSearches] = useState(
     JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
   )
@@ -15,14 +21,13 @@ export default function SearchSuggestion() {
   }
 
   function searchClickedTerm(item: string) {
-    // todo
+    setSearchTerm(item.trim())
+    hideSearchSuggestion()
+    router.push(`/search?q=${item.trim()}`)
   }
 
   return (
-    <div
-      className={`bg-white rounded-b-2xl max-h-[calc(100vh-80px)] shadow-bottom overflow-y-auto ${
-        recentSearches.length > 0 && "p-8"
-      }`}>
+    <div className={"p-8 bg-white rounded-b-2xl max-h-[calc(100vh-80px)] shadow-bottom overflow-y-auto"}>
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-medium text-base">Recent searches</h3>

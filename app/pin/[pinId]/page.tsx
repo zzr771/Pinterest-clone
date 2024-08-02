@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { pinId: string } }) {
   })
 
   return (
-    <div className="relative w3:mt-[90px]">
+    <main className="relative w3:mt-[90px]">
       <div className="fixed w3:top-24 w3:left-4 left-2 top-2 z-[1]">
         <BackwardButton />
       </div>
@@ -45,6 +45,6 @@ export default async function Page({ params }: { params: { pinId: string } }) {
         </h4>
         {/* <WaterFall requestName={"FETCH_PINS"} /> */}
       </div>
-    </div>
+    </main>
   )
 }

@@ -2,21 +2,24 @@
 
 import { FaSearch } from "react-icons/fa"
 import { IoMdCloseCircle } from "react-icons/io"
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import SearchSuggestion from "./SearchSuggestion"
 import { useAppDispatch } from "@/lib/store/hook"
 import { setShowModal } from "@/lib/store/features/modal"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 export default function SearchBar() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+
+  const keyword = useSearchParams().get("q")?.trim()
+  const routeName = usePathname().split("/")[1]
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
   const focusClass = isFocused ? "shadow-blue" : ""
-
   const searchBarContainer = useRef<HTMLDivElement>(null)
+
   function handleClick() {
     if (isFocused) {
       return
@@ -30,32 +33,25 @@ export default function SearchBar() {
       Every time a state changes, all the code of the component will be excuted again.
     If handleClickOutSide is a normal function, it will be repetitively created, each
     time its memory address is different. So in handleClick, addEventListener will
-    add handleClickOutSide repetitively.
+    add lots of 'handleClickOutSide' to the click listener.
   */
   const handleClickOutSide = useCallback((event: MouseEvent) => {
     if (!searchBarContainer?.current?.contains(event.target as Node)) {
-      setSearchTerm("")
-      setIsFocused(false)
-      document.removeEventListener("click", handleClickOutSide)
-      dispatch(setShowModal(false))
+      hideSearchSuggestion()
+      setSearchTerm(keyword || "")
     }
   }, [])
 
   function handleClickClearBtn(event: React.MouseEvent<HTMLDivElement>) {
     event.stopPropagation()
+    hideSearchSuggestion()
     setSearchTerm("")
-    setIsFocused(false)
-    dispatch(setShowModal(false))
-    document.removeEventListener("click", handleClickOutSide)
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key !== "Enter") {
+  function handleEnterDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Enter" || searchTerm.trim() === "") {
       return
     }
-
-    // todo: start search and blur the searchbar
-    router.push(`/search?q=${searchTerm}`)
 
     // save the search term in localStorage with LRU algorithm. Capacity: 10
     let recentResearches = JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
@@ -69,7 +65,30 @@ export default function SearchBar() {
       recentResearches.unshift(searchTerm)
     }
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
+
+    hideSearchSuggestion()
+    router.push(`/search?q=${searchTerm.trim()}`)
   }
+
+  function hideSearchSuggestion() {
+    setIsFocused(false)
+    dispatch(setShowModal(false))
+    document.removeEventListener("click", handleClickOutSide)
+  }
+
+  // If users type the search keyword in the address bar to initiate a search, the 'searchTerm' should change accordingly
+  useEffect(() => {
+    if (keyword) {
+      setSearchTerm(keyword)
+    }
+  }, [keyword])
+
+  // When users navigate to other routes, clear the 'searchTerm'
+  useEffect(() => {
+    if (routeName !== "search") {
+      setSearchTerm("")
+    }
+  }, [routeName])
 
   return (
     <div
@@ -89,7 +108,7 @@ export default function SearchBar() {
         className="flex-1 outline-none bg-transparent text-gray-font-1"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={handleEnterDown}
       />
 
       {isFocused && (
@@ -101,8 +120,8 @@ export default function SearchBar() {
       )}
 
       {isFocused && (
-        <div className="absolute top-[52px] left-0 w-full">
-          <SearchSuggestion />
+        <div className="absolute top-[48px] left-0 w-full">
+          <SearchSuggestion setSearchTerm={setSearchTerm} hideSearchSuggestion={hideSearchSuggestion} />
         </div>
       )}
     </div>

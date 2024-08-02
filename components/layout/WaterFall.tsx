@@ -213,6 +213,11 @@ export default function WaterFall({ requestName, param }: Props) {
     <section className="w-full relative">
       {initialLoading && <Loading />}
       <div ref={containterRef} className="relative w3:mx-auto px-1">
+        {requestName === "SEARCH_PINS" && pins.length === 0 && (
+          <div className="mx-auto mt-[40vh] text-center font-medium text-black">
+            Sorry, we couldn't find any pins matching your search. Try another keyword?
+          </div>
+        )}
         {pins.length > 0 &&
           pins.map((pin) => (
             <PinCard key={pin._id} pin={pin} isSaved={(userSaved && userSaved.includes(pin._id)) || false} />
