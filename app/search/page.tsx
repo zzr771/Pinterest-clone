@@ -1,6 +1,5 @@
 "use client"
 import { useLayoutEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
 import SlideBanner from "./_components/SlideBanner"
 import SearchBar from "./_components/SearchBar"
 import { ideasArray, popularArray } from "@/constants/index"
@@ -8,9 +7,14 @@ import { FiChevronRight } from "react-icons/fi"
 import Image from "next/image"
 import WaterFall from "@/components/layout/WaterFall"
 
-export default function Page() {
+interface Props {
+  searchParams: {
+    q: string
+  }
+}
+export default function Page({ searchParams }: Props) {
   const [isMobile, setIsMobile] = useState(false)
-  const keyword = useSearchParams().get("q")?.trim()
+  const keyword = searchParams["q"]?.trim()
   useLayoutEffect(() => {
     if (window.innerWidth <= 820) {
       setIsMobile(true)
@@ -19,14 +23,12 @@ export default function Page() {
   return (
     <>
       {!isMobile && (
-        <main className="">
-          <section className="relative w3:mt-20">
-            <WaterFall requestName={"SEARCH_PINS"} param={{ keyword }} />
-          </section>
+        <main className="w3:mt-20">
+          <WaterFall requestName={"SEARCH_PINS"} param={{ keyword }} />
         </main>
       )}
       {isMobile && (
-        <div className="w3:hidden">
+        <main>
           <SearchBar />
           <SlideBanner />
 
@@ -62,7 +64,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-        </div>
+        </main>
       )}
     </>
   )

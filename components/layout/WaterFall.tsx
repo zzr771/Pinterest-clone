@@ -12,6 +12,7 @@ import { getCardNumberLimit, getImageDisplaySize, handleApolloRequestError } fro
 import { useAppSelector } from "@/lib/store/hook"
 import Loading from "../shared/Loading"
 import pinRequests from "@/lib/apolloRequests/pin.request"
+import { useRouter, useSearchParams } from "next/navigation"
 
 // For taking out data from server's response
 const map = {
@@ -43,7 +44,6 @@ interface Props {
   param?: Object
 }
 export default function WaterFall({ requestName, param }: Props) {
-  const user = useAppSelector((store) => store.user.user)
   const userSaved = useAppSelector((store) => store.user.saved)
   const [pins, setPins] = useState<PinCard[]>([])
   const screenSize = useAppSelector((store) => store.screenSize.screenSize)
@@ -58,25 +58,29 @@ export default function WaterFall({ requestName, param }: Props) {
   const positionedCardNumber = useRef(0)
   const cardWidth = useRef(0)
   const cardPaddingBottom = useRef(0)
+  const cardTitlePartHeight = useRef(0)
   const cardAuthorPartHeight = useRef(0)
 
-  function calculateCardSize() {
-    const rem = parseInt(getComputedStyle(document.documentElement).fontSize)
+  function setCardSizeData() {
     if (screenSize < 540) {
       cardWidth.current = Math.round((screenSize - 8) / 2) // 8: container's padding (containterRef)
       cardPaddingBottom.current = 8
-      cardAuthorPartHeight.current = 4 * rem
+      cardTitlePartHeight.current = 24
+      cardAuthorPartHeight.current = 40
     } else if (screenSize < 820) {
       cardWidth.current = Math.round((screenSize - 8) / 3) // 8: container's padding (containterRef)
       cardPaddingBottom.current = 8
-      cardAuthorPartHeight.current = 4 * rem
+      cardTitlePartHeight.current = 24
+      cardAuthorPartHeight.current = 40
     } else {
       cardWidth.current = 252
       cardPaddingBottom.current = 16
+      cardTitlePartHeight.current = 26
+      cardAuthorPartHeight.current = 40
     }
   }
 
-  function calculateContainerWidthAndColumnNumber() {
+  function setContainerWidth() {
     if (screenSize < 540) {
       columnNumber.current = 2
       return "100%"
@@ -91,12 +95,14 @@ export default function WaterFall({ requestName, param }: Props) {
 
   function placeCardsFromIndex(index: number) {
     for (let i = index; i < pins.length; i++) {
+      console.log(pins[i].title)
       const shortestColumnIndex = findShortestColumn()
       const { height } = pins[i].imageSize
       const transformY = columnHeights.current[shortestColumnIndex]
       const transformX = shortestColumnIndex * cardWidth.current
+      const titleHeight = pins[i].title.length > 0 ? cardTitlePartHeight.current : 0
       columnHeights.current[shortestColumnIndex] +=
-        height + cardPaddingBottom.current + cardAuthorPartHeight.current
+        height + cardPaddingBottom.current + cardAuthorPartHeight.current + titleHeight
 
       if (containterRef.current) {
         ;(
@@ -125,8 +131,8 @@ export default function WaterFall({ requestName, param }: Props) {
   useEffect(() => {
     if (!containterRef.current) return
 
-    calculateCardSize()
-    containterRef.current.style.width = calculateContainerWidthAndColumnNumber()
+    setCardSizeData()
+    containterRef.current.style.width = setContainerWidth()
     // if 'columnNumber' doesn't change, there is no need to place all the cards again
     if (prevColumnNumber.current === columnNumber.current) return
 
@@ -168,6 +174,7 @@ export default function WaterFall({ requestName, param }: Props) {
     },
   })
   async function addCards() {
+    console.log(isNoMoreCard)
     if (!isInitialRequestOver || isNoMoreCard) return
 
     const { data } = await fetchMoreCards({
@@ -209,13 +216,27 @@ export default function WaterFall({ requestName, param }: Props) {
     }
   }, [pins])
 
+  // const keyword = useSearchParams().get("q")
+  // const router = useRouter()
+  // useEffect(() => {
+  //   if (requestName === "SEARCH_PINS") {
+  //     // router.refresh()
+  //     // setPins([])
+  //     // addCards()
+  //   }
+  // }, [keyword])
+
+  // // useEffect(() => {
+  // //   console.log("[]")
+  // // }, [])
+
   return (
-    <section className="w-full relative">
+    <div className="w-full relative max-w3:pb-[70px]">
       {initialLoading && <Loading />}
       <div ref={containterRef} className="relative w3:mx-auto px-1">
         {requestName === "SEARCH_PINS" && pins.length === 0 && (
-          <div className="mx-auto mt-[40vh] text-center font-medium text-black">
-            Sorry, we couldn't find any pins matching your search. Try another keyword?
+          <div className="mx-auto mt-[35vh] text-center text-lg text-black">
+            <p className="mb-3">Sorry, no matched results.</p>
           </div>
         )}
         {pins.length > 0 &&
@@ -224,6 +245,6 @@ export default function WaterFall({ requestName, param }: Props) {
           ))}
       </div>
       <div ref={observerRef} className="w-full h-screen absolute bottom-0 z-[-1]"></div>
-    </section>
+    </div>
   )
 }
