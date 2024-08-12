@@ -10,9 +10,8 @@ import { DocumentNode, useLazyQuery, useQuery } from "@apollo/client"
 import PinCard from "@/components/cards/PinCard"
 import { getCardNumberLimit, getImageDisplaySize, handleApolloRequestError } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
-import Loading from "../shared/Loading"
 import pinRequests from "@/lib/apolloRequests/pin.request"
-import { useRouter, useSearchParams } from "next/navigation"
+import { PinCardInfo } from "@/lib/types"
 
 // For taking out data from server's response
 const map = {
@@ -20,22 +19,6 @@ const map = {
   FETCH_USER_CREATED_PINS: "userCreatedPins",
   FETCH_USER_SAVED_PINS: "userSavedPins",
   SEARCH_PINS: "searchPins",
-}
-interface PinCard {
-  _id: string
-  author: {
-    _id: string
-    firstName: string
-    lastName: string
-    imageUrl: string
-  }
-  imageUrl: string
-  imageSize: {
-    width: number
-    height: number
-  }
-  title: string
-  link: string
 }
 interface Props {
   // Optional values are the keys of the 'pinRequests' object in "@/lib/apolloRequests/pin.request"
@@ -45,7 +28,7 @@ interface Props {
 }
 export default function WaterFall({ requestName, param }: Props) {
   const userSaved = useAppSelector((store) => store.user.saved)
-  const [pins, setPins] = useState<PinCard[]>([])
+  const [pins, setPins] = useState<PinCardInfo[]>([])
   const screenSize = useAppSelector((store) => store.screenSize.screenSize)
   const containterRef = useRef<HTMLDivElement>(null)
   const observerRef = useRef<HTMLDivElement>(null)
@@ -95,7 +78,6 @@ export default function WaterFall({ requestName, param }: Props) {
 
   function placeCardsFromIndex(index: number) {
     for (let i = index; i < pins.length; i++) {
-      console.log(pins[i].title)
       const shortestColumnIndex = findShortestColumn()
       const { height } = pins[i].imageSize
       const transformY = columnHeights.current[shortestColumnIndex]
@@ -160,7 +142,7 @@ export default function WaterFall({ requestName, param }: Props) {
     if (initialLoading || !initialData) return
 
     let initialPins = initialData[map[requestName]]
-    initialPins = initialPins.map((item: PinCard) => {
+    initialPins = initialPins.map((item: PinCardInfo) => {
       const { width, height } = getImageDisplaySize(item.imageSize)
       return { ...item, imageSize: { width, height } }
     })
@@ -174,7 +156,6 @@ export default function WaterFall({ requestName, param }: Props) {
     },
   })
   async function addCards() {
-    console.log(isNoMoreCard)
     if (!isInitialRequestOver || isNoMoreCard) return
 
     const { data } = await fetchMoreCards({
@@ -190,7 +171,7 @@ export default function WaterFall({ requestName, param }: Props) {
       setIsNoMoreCard(true)
       return
     }
-    subsequentPins = subsequentPins.map((item: PinCard) => {
+    subsequentPins = subsequentPins.map((item: PinCardInfo) => {
       const { width, height } = getImageDisplaySize(item.imageSize)
       return { ...item, imageSize: { width, height } }
     })
@@ -216,30 +197,30 @@ export default function WaterFall({ requestName, param }: Props) {
     }
   }, [pins])
 
-  // const keyword = useSearchParams().get("q")
-  // const router = useRouter()
-  // useEffect(() => {
-  //   if (requestName === "SEARCH_PINS") {
-  //     // router.refresh()
-  //     // setPins([])
-  //     // addCards()
-  //   }
-  // }, [keyword])
-
-  // // useEffect(() => {
-  // //   console.log("[]")
-  // // }, [])
-
   return (
     <div className="w-full relative max-w3:pb-[70px]">
-      {initialLoading && <Loading />}
+      {initialLoading && (
+        <div className="absolute top-[30vh] max-w3:top-[48vh] horizontal-middle">
+          <svg
+            aria-label="Loading Search Results"
+            className="loading-spinner"
+            height="40"
+            role="img"
+            viewBox="0 0 24 24"
+            width="40">
+            <path d="M15 10.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m-6-6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24"></path>
+          </svg>
+        </div>
+      )}
+
       <div ref={containterRef} className="relative w3:mx-auto px-1">
-        {requestName === "SEARCH_PINS" && pins.length === 0 && (
+        {!initialLoading && requestName === "SEARCH_PINS" && pins.length === 0 && (
           <div className="mx-auto mt-[35vh] text-center text-lg text-black">
             <p className="mb-3">Sorry, no matched results.</p>
           </div>
         )}
-        {pins.length > 0 &&
+        {!initialLoading &&
+          pins.length > 0 &&
           pins.map((pin) => (
             <PinCard key={pin._id} pin={pin} isSaved={(userSaved && userSaved.includes(pin._id)) || false} />
           ))}

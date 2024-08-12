@@ -8,7 +8,7 @@ import image4 from "@/public/assets/undone functions/pin-detail4.jpg"
 import image5 from "@/public/assets/undone functions/pin-detail5.jpg"
 import Image from "next/image"
 const images = [image5, image2, image3, image4, image1]
-export default function SlideBanner() {
+export default function SlideBannerMobile() {
   return (
     <Slide
       arrows={false}

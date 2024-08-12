@@ -84,7 +84,7 @@ export default function PinCard({ pin, isSaved }: Props) {
       <div ref={cardBody} className="relative rounded-2xl" onClick={() => router.push(`/pin/${_id}`)}>
         <Image
           src={imageUrl}
-          alt="pin cover image"
+          alt=""
           className="rounded-2xl"
           width={imageSize.width}
           height={imageSize.height}

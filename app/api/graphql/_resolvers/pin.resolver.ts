@@ -1,7 +1,7 @@
 import Pin from "@/lib/models/pin.model"
 import User from "@/lib/models/user.model"
 import Comment from "@/lib/models/comment.model"
-import { PinInfoBasic, ReactionInfo } from "@/lib/types"
+import { PinCardInfo, PinInfoBasic, ReactionInfo } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
 interface CommentInfoShallow {
@@ -81,7 +81,10 @@ const pinResolver = {
       _: any,
       { userId, currentNumber, limit }: { userId: string; currentNumber: number; limit: number }
     ) {
-      const user = await User.findById(userId).populate({
+      const user = await User.findById(userId)
+      const savedIds = user.saved.slice(currentNumber, currentNumber + limit)
+
+      const userDeep = await User.findById(userId).populate({
         path: "saved",
         model: Pin,
         options: {
@@ -90,7 +93,16 @@ const pinResolver = {
         },
         populate: { path: "author", model: User, select: "firstName lastName imageUrl" },
       })
-      return user.saved
+
+      // If some pins have been deleted
+      if (savedIds.length !== userDeep.saved.length) {
+        const validIds = userDeep.saved.map((pin: PinCardInfo) => {
+          return pin._id
+        })
+        user.saved.splice(currentNumber, limit, ...validIds)
+        await user.save()
+      }
+      return userDeep.saved
     },
 
     async searchPins(

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { FaSearch } from "react-icons/fa"
 import { IoMdClose } from "react-icons/io"
 
-export default function SearchBar() {
+export default function SearchBarMobile() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isFocused, setIsFocused] = useState(false)
   const [recentSearches, setRecentSearches] = useState([])

@@ -90,7 +90,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
         Note that 'router.refresh()' must go after 'router.replace()', otherwise the cache of Pin
       content page won't be invalidated.
     */
-    router.replace("/")
+    router.back()
     router.refresh()
   }
 
@@ -117,6 +117,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
           {
             label: "Delete Pin",
             callback: () => {
+              setShowDropDownList(false)
               dialog({
                 title: "Delete your Pin?",
                 confirmText: "Delete",
@@ -211,7 +212,14 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
           <div className="flex flex-col flex-1 max-h-[calc(100vh-323px)] w5:max-h-[659px] overflow-y-auto w3:pr-8 pr-4">
             {/* link */}
             {!isMobileDevice && (
-              <a target="_blank" href={pinBasicInfo.link} className="underline cursor-pointer">
+              <a
+                target="_blank"
+                href={
+                  pinBasicInfo.link.indexOf("http") !== -1
+                    ? pinBasicInfo.link
+                    : `https://${pinBasicInfo.link}`
+                }
+                className="underline cursor-pointer">
                 {shortenURL(pinBasicInfo.link || "")}
               </a>
             )}

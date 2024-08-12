@@ -6,13 +6,13 @@ import { useState, useRef, useCallback, useEffect } from "react"
 import SearchSuggestion from "./SearchSuggestion"
 import { useAppDispatch } from "@/lib/store/hook"
 import { setShowModal } from "@/lib/store/features/modal"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function SearchBar() {
   const router = useRouter()
   const dispatch = useAppDispatch()
 
-  const keyword = useSearchParams().get("q")?.trim()
+  const keyword = usePathname().split("/").pop()
   const routeName = usePathname().split("/")[1]
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -67,7 +67,7 @@ export default function SearchBar() {
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
 
     hideSearchSuggestion()
-    router.push(`/search?q=${searchTerm.trim()}`)
+    router.push(`/search/${searchTerm.trim()}`)
   }
 
   function hideSearchSuggestion() {

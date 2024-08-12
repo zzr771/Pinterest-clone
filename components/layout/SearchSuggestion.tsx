@@ -23,7 +23,7 @@ export default function SearchSuggestion({ setSearchTerm, hideSearchSuggestion }
   function searchClickedTerm(item: string) {
     setSearchTerm(item.trim())
     hideSearchSuggestion()
-    router.push(`/search?q=${item.trim()}`)
+    router.push(`/search/${item.trim()}`)
   }
 
   return (

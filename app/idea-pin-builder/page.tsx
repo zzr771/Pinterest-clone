@@ -160,7 +160,7 @@ export default function Page() {
     setTimeout(() => {
       if (res.length > 1) {
         showMessageBox({
-          message: "Your Pins has been published!",
+          message: "Your Pins have been published!",
         })
       } else {
         showMessageBox({

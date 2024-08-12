@@ -1,20 +1,27 @@
 "use client"
 import { useLayoutEffect, useState } from "react"
-import SlideBanner from "./_components/SlideBanner"
-import SearchBar from "./_components/SearchBar"
+import SlideBannerMobile from "./_components/SlideBannerMobile"
+import SearchBarMobile from "./_components/SearchBarMobile"
 import { ideasArray, popularArray } from "@/constants/index"
 import { FiChevronRight } from "react-icons/fi"
 import Image from "next/image"
 import WaterFall from "@/components/layout/WaterFall"
 
-interface Props {
-  searchParams: {
-    q: string
-  }
-}
-export default function Page({ searchParams }: Props) {
+/*
+    In this route, we use dynamic route instead of search params, because we want 
+  next.js to cache the results of every search. 
+    For instance, a user searches for "light", then searches for "beach", then clicks
+  the browser's 'back' button. We hope that the contents about 'light' can be cached 
+  so they can be displayed instantly.
+    But next.js's router cache ignores search params. "/search?q=1" and "/search?q=2"
+  means no difference to it. It only caches '/search' with the search param that you
+  use to visit this route for the first time. In this case, it caches '/search?q=light'
+  and doesn't cache '/search?q=beach'.
+    So we use dynamic route instead.
+*/
+export default function Page({ params }: { params: { keyword: string } }) {
+  const { keyword } = params
   const [isMobile, setIsMobile] = useState(false)
-  const keyword = searchParams["q"]?.trim()
   useLayoutEffect(() => {
     if (window.innerWidth <= 820) {
       setIsMobile(true)
@@ -29,8 +36,8 @@ export default function Page({ searchParams }: Props) {
       )}
       {isMobile && (
         <main>
-          <SearchBar />
-          <SlideBanner />
+          <SearchBarMobile />
+          <SlideBannerMobile />
 
           {/* search suggestions */}
           <div className="pb-16">

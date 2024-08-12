@@ -1,3 +1,5 @@
+export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
+
 export interface Option {
   label: string
   callback?: () => void
@@ -47,7 +49,22 @@ export interface PinInfoBasic {
   link: string
 }
 
-export type DraftState = "" | "Creating..." | "Saving..." | "Changes stored!" | "Publishing..."
+export interface PinCardInfo {
+  _id: string
+  author: {
+    _id: string
+    firstName: string
+    lastName: string
+    imageUrl: string
+  }
+  imageUrl: string
+  imageSize: {
+    width: number
+    height: number
+  }
+  title: string
+  link: string
+}
 
 export interface PinDraft {
   _id: string
