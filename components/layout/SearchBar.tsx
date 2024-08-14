@@ -12,8 +12,9 @@ export default function SearchBar() {
   const router = useRouter()
   const dispatch = useAppDispatch()
 
-  const keyword = usePathname().split("/").pop()
-  const routeName = usePathname().split("/")[1]
+  const pathName = usePathname()
+  const keyword = pathName.split("/").pop()
+  const routeName = pathName.split("/")[1]
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -46,28 +47,30 @@ export default function SearchBar() {
     event.stopPropagation()
     hideSearchSuggestion()
     setSearchTerm("")
+    router.push("/")
   }
 
   function handleEnterDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key !== "Enter" || searchTerm.trim() === "") {
+    const searchTermTrimed = searchTerm.trim()
+    if (event.key !== "Enter" || searchTermTrimed === "") {
       return
     }
 
     // save the search term in localStorage with LRU algorithm. Capacity: 10
     let recentResearches = JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
-    if (!recentResearches.includes(searchTerm)) {
+    if (!recentResearches.includes(searchTermTrimed)) {
       if (recentResearches.length >= 10) {
         recentResearches.pop()
       }
-      recentResearches.unshift(searchTerm)
+      recentResearches.unshift(searchTermTrimed)
     } else {
-      recentResearches = recentResearches.filter((item: string) => item !== searchTerm)
-      recentResearches.unshift(searchTerm)
+      recentResearches = recentResearches.filter((item: string) => item !== searchTermTrimed)
+      recentResearches.unshift(searchTermTrimed)
     }
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
 
     hideSearchSuggestion()
-    router.push(`/search/${searchTerm.trim()}`)
+    router.push(`/search/${searchTermTrimed}`)
   }
 
   function hideSearchSuggestion() {
@@ -78,7 +81,8 @@ export default function SearchBar() {
 
   // If users type the search keyword in the address bar to initiate a search, the 'searchTerm' should change accordingly
   useEffect(() => {
-    if (keyword) {
+    // In route '/user', the URL always ends with 'created' or 'saved'. Prevent these two words from being set as 'searchTerm'
+    if (keyword && pathName.indexOf("/user") === -1) {
       setSearchTerm(keyword)
     }
   }, [keyword])

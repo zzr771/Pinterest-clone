@@ -63,7 +63,7 @@ export default function PinDraftList({
 
   // select or unselect all drafts
   function checkAllDrafts(isAll: boolean) {
-    if (isAll) {
+    if (isAll && draftList.length > 0) {
       setCheckedDrafts(draftList)
     } else {
       setCheckedDrafts([])

@@ -20,10 +20,17 @@ export default function SearchSuggestion({ setSearchTerm, hideSearchSuggestion }
     setRecentSearches(updatedSearches)
   }
 
-  function searchClickedTerm(item: string) {
-    setSearchTerm(item.trim())
+  function searchClickedTerm(term: string) {
+    setSearchTerm(term)
     hideSearchSuggestion()
-    router.push(`/search/${item.trim()}`)
+
+    // change the search term's position in localStorage to the first place.
+    let recentResearches = JSON.parse(localStorage.getItem("pinterest_recentSearches") || "[]")
+    recentResearches = recentResearches.filter((item: string) => item !== term)
+    recentResearches.unshift(term)
+    localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
+
+    router.push(`/search/${term}`)
   }
 
   return (

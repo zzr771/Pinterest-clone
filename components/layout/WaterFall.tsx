@@ -219,11 +219,9 @@ export default function WaterFall({ requestName, param }: Props) {
             <p className="mb-3">Sorry, no matched results.</p>
           </div>
         )}
-        {!initialLoading &&
-          pins.length > 0 &&
-          pins.map((pin) => (
-            <PinCard key={pin._id} pin={pin} isSaved={(userSaved && userSaved.includes(pin._id)) || false} />
-          ))}
+        {pins.map((pin) => (
+          <PinCard key={pin._id} pin={pin} isSaved={(userSaved && userSaved.includes(pin._id)) || false} />
+        ))}
       </div>
       <div ref={observerRef} className="w-full h-screen absolute bottom-0 z-[-1]"></div>
     </div>

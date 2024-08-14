@@ -150,7 +150,7 @@ export default function PinCard({ pin, isSaved }: Props) {
             <Image
               src={author.imageUrl}
               alt="user avatar"
-              className="rounded-full object-cover  h-8 w-8"
+              className="rounded-full object-cover h-8 w-8"
               width={32}
               height={32}
             />

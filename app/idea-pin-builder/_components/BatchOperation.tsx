@@ -43,11 +43,15 @@ export default function BatchOperation({
   return (
     <div className="h-[4.5rem] border-t border-gray-bg-6 p-4">
       {checkedDrafts.length === 0 ? (
-        <div className="h-full flex items-center gap-2">
-          <Checkbox
-            onCheckedChange={() => checkAllDrafts(true)}
-            className="h-6 w-6 rounded-lg border-2 border-gray-font-4 bg-white data-[state=checked]:border-black data-[state=checked]:bg-black data-[state=checked]:text-white"
-          />
+        <div
+          className="relative h-full flex items-center gap-2 cursor-pointer"
+          onClick={() => checkAllDrafts(true)}>
+          {/* A cover layer that prevents users from directly clicking the checkbox. If users click the checkbox, a check will
+            be displayed in the checkbox, whick is expected. 
+          */}
+          <div className="absolute w-28 h-full"></div>
+
+          <Checkbox className="h-6 w-6 rounded-lg border-2 border-gray-font-4 bg-white data-[state=checked]:border-black data-[state=checked]:bg-black data-[state=checked]:text-white" />
           <span className="text-[15px]">Select all</span>
         </div>
       ) : (
