@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import { FaSearch, FaUser } from "react-icons/fa"
 import { AiFillHome } from "react-icons/ai"
 import Link from "next/link"
-import { SignInButton, SignOutButton } from "@clerk/nextjs"
+import { SignInButton } from "@clerk/nextjs"
 import { useRef } from "react"
 import Image from "next/image"
 import { useAppSelector } from "@/lib/store/hook"
@@ -14,19 +14,13 @@ export default function NavBarBottom() {
 
   const pathname = usePathname()
 
+  const user = useAppSelector((store) => store.user.user)
   const hiddenClerkButtonsRef = useRef<HTMLDivElement>(null)
   function handleSignIn() {
     const signInButton = hiddenClerkButtonsRef?.current?.children[0] as HTMLButtonElement
     if (!signInButton) return
     signInButton.click()
   }
-  function handleSignOut() {
-    const signOutButton = hiddenClerkButtonsRef?.current?.children[1] as HTMLButtonElement
-    if (!signOutButton) return
-    signOutButton.click()
-  }
-
-  const user = useAppSelector((store) => store.user.user)
 
   return (
     <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white">
@@ -37,7 +31,7 @@ export default function NavBarBottom() {
           </div>
         </Link>
 
-        <Link href="/search">
+        <Link href="/searchMobile">
           <div className={`${pathname === "Search" ? "text-black" : "text-gray-font-3"}`}>
             <FaSearch className="w-6 h-6" />
           </div>
@@ -68,7 +62,6 @@ export default function NavBarBottom() {
 
         <div ref={hiddenClerkButtonsRef} className="hidden">
           <SignInButton mode="modal" />
-          <SignOutButton />
         </div>
       </div>
     </section>
