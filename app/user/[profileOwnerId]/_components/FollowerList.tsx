@@ -81,50 +81,49 @@ export default function FollowerList({ userId, type, number, setShowFollowList }
               </svg>
             </div>
           )}
-          {users.length > 0 &&
-            users.map((item) => (
-              <div key={item._id} className="flex justify-between items-center py-1">
-                <div
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={() => {
-                    router.push(`/user/${item._id}`)
-                  }}>
-                  <Image
-                    src={item.imageUrl}
-                    alt="user avatar"
-                    width={64}
-                    height={64}
-                    className="rounded-full object-cover"
-                  />
-                  <span className="font-medium">
-                    {item.firstName} {item.lastName}
-                  </span>
-                </div>
-
-                {user?._id === item._id ? (
-                  <Button
-                    size="small"
-                    className="h-[38px] !text-base !font-medium text-gray-font-4"
-                    text={"That's you!"}
-                    bgColor={"gray"}></Button>
-                ) : (
-                  <Button
-                    size="small"
-                    className="h-[38px] !text-base !font-medium"
-                    text={following?.includes(item._id) ? "Unfollow" : "Follow"}
-                    bgColor={following?.includes(item._id) ? "black" : "red"}
-                    click={() => {
-                      if (following?.includes(item._id)) {
-                        unfollowUser(item._id)
-                      } else {
-                        followUser(item._id)
-                      }
-                    }}
-                    hover
-                    clickEffect></Button>
-                )}
+          {users.map((item) => (
+            <div key={item._id} className="flex justify-between items-center py-1">
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  router.push(`/user/${item._id}`)
+                }}>
+                <Image
+                  src={item.imageUrl}
+                  alt="user avatar"
+                  width={64}
+                  height={64}
+                  className="rounded-full object-cover"
+                />
+                <span className="font-medium">
+                  {item.firstName} {item.lastName}
+                </span>
               </div>
-            ))}
+
+              {user?._id === item._id ? (
+                <Button
+                  size="small"
+                  className="h-[38px] !text-base !font-medium text-gray-font-4"
+                  text={"That's you!"}
+                  bgColor={"gray"}></Button>
+              ) : (
+                <Button
+                  size="small"
+                  className="h-[38px] !text-base !font-medium"
+                  text={following?.includes(item._id) ? "Unfollow" : "Follow"}
+                  bgColor={following?.includes(item._id) ? "black" : "red"}
+                  click={() => {
+                    if (following?.includes(item._id)) {
+                      unfollowUser(item._id)
+                    } else {
+                      followUser(item._id)
+                    }
+                  }}
+                  hover
+                  clickEffect></Button>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
