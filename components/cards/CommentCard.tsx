@@ -1,3 +1,4 @@
+// This component can be used in both mobile and desktop
 "use client"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
@@ -229,10 +230,13 @@ export default function CommentCard({
       )}
 
       {showInputModal && isMobileDevice && (
-        <InputModal setShowInputModal={setShowInputModal} isComment={false} />
+        <InputModal
+          replyTo={comment}
+          rootCommentId={rootCommentId}
+          setShowInputModal={setShowInputModal}
+          setComments={setComments}
+        />
       )}
-
-      {/* todo: replies */}
     </div>
   )
 }

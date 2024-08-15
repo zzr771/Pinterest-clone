@@ -1,16 +1,26 @@
+import { COMMENT } from "@/lib/apolloRequests/comment.request"
+import { useAppSelector } from "@/lib/store/hook"
+import { CommentInfo } from "@/lib/types"
+import { handleApolloRequestError } from "@/lib/utils"
+import { useMutation } from "@apollo/client"
+import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
+import toast from "react-hot-toast"
 import { IoMdClose } from "react-icons/io"
 
 interface Props {
+  replyTo?: CommentInfo // for replying
+  rootCommentId?: string // for replying
   setShowInputModal: React.Dispatch<React.SetStateAction<boolean>>
-  isComment?: boolean
+  setComments: React.Dispatch<React.SetStateAction<CommentInfo[]>>
 }
-export default function InputModal({ setShowInputModal, isComment = true }: Props) {
+export default function InputModal({ replyTo, rootCommentId, setShowInputModal, setComments }: Props) {
+  const user = useAppSelector((store) => store.user.user)
   const [input, setInput] = useState("")
   const [isInputValid, setIsInputValid] = useState(false)
-  const placeHolderRef = useRef<HTMLDivElement>(null)
   const virtualTextAreaRef = useRef<HTMLDivElement>(null)
 
+  // When the text length exceeds 500, only the backspace key can be used
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     const text = virtualTextAreaRef.current?.textContent || ""
     if (text.length >= 500 && event.key !== "Backspace") {
@@ -35,6 +45,91 @@ export default function InputModal({ setShowInputModal, isComment = true }: Prop
       setShowInputModal(false)
     }
   }
+
+  // --------------------------------------------------------------------------------- Comment & Reply
+  const pinId = usePathname().split("/").pop()
+  function handlePost() {
+    if (!isInputValid) {
+      return
+    }
+    if (replyTo) {
+      handleReply()
+    } else {
+      handleComment()
+    }
+  }
+  const [commentMutation] = useMutation(COMMENT, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+
+  async function handleComment() {
+    if (!user) {
+      toast("Please sign in before operation")
+      return
+    }
+
+    const {
+      data: { comment: res },
+    } = await commentMutation({
+      variables: {
+        input: {
+          pinId,
+          userId: user._id,
+          content: input,
+          isReply: false,
+          replyToUser: null,
+          replyToComment: null,
+        },
+      },
+    })
+
+    setComments((prev) => {
+      if (!prev.includes(res)) {
+        return [...prev, res]
+      }
+      return prev
+    })
+    setShowInputModal(false)
+  }
+
+  async function handleReply() {
+    if (!user) {
+      toast("Please sign in before operation")
+      return
+    }
+    if (!replyTo) {
+      toast.error("Someting went wrong")
+      return
+    }
+
+    const {
+      data: { comment: res },
+    } = await commentMutation({
+      variables: {
+        input: {
+          pinId,
+          userId: user._id,
+          content: input,
+          isReply: true,
+          replyToUser: replyTo.isReply ? replyTo.author._id : null,
+          replyToComment: rootCommentId,
+        },
+      },
+    })
+
+    setComments((prev) => {
+      return prev.map((item) => {
+        if (item._id === rootCommentId && !item.replies.includes(res)) {
+          item.replies = [...item.replies, res]
+        }
+        return item
+      })
+    })
+    setShowInputModal(false)
+  }
+
   return (
     <div className="fixed inset-0 bg-gray-tp-2 z-[20]" onClick={handleClickModal}>
       <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] text-base">
@@ -46,15 +141,15 @@ export default function InputModal({ setShowInputModal, isComment = true }: Prop
             <IoMdClose className="w-6 h-6" />
           </div>
           {/* todo: username */}
-          <span className="font-medium">{isComment ? "Add a comment" : "Reply to Kevin"}</span>
+          <span className="font-medium">
+            {replyTo ? `Reply to ${replyTo.author.firstName}` : "Add a comment"}
+          </span>
           <div className="w-12"></div>
         </div>
 
         {/* virtual textarea */}
         <div className="relative flex flex-col z-[1] mt-5 mx-7 min-h-[164px]">
-          <div
-            ref={placeHolderRef}
-            className="placeholder absolute z-[-1] text-[#9CA3AF] text-[15px] font-normal">
+          <div className="placeholder absolute z-[-1] text-[#9CA3AF] text-[15px] font-normal">
             {input.length > 0
               ? ""
               : "Share what you like about this Pin, how it inspired you, or simply give a compliment"}
@@ -72,7 +167,8 @@ export default function InputModal({ setShowInputModal, isComment = true }: Prop
             <div
               className={`w-[3.75rem] h-8 rounded-full font-semibold text-sm text-center leading-8 ${
                 isInputValid ? "bg-red text-white" : "bg-gray-bg-4 text-gray-font-4"
-              }`}>
+              }`}
+              onClick={handlePost}>
               Post
             </div>
           </div>

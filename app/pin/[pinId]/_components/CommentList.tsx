@@ -2,25 +2,14 @@ import CommentCard from "@/components/cards/CommentCard"
 import { useEffect, useState } from "react"
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import { CommentInfo } from "@/lib/types"
-import toast from "react-hot-toast"
-import { usePathname } from "next/navigation"
-import { useMutation } from "@apollo/client"
-import { handleApolloRequestError } from "@/lib/utils"
-import { LIKE_COMMENT, UNLIKE_COMMENT } from "@/lib/apolloRequests/user.request"
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
-import { setUserLikedComments } from "@/lib/store/features/user"
-import useInvalidateRouterCache from "@/lib/hooks/useInvalidateRouterCache"
+import useLikeComment from "@/lib/hooks/useLikeComment"
 
 interface Props {
   comments: CommentInfo[]
   setComments: React.Dispatch<React.SetStateAction<CommentInfo[]>>
 }
 export default function Comments({ comments, setComments }: Props) {
-  const dispatch = useAppDispatch()
   const [isFolded, setIsFolded] = useState(false)
-  const path = usePathname()
-  const user = useAppSelector((store) => store.user.user)
-  const { needInvalidate } = useInvalidateRouterCache()
   const [commentNumber, setCommentNumber] = useState(countComments())
 
   function countComments() {
@@ -37,61 +26,7 @@ export default function Comments({ comments, setComments }: Props) {
   }, [comments])
 
   // --------------------------------------------------------------------------------- Like & Unlike
-  const [likeCommentMutation] = useMutation(LIKE_COMMENT, {
-    onError: (error) => {
-      handleApolloRequestError(error)
-    },
-  })
-  const [unlikeCommentMutation] = useMutation(UNLIKE_COMMENT, {
-    onError: (error) => {
-      handleApolloRequestError(error)
-    },
-  })
-
-  async function handleLike(commentId: string) {
-    if (!user) {
-      toast("Please sign in before operation")
-      return false
-    }
-
-    const {
-      data: { likeComment: res },
-    } = await likeCommentMutation({
-      variables: {
-        userId: user._id,
-        commentId,
-        path,
-      },
-    })
-
-    if (!Array.isArray(res)) return false
-    // storeLikeCount(commentId, 1)
-    dispatch(setUserLikedComments(res))
-    needInvalidate.current = true
-    return true
-  }
-  async function handleUnlike(commentId: string) {
-    if (!user) {
-      toast("Please sign in before operation")
-      return false
-    }
-
-    const {
-      data: { unlikeComment: res },
-    } = await unlikeCommentMutation({
-      variables: {
-        userId: user._id,
-        commentId,
-        path,
-      },
-    })
-
-    if (!Array.isArray(res)) return false
-    // storeLikeCount(commentId, -1)
-    dispatch(setUserLikedComments(res))
-    needInvalidate.current = true
-    return true
-  }
+  const { handleLike, handleUnlike } = useLikeComment()
 
   return (
     <div className="mt-[4rem]">
@@ -132,7 +67,12 @@ export default function Comments({ comments, setComments }: Props) {
               )
             )
           })}
-        <div className="py-4"></div>
+        {commentNumber === 0 && (
+          <span className="text-gray-font-4 font-light text-base">
+            No comments yet! Add one to start the conversation.
+          </span>
+        )}
+        <div className="py-10"></div>
       </div>
     </div>
   )

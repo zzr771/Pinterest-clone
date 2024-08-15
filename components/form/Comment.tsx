@@ -15,13 +15,14 @@ import { COMMENT } from "@/lib/apolloRequests/comment.request"
 import { handleApolloRequestError } from "@/lib/utils"
 import toast from "react-hot-toast"
 import { CommentInfo } from "@/lib/types"
+import { usePathname } from "next/navigation"
 
 interface Props {
-  pinId: string
   setComments: React.Dispatch<React.SetStateAction<CommentInfo[]>>
 }
-export default function Comment({ pinId, setComments }: Props) {
+export default function Comment({ setComments }: Props) {
   const user = useAppSelector((store) => store.user.user)
+  const pinId = usePathname().split("/").pop()
 
   const form = useForm({
     resolver: zodResolver(CommentValidation),
@@ -60,6 +61,11 @@ export default function Comment({ pinId, setComments }: Props) {
       },
     })
     setComments((prev) => {
+      /*
+            In React 18 strict mode, the callback passed to setState will be called twice to check if
+          it is a pure function.
+            "!prev.includes(res)" is necessary to prevent adding 'res' to 'comments' for a second time.
+        */
       if (!prev.includes(res)) {
         return [...prev, res]
       }
