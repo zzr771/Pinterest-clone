@@ -6,9 +6,7 @@ interface Props {
   id: string
 }
 export default function SearchSuggestionCard({ image, title, id }: Props) {
-  function handleClick() {
-    // todo
-  }
+  function handleClick() {}
   return (
     <div
       className="flex flex-1 overflow-hidden rounded-2xl bg-gray-bg-3 aspect-[2.5/1] cursor-not-allowed"

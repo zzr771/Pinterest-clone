@@ -84,10 +84,10 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
       still be displayed on Home page. If he clicks this Pin, he will see the Pin's content again
       (router cache).
         What we want is that when the user clicks the deleted Pin's card on Home page, he can get
-      into the Pin's content page, but the page should be taken over by 'error.tsx' and tell the user
-      that this Pin has been deleted.
+      into the Pin's content page, but the page should be taken over by 'error.tsx' and tell the 
+      user that this Pin has been deleted.
         To achieve this, we need to refresh the router cache. 
-        Note that 'router.refresh()' must go after 'router.replace()', otherwise the cache of Pin
+        Note that 'router.refresh()' must go after 'router.back()', otherwise the cache of Pin
       content page won't be invalidated.
     */
     router.back()
@@ -292,12 +292,16 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
             <div className="flex justify-end items-center mt-1 mb-2">
               <Reaction initialReactions={pin.reactions} />
             </div>
-            <Comment pinId={_id} setComments={setComments} />
+            <Comment setComments={setComments} />
           </div>
         )}
 
         {isMobileDevice && showCommentsMobile && (
-          <CommentListMobile setshowCommentsMobile={setshowCommentsMobile} />
+          <CommentListMobile
+            setshowCommentsMobile={setshowCommentsMobile}
+            comments={comments}
+            setComments={setComments}
+          />
         )}
       </div>
       <Dialog />

@@ -36,7 +36,6 @@ export default function SearchBarMobile() {
     }
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
 
-    // -------------------------------------------------------------------------------------------------------- todo: start search and let searchbar blur
     setIsFocused(false)
     setSearchTerm(searchTermTrimed)
     router.replace(`/searchMobile/${searchTermTrimed}`)

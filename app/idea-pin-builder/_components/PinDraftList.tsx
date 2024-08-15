@@ -132,7 +132,6 @@ export default function PinDraftList({
             {isFolded ? <FiChevronsRight className="h-7 w-7" /> : <FiChevronsLeft className="h-7 w-7" />}
           </Button>
         </div>
-        {/* todo: disable this button while saving a new created draft */}
         {isFolded && (
           <Button hover clickEffect rounded click={createEmptyDraft}>
             <FaPlus className="h-5 w-5" />

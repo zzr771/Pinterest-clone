@@ -1,4 +1,4 @@
-// This component can be used in both mobile and desktop
+// This component is used on both mobile and desktop
 "use client"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
