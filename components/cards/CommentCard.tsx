@@ -1,7 +1,7 @@
 // This component is used on both mobile and desktop
 "use client"
 import Image from "next/image"
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { HiOutlineHeart, HiHeart } from "react-icons/hi"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
@@ -35,7 +35,7 @@ export default function CommentCard({
   const [isMobileDevice, setIsMobileDevice] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false) // desktop
   const [showInputModal, setShowInputModal] = useState(false) // mobile
-  const { author, content, likes, replies, replyToUser, createdAt } = comment
+  const { author, content, likes, replies = [], replyToUser, createdAt } = comment
   const user = useAppSelector((store) => store.user.user)
   const isAuthor = author._id === user?._id
   const [commentOnEdit, setCommentOnEdit] = useState<undefined | CommentInfo>(undefined)
@@ -109,6 +109,29 @@ export default function CommentCard({
     setShowInputModal(true)
   }
 
+  // --------------------------------------------------------------------- Displayed Replies
+  const [displayedReplies, setDisplayedReplies] = useState<CommentInfo[]>(replies.slice(0, 1))
+  const [showAllReplies, setShowAllReplies] = useState(false)
+
+  useEffect(() => {
+    if (showAllReplies) {
+      setDisplayedReplies(replies)
+    } else {
+      setDisplayedReplies(replies.slice(0, 1))
+    }
+  }, [replies.length])
+
+  function toggleShowReplies() {
+    if (!showAllReplies) {
+      setDisplayedReplies(replies)
+      setShowAllReplies(true)
+    } else {
+      setDisplayedReplies(replies.slice(0, 1))
+      setShowAllReplies(false)
+    }
+  }
+
+  // --------------------------------------------------------------------- Like & Unlike
   const [likeCount, setLikeCount] = useState(likes)
   const userLikedComment = useAppSelector((store) => store.user.likedComments)
   const isLiked = userLikedComment && userLikedComment.includes(comment._id)
@@ -225,10 +248,17 @@ export default function CommentCard({
         </div>
       )}
 
-      {/* replies */}
+      {replies.length > 1 && (
+        <div className="ml-12 my-4 text-gray-font-4 text-xs cursor-pointer" onClick={toggleShowReplies}>
+          <span className="mr-2">⎯⎯</span>
+          {showAllReplies ? "Hide replies" : `View ${replies.length} replies`}
+        </div>
+      )}
+
+      {/* reply list */}
       <div className="mt-4 ml-12">
-        {replies &&
-          replies.map((reply) => {
+        {displayedReplies &&
+          displayedReplies.map((reply) => {
             return (
               reply && (
                 <CommentCard
