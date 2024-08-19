@@ -1,45 +1,56 @@
+// This component is used for replying to a comment/reply and editing a comment/reply
 import { useForm } from "react-hook-form"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "../shadcn/form" // 这些组件来自库 shadcn
-import { Textarea } from "../shadcn/textarea"
-import Button from "../shared/Button"
-
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../shadcn/form"
+import { VirtualTextarea } from "./VirtualTextarea"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CommentValidation } from "@/lib/validations/comment"
+
+import Button from "../shared/Button"
 import { useEffect, useRef } from "react"
 import { useAppSelector } from "@/lib/store/hook"
 import { useMutation } from "@apollo/client"
 import { handleApolloRequestError } from "@/lib/utils"
 import { CommentInfo } from "@/lib/types"
-import { COMMENT } from "@/lib/apolloRequests/comment.request"
+import { COMMENT, EDIT_COMMENT } from "@/lib/apolloRequests/comment.request"
 import { usePathname } from "next/navigation"
 
 interface Props {
-  replyTo: CommentInfo
-  rootCommentId: string
+  replyTo: CommentInfo // for replying
+  rootCommentId: string // for replying
   setShowReplyInput: React.Dispatch<React.SetStateAction<boolean>>
   setComments: React.Dispatch<React.SetStateAction<CommentInfo[]>>
+  commentOnEdit?: CommentInfo // for editing
+  setCommentOnEdit?: React.Dispatch<React.SetStateAction<CommentInfo | undefined>> // for editing
 }
-export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setComments }: Props) {
+export default function Reply({
+  replyTo,
+  rootCommentId,
+  setShowReplyInput,
+  setComments,
+  commentOnEdit,
+  setCommentOnEdit,
+}: Props) {
   const user = useAppSelector((store) => store.user.user)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const pinId = usePathname().split("/").pop()
 
-  useEffect(() => {
-    if (textAreaRef.current) {
-      textAreaRef.current.focus()
-    }
-  }, [])
   const form = useForm({
     resolver: zodResolver(CommentValidation),
     defaultValues: {
-      comment: "",
+      comment: commentOnEdit?.content || "",
     },
   })
   // watch user input and render the "save" button correspondingly
   const userInput: string = form.watch("comment")
 
-  const pinId = usePathname().split("/").pop()
+  // ----------------------------------------------------------------------------------- Requests
   const [commentMutation] = useMutation(COMMENT, {
+    onError: (error) => {
+      handleApolloRequestError(error)
+    },
+  })
+  const [editCommentMutation] = useMutation(EDIT_COMMENT, {
     onError: (error) => {
       handleApolloRequestError(error)
     },
@@ -49,6 +60,15 @@ export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setCo
     const isValid = await form.trigger()
     if (!isValid || !user) return
 
+    if (commentOnEdit) {
+      handleEdit(values.comment)
+    } else {
+      handleReply(values.comment)
+    }
+  }
+
+  async function handleReply(content: string) {
+    if (!user) return
     const {
       data: { comment: res },
     } = await commentMutation({
@@ -56,7 +76,7 @@ export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setCo
         input: {
           pinId,
           userId: user._id,
-          content: values.comment,
+          content,
           isReply: true,
           replyToUser: replyTo.isReply ? replyTo.author._id : null,
           replyToComment: rootCommentId,
@@ -81,6 +101,43 @@ export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setCo
     form.reset()
   }
 
+  async function handleEdit(content: string) {
+    if (!user || !commentOnEdit) return
+    const {
+      data: { editComment: res },
+    } = await editCommentMutation({
+      variables: {
+        pinId,
+        commentId: commentOnEdit._id,
+        content,
+      },
+    })
+
+    setComments((prev) => {
+      let targetFound = false
+      return prev.map((item) => {
+        if (targetFound) {
+          return item
+        } else if (item._id === res._id) {
+          item.content = res.content
+          targetFound = true
+        } else {
+          item.replies.forEach((reply) => {
+            if (reply._id === res._id) {
+              reply.content = res.content
+              targetFound = true
+              return
+            }
+          })
+        }
+        return item
+      })
+    })
+    setShowReplyInput(false)
+    setCommentOnEdit && setCommentOnEdit(undefined)
+    form.reset()
+  }
+
   return (
     <Form {...form}>
       <form>
@@ -89,10 +146,12 @@ export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setCo
           name="comment"
           render={({ field }) => (
             <FormItem className="flex gap-3 items-center w-full">
-              <FormControl className="border-none bg-transparent">
-                <Textarea
-                  className="resize-none border-solid border-gray-bg-4 rounded-2xl no-focus"
-                  rows={2}
+              <FormControl className="bg-transparent">
+                <VirtualTextarea
+                  className="w-full border-2 border-solid border-gray-bg-4 rounded-2xl pl-4 pr-2 py-3 text-gray-font-4"
+                  minRows={2}
+                  maxRows={5}
+                  focusOnMount
                   placeholder="Reply"
                   {...field}
                   ref={textAreaRef}
@@ -112,6 +171,7 @@ export default function Reply({ replyTo, rootCommentId, setShowReplyInput, setCo
             clickEffect
             click={() => {
               setShowReplyInput(false)
+              setCommentOnEdit && setCommentOnEdit(undefined)
             }}
           />
           <Button

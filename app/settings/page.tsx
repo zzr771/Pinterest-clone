@@ -306,7 +306,7 @@ export default function Page() {
                         className="input-default p-4"
                         minRows={4}
                         maxRows={4}
-                        placeHolder={"Tell your story"}
+                        placeholder={"Tell your story"}
                         {...field}
                       />
                     </FormControl>

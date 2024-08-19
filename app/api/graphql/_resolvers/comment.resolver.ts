@@ -45,6 +45,11 @@ const commentResolver = {
         }
       }
 
+      if (replyToUser) {
+        const replyTo = await User.findById(replyToUser).select("firstName")
+        newComment.replyToUser = replyTo
+      }
+
       const author = await User.findById(userId).select("firstName imageUrl")
       newComment.author = author
 
@@ -53,12 +58,13 @@ const commentResolver = {
     },
 
     async editComment(_: any, args: { pinId: string; commentId: string; content: string }) {
-      await Comment.findByIdAndUpdate(args.commentId, { content: args.content })
-
+      const comment = await Comment.findByIdAndUpdate(
+        args.commentId,
+        { content: args.content },
+        { new: true }
+      )
       revalidatePath(`/pin/${args.pinId}`)
-
-      const comments = await fetchComments(args.pinId)
-      return comments
+      return comment
     },
 
     async deleteComment(

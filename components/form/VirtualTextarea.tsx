@@ -10,13 +10,14 @@ import * as React from "react"
 import { ChangeEvent, forwardRef, useEffect, useRef, useState, useLayoutEffect } from "react"
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  placeHolder?: string
+  placeholder?: string
+  focusOnMount?: boolean
   minRows: number
   maxRows: number
 }
 
 export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, placeHolder, minRows, maxRows, ...props }, ref) => {
+  ({ className, placeholder, focusOnMount, minRows, maxRows, ...props }, ref) => {
     const [input, setInput] = useState("")
     const containerRef = useRef<HTMLDivElement>(null)
     const virtualTextAreaRef = useRef<HTMLDivElement>(null)
@@ -25,8 +26,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     useLayoutEffect(() => {
       const container = containerRef.current
       const virtualTextArea = virtualTextAreaRef.current
-      const placeHolder = placeHolderRef.current
-      if (!container || !virtualTextArea || !placeHolder) return
+      if (!container || !virtualTextArea) return
 
       const styles = getComputedStyle(container)
       const lineHeight = parseInt(styles.lineHeight)
@@ -49,24 +49,46 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       Things to know:
         1. When form.reset() is invoked, the original value will be sent to 'props.value'.
         2. When a user types anything or form.setValue() is invoked, props.value will change as well.
-        3. When a user is typing and 'virtualTextAre.textContent' is set by JS code, the cursor will move to
+        3. When a user is typing and 'virtualTextArea.textContent' is set by JS code, the cursor will move to
         the beginning immediately.
 
         To respond to form.reset() and form.setValue(), we must listen to 'props.value' change. But we can't
-      set 'virtualTextAre.textContent' when the user is typing.
-        So we check if the virtualTextAre is currently being focused. If it is, we don't update the 
-        'virtualTextAre.textContent', so the cursor won't move. If it is not, we can update the 
-        'virtualTextAre.textContent' safely to the new value.
+      set 'virtualTextArea.textContent' when the user is typing.
+        So we check if the virtualTextArea is currently being focused. If it is, we don't update the 
+      'virtualTextArea.textContent', so the cursor won't move. If it is not, we can safely assign the new value
+      to 'virtualTextArea.textContent'.
     */
     useEffect(() => {
-      const virtualTextAre = virtualTextAreaRef.current
-      if (document.activeElement !== virtualTextAre) {
-        if (virtualTextAre && typeof props.value === "string") {
-          virtualTextAre.textContent = props.value
+      const virtualTextArea = virtualTextAreaRef.current
+      if (document.activeElement !== virtualTextArea) {
+        if (virtualTextArea && typeof props.value === "string") {
+          virtualTextArea.textContent = props.value
           setInput(props.value)
         }
       }
     }, [props.value])
+
+    useEffect(() => {
+      const virtualTextArea = virtualTextAreaRef.current
+      if (!virtualTextArea || !virtualTextArea.childNodes[0]) return
+
+      setTimeout(() => {
+        // when editing a comment, move the cursor to the end of the text automatically.
+        if (focusOnMount && typeof props.value === "string") {
+          virtualTextArea.focus()
+          const range = document.createRange()
+          const selection = window.getSelection()
+
+          // clear current selection
+          selection?.removeAllRanges()
+          // set the range to the end of the text
+          range.setStart(virtualTextArea.childNodes[0], props.value.length)
+          range.collapse(true)
+
+          selection?.addRange(range)
+        }
+      })
+    }, [])
 
     return (
       /* 
@@ -75,7 +97,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       */
       <div ref={containerRef} className={`relative z-[1] overflow-hidden ${className}`}>
         <div ref={placeHolderRef} className="absolute z-[-1] text-[#9CA3AF]">
-          {input.length > 0 ? "" : placeHolder}
+          {input.length === 0 && placeholder}
         </div>
         <div
           ref={virtualTextAreaRef}

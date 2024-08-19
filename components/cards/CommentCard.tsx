@@ -1,7 +1,7 @@
 // This component is used on both mobile and desktop
 "use client"
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { HiOutlineHeart, HiHeart } from "react-icons/hi"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
@@ -33,11 +33,12 @@ export default function CommentCard({
   setComments,
 }: Props) {
   const [isMobileDevice, setIsMobileDevice] = useState(false)
-  const [showReplyInput, setShowReplyInput] = useState(false) // PC
+  const [showReplyInput, setShowReplyInput] = useState(false) // desktop
   const [showInputModal, setShowInputModal] = useState(false) // mobile
   const { author, content, likes, replies, replyToUser, createdAt } = comment
   const user = useAppSelector((store) => store.user.user)
   const isAuthor = author._id === user?._id
+  const [commentOnEdit, setCommentOnEdit] = useState<undefined | CommentInfo>(undefined)
 
   // --------------------------------------------------------------------- Author Options
   const [deleteComment] = useMutation(DELETE_COMMENT, {
@@ -46,7 +47,14 @@ export default function CommentCard({
     },
   })
   const authorOptions = useRef([
-    { label: "Edit", callback: () => {} },
+    {
+      label: "Edit",
+      callback: () => {
+        setCommentOnEdit(comment)
+        setShowReplyInput(true)
+        setShowInputModal(true)
+      },
+    },
     {
       label: "Delete",
       callback: async () => {
@@ -83,7 +91,7 @@ export default function CommentCard({
     },
   ])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (window.innerWidth < 820) {
       setIsMobileDevice(true)
     } else {
@@ -96,6 +104,7 @@ export default function CommentCard({
       toast("Please sign in before operation")
       return
     }
+    setCommentOnEdit(undefined)
     setShowReplyInput((prev) => !prev)
     setShowInputModal(true)
   }
@@ -128,7 +137,11 @@ export default function CommentCard({
 
   return (
     <div className="my-2.5">
-      <div className="flex">
+      {/* 
+        Content of the comment
+        When editing, the content part will be hidden temporarily
+      */}
+      <div className={`flex ${!isMobileDevice && commentOnEdit && "hidden"}`}>
         {/* avatar image */}
         <div className="min-w-8 mr-2">
           {author.imageUrl && (
@@ -199,6 +212,19 @@ export default function CommentCard({
         </div>
       </div>
 
+      {!isMobileDevice && showReplyInput && (
+        <div className={`mt-3 ${!commentOnEdit && "ml-12"}`}>
+          <Reply
+            setShowReplyInput={setShowReplyInput}
+            replyTo={comment}
+            rootCommentId={rootCommentId}
+            setComments={setComments}
+            commentOnEdit={commentOnEdit}
+            setCommentOnEdit={setCommentOnEdit}
+          />
+        </div>
+      )}
+
       {/* replies */}
       <div className="mt-4 ml-12">
         {replies &&
@@ -218,23 +244,14 @@ export default function CommentCard({
           })}
       </div>
 
-      {!isMobileDevice && showReplyInput && (
-        <div className="mt-3 ml-12">
-          <Reply
-            setShowReplyInput={setShowReplyInput}
-            replyTo={comment}
-            rootCommentId={rootCommentId}
-            setComments={setComments}
-          />
-        </div>
-      )}
-
       {showInputModal && isMobileDevice && (
         <InputModal
           replyTo={comment}
           rootCommentId={rootCommentId}
           setShowInputModal={setShowInputModal}
           setComments={setComments}
+          commentOnEdit={commentOnEdit}
+          setCommentOnEdit={setCommentOnEdit}
         />
       )}
     </div>

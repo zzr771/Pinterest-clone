@@ -47,3 +47,12 @@ export const DELETE_COMMENT = gql`
     deleteComment(commentId: $commentId, commentOnPin: $commentOnPin, replyToComment: $replyToComment)
   }
 `
+
+export const EDIT_COMMENT = gql`
+  mutation editComment($pinId: ID!, $commentId: ID!, $content: String!) {
+    editComment(pinId: $pinId, commentId: $commentId, content: $content) {
+      _id
+      content
+    }
+  }
+`

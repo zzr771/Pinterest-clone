@@ -405,7 +405,7 @@ export default function PinForm({
                           className="input-default p-4"
                           minRows={3}
                           maxRows={6}
-                          placeHolder={"Add a detailed description"}
+                          placeholder={"Add a detailed description"}
                           {...field}
                         />
                       </FormControl>

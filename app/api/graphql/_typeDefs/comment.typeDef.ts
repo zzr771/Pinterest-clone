@@ -12,6 +12,10 @@ export const commentDefs = `#graphql
     commentOnPin: ID
     replyToComment: ID
   }
+  type CommentContent {
+    _id: ID!
+    content: String!
+  }
 
   input commentInput {
     pinId: ID!
@@ -24,7 +28,7 @@ export const commentDefs = `#graphql
   # --------------------------------------------------------------------------------------------------
   type Mutation {
     comment(input: commentInput!): Comment
-    editComment(pinId: ID!, commentId: ID!, content: String!): Comment
+    editComment(pinId: ID!, commentId: ID!, content: String!): CommentContent
     deleteComment(commentId: ID!, commentOnPin: ID!, replyToComment: ID): Boolean
   }
 `

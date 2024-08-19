@@ -102,7 +102,7 @@ export default function Comment({ setComments }: Props) {
                     className="p-4 w-[330px]"
                     minRows={1}
                     maxRows={5}
-                    placeHolder="Add a comment"
+                    placeholder="Add a comment"
                     {...field}
                   />
                 </FormControl>

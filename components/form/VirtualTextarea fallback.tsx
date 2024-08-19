@@ -3,13 +3,13 @@ import * as React from "react"
 import { forwardRef, useEffect, useRef, useLayoutEffect } from "react"
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  placeHolder?: string
+  placeholder?: string
   minRows: number
   maxRows: number
 }
 
 export const VirtualTextarea2 = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, placeHolder, minRows, maxRows, ...props }, ref) => {
+  ({ className, placeholder, minRows, maxRows, ...props }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const simulatorRef = useRef<HTMLDivElement>(null)
@@ -53,7 +53,7 @@ export const VirtualTextarea2 = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           className={`w-full ${className} !border-none m-0`}
           ref={textareaRef}
-          placeholder={placeHolder}
+          placeholder={placeholder}
           {...props}
         />
         <div
