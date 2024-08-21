@@ -16,7 +16,7 @@ import { ApolloWrapper } from "@/components/ApolloWrapper"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: " .",
+  title: "Pinterest Clone",
   description: "",
 }
 
