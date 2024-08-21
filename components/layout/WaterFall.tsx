@@ -214,7 +214,7 @@ export default function WaterFall({ requestName, param }: Props) {
       )}
 
       <div ref={containterRef} className="relative w3:mx-auto px-1">
-        {!initialLoading && requestName === "SEARCH_PINS" && pins.length === 0 && (
+        {!initialLoading && requestName === "SEARCH_PINS" && initialData[map[requestName]].length === 0 && (
           <div className="mx-auto mt-[35vh] text-center text-lg text-black">
             <p className="mb-3">Sorry, no matched results.</p>
           </div>
