@@ -274,7 +274,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
             {!isMobileDevice && <CommentList comments={comments} setComments={setComments} />}
           </div>
 
-          {isMobileDevice && <ButtonsMobile setshowCommentsMobile={setshowCommentsMobile} />}
+          {isMobileDevice && <ButtonsMobile setshowCommentsMobile={setshowCommentsMobile} pinId={_id} />}
 
           {/* monitor the screen scrolling position and trigger the positioning of ButtonsMobile */}
           {isMobileDevice && (

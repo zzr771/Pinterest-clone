@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/user/:profileOwnerId",
+        destination: "/user/:profileOwnerId/created",
+        permanent: true,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {

@@ -1,8 +1,0 @@
-Pin详情页:
-测试：用户A创建一个Pin, 用户B收藏该Pin, 用户A删除该Pin, 用户B查看收藏列表, 预期：用户B的收藏列表中不再有该Pin
-
-User Page
-
-Search Page
-
-All Pages Mobile

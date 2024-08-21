@@ -46,17 +46,17 @@ export default function Paragraph({ text, maxLines, children, className }: Props
       <div ref={pRef} className="overflow-hidden">
         {children || text}
         {showLess && (
-          <span className="font-medium px-1 cursor-pointer" onClick={clickLessHandler}>
+          <div className="inline-block font-medium px-1 cursor-pointer" onClick={clickLessHandler}>
             ... less
-          </span>
+          </div>
         )}
       </div>
       {showMore && (
-        <span
+        <div
           className="absolute bottom-0 right-0 font-medium linear-white pl-2 pr-1 cursor-pointer"
           onClick={clickMoreHandler}>
           ... more
-        </span>
+        </div>
       )}
     </div>
   )

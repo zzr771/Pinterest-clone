@@ -14,6 +14,7 @@ import Buttons from "./Buttons"
 import { UserInfo } from "@/lib/types"
 import useInvalidateRouterCache from "@/lib/hooks/useInvalidateRouterCache"
 import useFollowUser from "@/lib/hooks/useFollowUser"
+import { SignOutButton } from "@clerk/nextjs"
 const FollowerList = dynamic(() => import("./FollowerList"))
 const FollowerListMobile = dynamic(() => import("./FollowerListMobile"))
 
@@ -24,15 +25,22 @@ export default function UserInfoPart({ profileOwner }: Props) {
   const { follower, following } = profileOwner
   const user = useAppSelector((state) => state.user.user)
   const userFollowing = useAppSelector((state) => state.user.following)
+  const hiddenClerkButtonsRef = useRef<HTMLDivElement>(null)
 
   // --------------------------------------------------------------------------------- What buttons to show
   const [isMyself, setIsMyself] = useState(false) // Whether the current user is viewing the profile of himself/herself
   const [isFollowing, setIsFollowing] = useState(false) // Whether the current user is following the profile owner
   useEffect(() => {
-    if (!user || !userFollowing) return
-    setIsMyself(profileOwner?._id === user._id)
+    if (!user) {
+      setIsMyself(false)
+    } else {
+      setIsMyself(profileOwner?._id === user._id)
+    }
+  }, [user])
+  useEffect(() => {
+    if (!userFollowing) return
     setIsFollowing(userFollowing.includes(profileOwner._id))
-  }, [user, userFollowing])
+  }, [userFollowing])
 
   // --------------------------------------------------------------------------------- Follow & Unfollow
   const { needInvalidate } = useInvalidateRouterCache()
@@ -52,7 +60,16 @@ export default function UserInfoPart({ profileOwner }: Props) {
   const [followType, setFollowType] = useState<"follower" | "following">("follower")
 
   const [isMobileDevice, setIsMobileDevice] = useState(false)
-  const options = useRef([{ label: "Sign out", callback: () => {} }])
+  const options = useRef([
+    {
+      label: "Sign out",
+      callback: () => {
+        const signOutButton = hiddenClerkButtonsRef?.current?.children[0] as HTMLButtonElement
+        if (!signOutButton) return
+        signOutButton.click()
+      },
+    },
+  ])
   useLayoutEffect(() => {
     if (window.innerWidth < 820) {
       setIsMobileDevice(true)
@@ -102,7 +119,7 @@ export default function UserInfoPart({ profileOwner }: Props) {
           <span className="text-sm font-light">{profileOwner?.username}</span>
         </div>
         {/* website & about */}
-        <Paragraph maxLines={3} className="text-center">
+        <Paragraph maxLines={3} className="text-center max-w3:mx-5">
           <span>
             <span className="font-medium cursor-pointer hover:underline">{profileOwner?.website}</span>
             {profileOwner?.website && " · "}
@@ -154,8 +171,17 @@ export default function UserInfoPart({ profileOwner }: Props) {
         />
       )}
       {showFollowList && isMobileDevice && (
-        <FollowerListMobile type={followType} number={1153} setShowFollowList={setShowFollowList} />
+        <FollowerListMobile
+          userId={profileOwner._id}
+          type={followType}
+          number={followType === "follower" ? displayedFollowerNum : following?.length}
+          setShowFollowList={setShowFollowList}
+        />
       )}
+
+      <div ref={hiddenClerkButtonsRef} className="hidden">
+        <SignOutButton />
+      </div>
     </div>
   )
 }

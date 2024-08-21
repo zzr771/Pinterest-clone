@@ -56,7 +56,7 @@ export default function NavBarBottom() {
         )}
         {!user && (
           <div onClick={handleSignIn}>
-            <FaUser className="w-6 h-6" />
+            <FaUser className="w-6 h-6 text-gray-font-3" />
           </div>
         )}
 
