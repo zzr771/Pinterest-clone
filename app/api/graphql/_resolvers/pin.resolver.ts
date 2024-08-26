@@ -54,7 +54,7 @@ const pinResolver = {
     async pins(_: any, { currentNumber, limit }: { currentNumber: number; limit: number }) {
       // No need to use field resolver here, because it requires to populate every property.
       const pins = await Pin.find({})
-        .sort({ createdAt: "desc" })
+        .sort({ createdAt: "desc", imageUrl: "desc" }) // some pins may be created in batch and have the same 'createdAt', so we secondaryly sort by 'imageUrl' to make sure the order is stable.
         .skip(currentNumber)
         .limit(limit)
         .populate({ path: "author", model: User, select: "firstName lastName imageUrl" })
