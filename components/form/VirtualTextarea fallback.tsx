@@ -63,3 +63,4 @@ export const VirtualTextarea2 = forwardRef<HTMLTextAreaElement, TextareaProps>(
     )
   }
 )
+VirtualTextarea2.displayName = "Textarea"
