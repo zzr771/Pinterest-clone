@@ -5,7 +5,6 @@ import PinImage from "./_components/PinImage"
 import PinContent from "./_components/PinContent"
 import WaterFall from "@/components/layout/WaterFall"
 const InterSectionMonitor = dynamic(() => import("@/components/mobile/IntersectionMonitor"), { ssr: false })
-const OptionButtonMobile = dynamic(() => import("@/components/mobile/OptionButtonMobile"), { ssr: false })
 import { FETCH_PIN } from "@/lib/apolloRequests/pin.request"
 
 export default async function Page({ params }: { params: { pinId: string } }) {
@@ -28,9 +27,6 @@ export default async function Page({ params }: { params: { pinId: string } }) {
     <main className="relative w3:mt-[90px]">
       <div className="fixed w3:top-24 w3:left-4 left-2 top-2 z-[1]">
         <BackwardButton />
-      </div>
-      <div className="fixed w3:hidden right-2 top-2 z-[10]">
-        <OptionButtonMobile pin={pin} />
       </div>
 
       <section className="flex pin-container-width w3:mt-2.5 mx-auto rounded-[2rem] w3:shadow-medium w3:items-stretch">

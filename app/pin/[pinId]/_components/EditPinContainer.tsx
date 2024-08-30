@@ -1,7 +1,7 @@
 "use client"
 import { PinInfoBasic } from "@/lib/types"
 import dynamic from "next/dynamic"
-const EditPin = dynamic(() => import("./EditPin"), { ssr: false })
+const EditPinForm = dynamic(() => import("./EditPinForm"), { ssr: false })
 
 interface Props {
   pinInfoBasic: PinInfoBasic
@@ -17,7 +17,9 @@ export default function EditPinContainer({
 }: Props) {
   return (
     <div
-      className={`fixed inset-0 z-[110] w3:transition-300 ${showEditPinForm ? "bg-gray-tp-3" : "invisible"}`}
+      className={`fixed inset-0 z-[120] w3:z-[110]  w3:transition-300 ${
+        showEditPinForm ? "bg-gray-tp-3" : "invisible"
+      }`}
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           setShowEditPinForm(false)
@@ -28,7 +30,7 @@ export default function EditPinContainer({
           showEditPinForm ? "translate-x-0" : "translate-x-full"
         }`}>
         {showEditPinForm && (
-          <EditPin
+          <EditPinForm
             pinInfoBasic={pinInfoBasic}
             setShowEditPinForm={setShowEditPinForm}
             setPinBasicInfo={setPinBasicInfo}

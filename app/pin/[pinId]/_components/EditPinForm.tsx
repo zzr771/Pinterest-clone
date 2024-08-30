@@ -20,7 +20,7 @@ interface Props {
   setPinBasicInfo: React.Dispatch<React.SetStateAction<PinInfoBasic>>
   setShowEditPinForm: React.Dispatch<React.SetStateAction<boolean>>
 }
-export default function EditForm({ pinInfoBasic, setPinBasicInfo, setShowEditPinForm }: Props) {
+export default function EditPinForm({ pinInfoBasic, setPinBasicInfo, setShowEditPinForm }: Props) {
   const [allowSave, setAllowSave] = useState(false)
 
   const form = useForm({

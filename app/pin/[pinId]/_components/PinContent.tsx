@@ -13,6 +13,7 @@ const IntersectionMonitor = dynamic(() => import("@/components/mobile/Intersecti
 const ButtonsMobile = dynamic(() => import("./ButtonsMobile"))
 const CommentList = dynamic(() => import("./CommentList"))
 const CommentListMobile = dynamic(() => import("./CommentListMobile"))
+const OptionButtonMobile = dynamic(() => import("@/components/mobile/OptionButtonMobile"), { ssr: false })
 import { CommentInfo, PinInfoBasic, PinInfoDeep } from "@/lib/types"
 import { abbreviateNumber, handleApolloRequestError, handleDownloadImage, shortenURL } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
@@ -161,6 +162,10 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
 
   return (
     <>
+      <div className="fixed w3:hidden right-2 top-2 z-[10]">
+        <OptionButtonMobile options={options} />
+      </div>
+
       <EditPinContainer
         pinInfoBasic={{
           _id,
@@ -172,6 +177,7 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
         showEditPinForm={showEditPinForm}
         setShowEditPinForm={setShowEditPinForm}
       />
+
       <div className="flex flex-col pin-image-width min-h-[205px] w5:min-h-[592px] w5:max-h-[902px] w3:max-w5:rounded-b-[2rem] w5:rounded-r-[2rem]">
         <div className="relative flex flex-col flex-1 w3:pl-8 pl-4">
           {/* top bar */}

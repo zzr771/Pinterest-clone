@@ -1,37 +1,17 @@
 // this component is only for mobile devices
 "use client"
-import { useMemo } from "react"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import dynamic from "next/dynamic"
 const OptionListMobile = dynamic(() => import("../mobile/OptionListMobile"), { ssr: false })
 import { useAppSelector } from "@/lib/store/hook"
-import { handleDownloadImage } from "@/lib/utils"
-import { PinInfoDeep } from "@/lib/types"
+import { Option } from "@/lib/types"
 
-export default function OptionButtonMobile({ pin }: { pin: PinInfoDeep }) {
-  const user = useAppSelector((store) => store.user.user)
-  const { imageUrl, title, author } = pin
+interface Props {
+  options: Option[]
+}
+export default function OptionButtonMobile({ options }: Props) {
   const intersectionState = useAppSelector((store) => store.intersection.observers.OptionButtonMobile)
-  const options = [
-    {
-      label: "Download image",
-      callback: () => {
-        handleDownloadImage(imageUrl, title || "Pinterest")
-      },
-    },
-  ]
-  if (user?._id === author._id) {
-    options.push(
-      ...[
-        {
-          label: "Edit Pin",
-          callback: () => {},
-        },
-        { label: "Delete Pin", callback: () => {} },
-      ]
-    )
-  }
 
   let visibilityClass = ""
   if (intersectionState === "enter-top") {
