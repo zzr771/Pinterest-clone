@@ -10,8 +10,6 @@ import Image from "next/image"
 import { useAppSelector } from "@/lib/store/hook"
 
 export default function NavBarBottom() {
-  if (window.innerWidth >= 820) return null
-
   const pathname = usePathname()
 
   const user = useAppSelector((store) => store.user.user)
@@ -21,6 +19,8 @@ export default function NavBarBottom() {
     if (!signInButton) return
     signInButton.click()
   }
+
+  if (window.innerWidth >= 820) return null
 
   return (
     <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white">

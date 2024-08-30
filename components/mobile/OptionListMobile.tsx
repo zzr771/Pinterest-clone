@@ -8,8 +8,6 @@ interface Props {
   children: React.ReactNode // The button that toggles the dropdown list.
 }
 export default function OptionListMobile({ options, children }: Props) {
-  if (window.innerWidth >= 820) return null
-
   const [showList, setShowList] = useState(false)
 
   function handleClickModal(event: React.MouseEvent<HTMLDivElement>) {
@@ -17,6 +15,8 @@ export default function OptionListMobile({ options, children }: Props) {
       setShowList(false)
     }
   }
+
+  if (window.innerWidth >= 820) return null
   return (
     <>
       {/* The button that toggles the dropdown list. */}

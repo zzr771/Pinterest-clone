@@ -15,8 +15,6 @@ import { useAppSelector } from "@/lib/store/hook"
 const DropDownList = dynamic(() => import("@/components/shared/DropDownList"), { ssr: false })
 
 export default function NavBarTop() {
-  if (window.innerWidth < 820) return null
-
   const router = useRouter()
   const pathname = usePathname()
   const [activeBtn, setActiveBtn] = useState("")
@@ -78,12 +76,14 @@ export default function NavBarTop() {
     signOutButton.click()
   }
 
+  if (window.innerWidth < 820) return null
+
   return (
     <section className="nav-top items-center bg-white h-20 py-1 px-4 flex">
       {/* Pinterest icon */}
       <Link href="/">
         <Button hover={true} rounded={true}>
-          <img src="/assets/icon.png" alt="icon" className="h-6 w-6" />
+          <Image src="/assets/icon.png" alt="icon" height={24} width={24} />
         </Button>
       </Link>
 
