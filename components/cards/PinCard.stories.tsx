@@ -21,19 +21,3 @@ const meta = {
 
 export default meta
 type Story = StoryObj<typeof meta>
-
-export const Primary: Story = {
-  args: {
-    pinId: "2",
-    image: "/assets/test/PinCard/3.jpg",
-    imageSize: {
-      width: 236,
-      height: 464,
-    },
-    title: "Witness the most amazing scenaries in Alps",
-    author: {
-      name: "Dodi's Personalized Trip Schedule",
-      avatar: "/assets/test/avatar.jpg",
-    },
-  },
-}
