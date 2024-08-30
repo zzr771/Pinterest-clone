@@ -86,6 +86,7 @@ export default function PinCard({ pin, isSaved }: Props) {
           src={imageUrl}
           alt=""
           className="rounded-2xl"
+          style={{ height: imageSize.height, width: imageSize.width }}
           width={imageSize.width}
           height={imageSize.height}
         />
