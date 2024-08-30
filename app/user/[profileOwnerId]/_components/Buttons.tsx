@@ -18,7 +18,7 @@ interface Props {
 export default function Buttons({ userId, isMyself, isFollowing, followUser, unfollowUser }: Props) {
   const router = useRouter()
 
-  // -------------------------- Currently skip the 'block' function, thus related dropdown list is commented out
+  // -------------------------- Currently skip the 'block' function, all related dropdown code is commented out
   // const options = useRef([{ label: "Block", callback: () => {} }])
   // const [showDropDownList, setShowDropDownList] = useState(false)
   // const [isMobileDevice, setIsMobileDevice] = useState(false)
