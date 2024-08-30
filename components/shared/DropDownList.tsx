@@ -37,12 +37,6 @@ export default function DropDownList({
   showCheckMark = false,
   activeOption,
 }: Props) {
-  if (window.innerWidth < 820) return children
-
-  function handleClick(item: Option) {
-    item.callback && item.callback()
-  }
-
   // by default, give the first option a darker background color. Don't know why, just imitate Pinterest
   const firstOptionRef = useRef<HTMLDivElement>(null)
   function handleMouseEnter() {
@@ -60,7 +54,7 @@ export default function DropDownList({
   const containerRef = useRef<HTMLDivElement>(null)
   const [showDropDown, setShowDropDown] = useState(false)
 
-  function placeContainer() {
+  const placeContainer = useCallback(() => {
     const origin = originRef.current
     const container = containerRef.current
     if (!origin || !container) return
@@ -86,41 +80,21 @@ export default function DropDownList({
     }
 
     container.style.transform = `translate(${transformX}, ${transformY})`
-  }
+  }, [position])
 
-  // place the drop down list container, add handler for clicking outside
-  useLayoutEffect(() => {
-    const origin = originRef.current
-    const container = containerRef.current
-    if (!origin || !showDropDown || !container) return
+  const handleClickOutside = useCallback(
+    (event: MouseEvent) => {
+      const origin = originRef.current
+      const container = containerRef.current
+      if (!origin || !container) return
 
-    placeContainer()
-
-    setTimeout(() => {
-      beforeMouseEnter()
-    })
-
-    if (window.innerWidth >= 820 && showDropDown) {
-      document.addEventListener("click", handleClickOutside)
-    } else {
-      document.removeEventListener("click", handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside)
-    }
-  }, [showDropDown])
-
-  const handleClickOutside = useCallback((event: MouseEvent) => {
-    const origin = originRef.current
-    const container = containerRef.current
-    if (!origin || !container) return
-
-    if (!container.contains(event.target as Node) && !origin.contains(event.target as Node)) {
-      setShowDropDown(false)
-      setShowDropDownFromParent && setShowDropDownFromParent(false)
-    }
-  }, [])
+      if (!container.contains(event.target as Node) && !origin.contains(event.target as Node)) {
+        setShowDropDown(false)
+        setShowDropDownFromParent && setShowDropDownFromParent(false)
+      }
+    },
+    [setShowDropDownFromParent]
+  )
 
   // make dropdown list follow the position change caused by any parent's scrolling
   const handleScroll = useCallback(throttle(placeContainer, 15), [])
@@ -144,7 +118,34 @@ export default function DropDownList({
         item.removeEventListener("scroll", handleScroll)
       })
     }
-  }, [showDropDown])
+  }, [showDropDown, followScrolling, handleScroll])
+
+  // place the drop down list container, add handler for clicking outside
+  useLayoutEffect(() => {
+    const origin = originRef.current
+    const container = containerRef.current
+    if (!origin || !showDropDown || !container) return
+
+    placeContainer()
+
+    setTimeout(() => {
+      beforeMouseEnter()
+    })
+
+    if (window.innerWidth >= 820 && showDropDown) {
+      document.addEventListener("click", handleClickOutside)
+    } else {
+      document.removeEventListener("click", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside)
+    }
+  }, [showDropDown, handleClickOutside, placeContainer])
+
+  function handleClick(item: Option) {
+    item.callback && item.callback()
+  }
 
   return (
     <>

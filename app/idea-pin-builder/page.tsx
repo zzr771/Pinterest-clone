@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import PinDraftList from "./_components/PinDraftList"
 import PinForm from "./_components/PinForm"
 import type { DraftState, PinDraft } from "@/lib/types"
@@ -24,7 +24,7 @@ export default function Page() {
   const [draftList, setDraftList] = useState<PinDraft[]>([])
   const [currentDraft, setCurrentDraft] = useState<PinDraft>(genEmptyDraft())
 
-  async function getDraftList() {
+  const getDraftList = useCallback(async () => {
     if (!user) return
     const res = await fetchUserDrafts(user._id)
     if (res && "errorMessage" in res) {
@@ -49,7 +49,7 @@ export default function Page() {
       })
       return [...unsavedDrafts, ...res]
     })
-  }
+  }, [user])
 
   useEffect(() => {
     async function init() {
@@ -59,7 +59,7 @@ export default function Page() {
       }
     }
     init()
-  }, [user])
+  }, [user, getDraftList])
 
   function genEmptyDraft() {
     return {

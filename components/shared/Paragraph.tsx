@@ -40,7 +40,7 @@ export default function Paragraph({ text, maxLines, children, className }: Props
       p.style.maxHeight = `${lineHeight * maxLines}px`
       setShowMore(true)
     }
-  }, [])
+  }, [maxLines])
   return (
     <div className={`relative ${className}`}>
       <div ref={pRef} className="overflow-hidden">

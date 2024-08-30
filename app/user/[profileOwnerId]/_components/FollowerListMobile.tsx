@@ -36,7 +36,7 @@ export default function FollowerListMobile({ userId, type, number, setShowFollow
       setUsers(res)
     }
     getUsers()
-  }, [])
+  }, [type, userId])
 
   const { followUser, unfollowUser } = useFollowUser({ followHandler: () => {}, unfollowHandler: () => {} })
 

@@ -36,11 +36,11 @@ export default function UserInfoPart({ profileOwner }: Props) {
     } else {
       setIsMyself(profileOwner?._id === user._id)
     }
-  }, [user])
+  }, [user, profileOwner._id])
   useEffect(() => {
     if (!userFollowing) return
     setIsFollowing(userFollowing.includes(profileOwner._id))
-  }, [userFollowing])
+  }, [userFollowing, profileOwner._id])
 
   // --------------------------------------------------------------------------------- Follow & Unfollow
   const { needInvalidate } = useInvalidateRouterCache()

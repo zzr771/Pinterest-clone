@@ -116,30 +116,26 @@ export default function Reaction({ initialReactions }: Props) {
     return result
   }
 
-  function getCurrentReactionIcon() {
-    const currentUserReaction = reactions.find((item) => item.user._id === user?._id)
-    if (!currentUserReaction) return null
-
-    return reactionIcons.find((item) => item.id === currentUserReaction.reactionId) || null
-  }
-
   useEffect(() => {
     if (!user) return
 
-    const result = getCurrentReactionIcon()
-    if (result) {
-      setCurrentReactionIcon(result)
-    }
-  }, [user])
+    // set the number of reaction kinds
+    const reactionKinds: string[] = []
+    reactions.forEach((item) => {
+      if (!reactionKinds.includes(item.reactionId)) {
+        reactionKinds.push(item.reactionId)
+      }
+    })
+    setReactionKinds(reactionKinds)
 
-  useEffect(() => {
-    setReactionKinds(getReactionKinds())
-
-    const result = getCurrentReactionIcon()
-    if (result) {
-      setCurrentReactionIcon(result)
+    // set current user's reaction icon
+    const currentUserReaction = reactions.find((item) => item.user._id === user?._id)
+    if (!currentUserReaction) return
+    const currentReactionIcon = reactionIcons.find((item) => item.id === currentUserReaction.reactionId)
+    if (currentReactionIcon) {
+      setCurrentReactionIcon(currentReactionIcon)
     }
-  }, [reactions])
+  }, [user, reactions])
 
   // ----------------------------------------------------------------------- Animation Effect
   useEffect(() => {

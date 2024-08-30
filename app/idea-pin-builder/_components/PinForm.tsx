@@ -87,7 +87,7 @@ export default function PinForm({
     return () => {
       resizeObserver.disconnect()
     }
-  }, [])
+  }, [handleSrceenResize])
 
   // ---------------------------------------------------------------------- Draft State
   const [draftState, setDraftState] = useState<DraftState>("")
@@ -134,6 +134,7 @@ export default function PinForm({
 
     setCurrentDraft({ ...currentDraft, prevImageUrl: currentDraft.imageUrl })
     prevDraft.current = currentDraft
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDraft._id])
   function diffDrafts(prev: PinDraft, next: PinDraft) {
     return prev.title !== next.title || prev.description !== next.description || prev.link !== next.link
@@ -240,6 +241,7 @@ export default function PinForm({
       const draftOnEdit = { ...currentDraft, title, description, link }
       submit(draftOnEdit)
     }, 300)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, description, link])
 
   // ---------------------------------------------------------------------- Submit form changes

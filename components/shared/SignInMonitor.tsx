@@ -50,7 +50,7 @@ export default function SignInMonitor() {
     } else {
       dispatch(setUserInfo(null))
     }
-  }, [isSignedIn])
+  }, [isSignedIn, user])
 
   return null
 }

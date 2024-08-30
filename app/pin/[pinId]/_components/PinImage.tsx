@@ -18,8 +18,8 @@ export default function PinImage({ imageUrl, width, height }: Props) {
 
   const [isBigImage, setIsBigImage] = useState(true)
   const [displaySize, setDisplaySize] = useState({ width, height })
-  const ratio = width / height
   useLayoutEffect(() => {
+    const ratio = width / height
     const size = { width: 0, height: 0 }
     // mobile devices
     if (window.innerWidth < 820) {
@@ -38,7 +38,7 @@ export default function PinImage({ imageUrl, width, height }: Props) {
       setIsBigImage(true)
     }
     setDisplaySize(size)
-  }, [])
+  }, [width, height])
 
   return (
     <div

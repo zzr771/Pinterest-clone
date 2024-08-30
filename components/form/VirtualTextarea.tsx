@@ -32,7 +32,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       const lineHeight = parseInt(styles.lineHeight)
       virtualTextArea.style.minHeight = minRows * lineHeight + "px"
       virtualTextArea.style.maxHeight = maxRows * lineHeight + "px"
-    }, [])
+    }, [minRows, maxRows])
 
     function handleChange() {
       const text = virtualTextAreaRef.current?.textContent || ""
@@ -73,7 +73,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       if (!virtualTextArea || !virtualTextArea.childNodes[0]) return
 
       setTimeout(() => {
-        // when editing a comment, move the cursor to the end of the text automatically.
+        // when editing a comment, move the cursor to the end of the text on mount.
         if (focusOnMount && typeof props.value === "string") {
           virtualTextArea.focus()
           const range = document.createRange()
@@ -88,7 +88,7 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           selection?.addRange(range)
         }
       })
-    }, [])
+    }, [focusOnMount])
 
     return (
       /* 

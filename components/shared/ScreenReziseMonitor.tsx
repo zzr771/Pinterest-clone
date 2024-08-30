@@ -1,19 +1,14 @@
 "use client"
 
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { setScreenSize } from "@/lib/store/features/screenSize"
 import { useAppDispatch } from "@/lib/store/hook"
 
 export default function ScreenResize() {
-  if (typeof window === "undefined") return
-
   const dispatch = useAppDispatch()
-
-  function set() {
+  const set = useCallback(() => {
     dispatch(setScreenSize(window.innerWidth))
-  }
-  set()
-
+  }, [])
   const handleResize = useMemo(() => {
     let timer = 0
     return function () {
@@ -25,7 +20,11 @@ export default function ScreenResize() {
         set()
       }, 200)
     }
-  }, [])
+  }, [set])
+
+  if (typeof window === "undefined") return
+  set()
+
   document.defaultView?.addEventListener("resize", handleResize)
 
   return null

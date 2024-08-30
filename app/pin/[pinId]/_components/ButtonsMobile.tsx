@@ -23,7 +23,7 @@ export default function ButtonsMobile({ setshowCommentsMobile, pinId }: Props) {
   // -------------------------------------------------------------- Save & Unsave
   const userSaved = useAppSelector((store) => store.user.saved)
   const { savePin, unsavePin } = useSavePin()
-  const isSaved = useMemo(() => userSaved && userSaved.includes(pinId), [userSaved])
+  const isSaved = useMemo(() => userSaved && userSaved.includes(pinId), [userSaved, pinId])
 
   return (
     <div className="h-16">

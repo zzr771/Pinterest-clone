@@ -5,13 +5,15 @@
   whick will trigger hardware acceleration. 
 */
 "use client"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { DocumentNode, useLazyQuery, useQuery } from "@apollo/client"
 import PinCard from "@/components/cards/PinCard"
 import { getCardNumberLimit, getImageDisplaySize, handleApolloRequestError } from "@/lib/utils"
 import { useAppSelector } from "@/lib/store/hook"
 import pinRequests from "@/lib/apolloRequests/pin.request"
 import { PinCardInfo } from "@/lib/types"
+import { usePathname } from "next/navigation"
+import { debug } from "console"
 
 // For taking out data from server's response
 const map = {
@@ -33,6 +35,7 @@ export default function WaterFall({ requestName, param }: Props) {
   const containterRef = useRef<HTMLDivElement>(null)
   const observerRef = useRef<HTMLDivElement>(null)
   const requestMethod = useRef<DocumentNode>(pinRequests[requestName])
+  const pathName = usePathname()
 
   // ----------------------------------------------------------------------------------- Card Positioning
   const columnHeights = useRef<Array<number>>([])
@@ -44,7 +47,7 @@ export default function WaterFall({ requestName, param }: Props) {
   const cardTitlePartHeight = useRef(0)
   const cardAuthorPartHeight = useRef(0)
 
-  function setCardSizeData() {
+  const setCardSizeData = useCallback(() => {
     if (screenSize < 540) {
       cardWidth.current = Math.round((screenSize - 8) / 2) // 8: container's padding (containterRef)
       cardPaddingBottom.current = 8
@@ -61,9 +64,9 @@ export default function WaterFall({ requestName, param }: Props) {
       cardTitlePartHeight.current = 26
       cardAuthorPartHeight.current = 40
     }
-  }
+  }, [screenSize])
 
-  function setContainerWidth() {
+  const setContainerWidth = useCallback(() => {
     if (screenSize < 540) {
       columnNumber.current = 2
       return "100%"
@@ -74,40 +77,42 @@ export default function WaterFall({ requestName, param }: Props) {
       columnNumber.current = Math.floor((screenSize - 14) / cardWidth.current) // 14: the width of the scroll bar
       return columnNumber.current * cardWidth.current + "px"
     }
-  }
+  }, [screenSize])
 
-  function placeCardsFromIndex(index: number) {
-    for (let i = index; i < pins.length; i++) {
-      const shortestColumnIndex = findShortestColumn()
-      const { height } = pins[i].imageSize
-      const transformY = columnHeights.current[shortestColumnIndex]
-      const transformX = shortestColumnIndex * cardWidth.current
-      const titleHeight = pins[i].title.length > 0 ? cardTitlePartHeight.current : 0
-      columnHeights.current[shortestColumnIndex] +=
-        height + cardPaddingBottom.current + cardAuthorPartHeight.current + titleHeight
-
-      if (containterRef.current) {
-        ;(
-          containterRef.current.children[i] as HTMLDivElement
-        ).style.transform = `translate(${transformX}px, ${transformY}px)`
-      }
-    }
-  }
+  // ------------------------------------------------------------------------------ place new cards when 'pins' changes
   function findShortestColumn() {
     return columnHeights.current.indexOf(Math.min(...columnHeights.current))
   }
   function getTallestHeight() {
     return Math.max(...columnHeights.current)
   }
+  const placeCardsFromIndex = useCallback(
+    (index: number) => {
+      for (let i = index; i < pins.length; i++) {
+        const shortestColumnIndex = findShortestColumn()
+        const { height } = pins[i].imageSize
+        const transformY = columnHeights.current[shortestColumnIndex]
+        const transformX = shortestColumnIndex * cardWidth.current
+        const titleHeight = pins[i].title.length > 0 ? cardTitlePartHeight.current : 0
+        columnHeights.current[shortestColumnIndex] +=
+          height + cardPaddingBottom.current + cardAuthorPartHeight.current + titleHeight
 
-  // place new cards when 'pins' changes
+        if (containterRef.current) {
+          ;(
+            containterRef.current.children[i] as HTMLDivElement
+          ).style.transform = `translate(${transformX}px, ${transformY}px)`
+        }
+      }
+    },
+    [pins]
+  )
   useEffect(() => {
     if (!containterRef.current || !pins.length) return
 
     placeCardsFromIndex(positionedCardNumber.current)
     containterRef.current.style.height = getTallestHeight() + "px"
     positionedCardNumber.current = pins.length
-  }, [pins])
+  }, [pins, placeCardsFromIndex])
 
   // place all cards when 'screenSize' changes significantly ('columnNumber' changes)
   useEffect(() => {
@@ -121,23 +126,31 @@ export default function WaterFall({ requestName, param }: Props) {
     prevColumnNumber.current = columnNumber.current
     columnHeights.current = new Array(columnNumber.current).fill(0)
 
-    if (!pins.length) return
     placeCardsFromIndex(0)
-  }, [screenSize])
+  }, [screenSize, setCardSizeData, setContainerWidth, placeCardsFromIndex])
 
   // ----------------------------------------------------------------------------------- Fetch Data
-  const [isInitialRequestOver, setIsInitialRequestOver] = useState(false)
-  const [isNoMoreCard, setIsNoMoreCard] = useState(false)
+  const isNoMoreCard = useRef(false)
+  const isInitialRequestOver = useRef(false)
+  const cardNumber = useRef(0)
+
+  const cardNumberLimit = useRef(getCardNumberLimit(screenSize))
+  useEffect(() => {
+    cardNumberLimit.current = getCardNumberLimit(screenSize)
+  }, [screenSize])
+
   const { loading: initialLoading, data: initialData } = useQuery(requestMethod.current, {
     variables: {
       currentNumber: 0,
-      limit: getCardNumberLimit(screenSize),
+      limit: cardNumberLimit.current,
       ...param,
     },
     onError: (error) => {
       handleApolloRequestError(error)
     },
   })
+
+  // fetch initial data
   useEffect(() => {
     if (initialLoading || !initialData) return
 
@@ -146,29 +159,36 @@ export default function WaterFall({ requestName, param }: Props) {
       const { width, height } = getImageDisplaySize(item.imageSize)
       return { ...item, imageSize: { width, height } }
     })
+
     setPins(initialPins)
-    setIsInitialRequestOver(true)
-  }, [initialLoading])
+    cardNumber.current += initialPins.length
+    isInitialRequestOver.current = true
+  }, [initialLoading, initialData, requestName])
 
   const [fetchMoreCards] = useLazyQuery(requestMethod.current, {
     onError: (error) => {
       handleApolloRequestError(error)
     },
   })
-  async function addCards() {
-    if (!isInitialRequestOver || isNoMoreCard) return
+
+  const addCards = useCallback(async () => {
+    if (!isInitialRequestOver.current || isNoMoreCard.current) return
 
     const { data } = await fetchMoreCards({
       variables: {
-        currentNumber: pins.length,
-        limit: getCardNumberLimit(screenSize),
+        /*
+            Sometimes, the 'addCards' function is invoked so closely after the initial query that 'pins' 
+          has not been updated yet. So we use 'cardNumber.current' instead of 'pins.length'.
+        */
+        currentNumber: cardNumber.current,
+        limit: cardNumberLimit.current,
         ...param,
       },
     })
 
     let subsequentPins = data[map[requestName]]
     if (subsequentPins.length === 0) {
-      setIsNoMoreCard(true)
+      isNoMoreCard.current = true
       return
     }
     subsequentPins = subsequentPins.map((item: PinCardInfo) => {
@@ -176,7 +196,8 @@ export default function WaterFall({ requestName, param }: Props) {
       return { ...item, imageSize: { width, height } }
     })
     setPins((prev) => prev.concat(subsequentPins))
-  }
+    cardNumber.current += subsequentPins.length
+  }, [fetchMoreCards, param, requestName])
 
   /*
       Every time the state pins changes, the IntersectionObserver must be recreated to update
@@ -195,7 +216,7 @@ export default function WaterFall({ requestName, param }: Props) {
     return () => {
       intersectionObserver.disconnect()
     }
-  }, [pins])
+  }, [pins, addCards])
 
   return (
     <div className="w-full relative max-w3:pb-[70px]">
@@ -217,6 +238,18 @@ export default function WaterFall({ requestName, param }: Props) {
         {!initialLoading && requestName === "SEARCH_PINS" && initialData[map[requestName]].length === 0 && (
           <div className="mx-auto mt-[35vh] text-center text-lg text-black">
             <p className="mb-3">Sorry, no matched results.</p>
+          </div>
+        )}
+        {!initialLoading && initialData[map[requestName]].length === 0 && (
+          <div className="mx-auto mt-[5vh] text-center text-lg text-gray-font-4 max-w3:text-base max-w3:mx-5">
+            {requestName === "FETCH_USER_CREATED_PINS" && (
+              <p className="mb-3">
+                It looks like you haven{"'"}t created anything yet. Share your first pin now!
+              </p>
+            )}
+            {requestName === "FETCH_USER_SAVED_PINS" && (
+              <p className="mb-3">No saved pins. Explore and save the content you love!</p>
+            )}
           </div>
         )}
         {pins.map((pin) => (

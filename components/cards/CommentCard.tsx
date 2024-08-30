@@ -1,7 +1,7 @@
 // This component is used on both mobile and desktop
 "use client"
 import Image from "next/image"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react"
 import { HiOutlineHeart, HiHeart } from "react-icons/hi"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
@@ -110,25 +110,39 @@ export default function CommentCard({
   }
 
   // --------------------------------------------------------------------- Displayed Replies
-  const [displayedReplies, setDisplayedReplies] = useState<CommentInfo[]>(replies.slice(0, 1))
-  const [showAllReplies, setShowAllReplies] = useState(false)
-
-  useEffect(() => {
-    if (showAllReplies) {
-      setDisplayedReplies(replies)
-    } else {
-      setDisplayedReplies(replies.slice(0, 1))
+  const [{ displayedReplies, showAllReplies }, dispatchReplies] = useReducer(displayedRepliesReducer, {
+    displayedReplies: replies.slice(0, 1),
+    showAllReplies: false,
+  })
+  function displayedRepliesReducer(
+    state: { displayedReplies: CommentInfo[]; showAllReplies: boolean },
+    action: { type: "change" | "toggle" }
+  ): { displayedReplies: CommentInfo[]; showAllReplies: boolean } {
+    switch (action.type) {
+      case "change":
+        if (state.showAllReplies) {
+          return { ...state, displayedReplies: replies }
+        } else {
+          return { ...state, displayedReplies: replies.slice(0, 1) }
+        }
+      case "toggle":
+        if (state.showAllReplies) {
+          return { displayedReplies: replies.slice(0, 1), showAllReplies: false }
+        } else {
+          return { displayedReplies: replies, showAllReplies: true }
+        }
+      default:
+        return state
     }
+  }
+
+  // when a new reply is added, update the displayed replies
+  useEffect(() => {
+    dispatchReplies({ type: "change" })
   }, [replies.length])
 
   function toggleShowReplies() {
-    if (!showAllReplies) {
-      setDisplayedReplies(replies)
-      setShowAllReplies(true)
-    } else {
-      setDisplayedReplies(replies.slice(0, 1))
-      setShowAllReplies(false)
-    }
+    dispatchReplies({ type: "toggle" })
   }
 
   // --------------------------------------------------------------------- Like & Unlike

@@ -3,7 +3,7 @@
 import Tabs from "@/components/shared/Tabs"
 import { UserInfo } from "@/lib/types"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 /*
     With current folder and file structure, when users enter '/user/xxx',
@@ -19,7 +19,7 @@ export default function UserPinsPart({ profileOwner }: Props) {
   const [selectedTab, setSelectedTab] = useState(subRouteName)
   useEffect(() => {
     router.replace(`/user/${profileOwner._id}/${selectedTab}`, { scroll: false })
-  }, [selectedTab])
+  }, [selectedTab, router, profileOwner._id])
 
   return (
     <>

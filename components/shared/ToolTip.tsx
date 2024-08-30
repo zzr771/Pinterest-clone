@@ -39,7 +39,7 @@ export default function ToolTip({ position = "bottom", text, children, extraGap 
         box.style.left = containerWidth + 8 + extraGap + "px"
         break
     }
-  }, [])
+  })
   return (
     <div ref={containerRef} className="relative hover-visible-container">
       <div

@@ -6,7 +6,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ProfileValidation } from "@/lib/validations/profile"
 
-import { useEffect, useRef, useState, ChangeEvent } from "react"
+import { useEffect, useRef, useState, ChangeEvent, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { FaAngleLeft } from "react-icons/fa6"
@@ -48,18 +48,6 @@ export default function Page() {
   })
 
   const user = useAppSelector((store) => store.user.user)
-  function loadUserSettings() {
-    if (user === null) return
-    defaultValues.current = user
-    form.setValue("imageUrl", user.imageUrl)
-    form.setValue("username", user.username)
-    form.setValue("firstName", user.firstName)
-    form.setValue("lastName", user.lastName || "")
-    form.setValue("about", user.about || "")
-    form.setValue("website", user.website || "")
-    setIsLoading(false)
-    setIsValidationPassed(false)
-  }
   async function getUserSettings() {
     if (!user) return
 
@@ -72,8 +60,18 @@ export default function Page() {
     dispatch(setUserInfo({ ...user, ...res }))
   }
   useEffect(() => {
-    if (user) loadUserSettings()
-  }, [user])
+    if (user) {
+      defaultValues.current = user
+      form.setValue("imageUrl", user.imageUrl)
+      form.setValue("username", user.username)
+      form.setValue("firstName", user.firstName)
+      form.setValue("lastName", user.lastName || "")
+      form.setValue("about", user.about || "")
+      form.setValue("website", user.website || "")
+      setIsLoading(false)
+      setIsValidationPassed(false)
+    }
+  }, [user, form])
 
   // when the user input changes, validate all form fields
   const [isValidationPassed, setIsValidationPassed] = useState(false)
@@ -85,7 +83,7 @@ export default function Page() {
     "website",
     "username",
   ])
-  function checkValuesChange() {
+  const checkValuesChange = useCallback(() => {
     // In initail state, defaultValues.currnet.username is "". Prevent check until defaultValues gets real user info
     if (!defaultValues.current.username) return false
 
@@ -97,7 +95,7 @@ export default function Page() {
       }
     })
     return haveValuesChanged
-  }
+  }, [form])
   useEffect(() => {
     form.trigger().then((result) => {
       if (result && checkValuesChange()) {
@@ -106,7 +104,7 @@ export default function Page() {
         setIsValidationPassed(false)
       }
     })
-  }, [imageUrl, firstName, lastName, about, website, username])
+  }, [imageUrl, firstName, lastName, about, website, username, form, checkValuesChange])
 
   const [files, setFiles] = useState<File[]>([])
   function handleImage(e: ChangeEvent<HTMLInputElement>, fieldChange: (value: string) => void) {

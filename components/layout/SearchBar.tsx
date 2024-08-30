@@ -11,15 +11,19 @@ import { usePathname, useRouter } from "next/navigation"
 export default function SearchBar() {
   const router = useRouter()
   const dispatch = useAppDispatch()
-
-  const pathName = usePathname()
-  const keyword = pathName.split("/").pop()
-  const routeName = pathName.split("/")[1]
   const [isFocused, setIsFocused] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
   const focusClass = isFocused ? "shadow-blue" : ""
   const searchBarContainer = useRef<HTMLDivElement>(null)
+
+  const pathName = usePathname()
+  const keyword = useRef(pathName.split("/").pop())
+  const routeName = useRef(pathName.split("/")[1])
+  useEffect(() => {
+    keyword.current = pathName.split("/").pop()
+    routeName.current = pathName.split("/")[1]
+  }, [pathName])
 
   function handleClick() {
     if (isFocused) {
@@ -29,6 +33,11 @@ export default function SearchBar() {
     dispatch(setShowModal(true))
     document.addEventListener("click", handleClickOutSide)
   }
+  const hideSearchSuggestion = useCallback(() => {
+    setIsFocused(false)
+    dispatch(setShowModal(false))
+    document.removeEventListener("click", handleClickOutSideRef.current)
+  }, [])
 
   /*
       Every time a state changes, all the code of the component will be excuted again.
@@ -36,12 +45,20 @@ export default function SearchBar() {
     time its memory address is different. So in handleClick, addEventListener will
     add lots of 'handleClickOutSide' to the click listener.
   */
-  const handleClickOutSide = useCallback((event: MouseEvent) => {
-    if (!searchBarContainer?.current?.contains(event.target as Node)) {
-      hideSearchSuggestion()
-      setSearchTerm(keyword || "")
-    }
-  }, [])
+
+  const handleClickOutSide = useCallback(
+    (event: MouseEvent) => {
+      if (!searchBarContainer?.current?.contains(event.target as Node)) {
+        hideSearchSuggestion()
+        setSearchTerm(keyword.current || "")
+      }
+    },
+    [hideSearchSuggestion]
+  )
+  const handleClickOutSideRef = useRef(handleClickOutSide)
+  useEffect(() => {
+    handleClickOutSideRef.current = handleClickOutSide
+  }, [handleClickOutSide])
 
   function handleClickClearBtn(event: React.MouseEvent<HTMLDivElement>) {
     event.stopPropagation()
@@ -73,26 +90,20 @@ export default function SearchBar() {
     router.push(`/search/${searchTermTrimed}`)
   }
 
-  function hideSearchSuggestion() {
-    setIsFocused(false)
-    dispatch(setShowModal(false))
-    document.removeEventListener("click", handleClickOutSide)
-  }
-
   // If users type the search keyword in the address bar to initiate a search, the 'searchTerm' should change accordingly
   useEffect(() => {
     // In route '/user', the URL always ends with 'created' or 'saved'. Prevent these two words from being set as 'searchTerm'
-    if (keyword && pathName.indexOf("/user") === -1) {
-      setSearchTerm(keyword)
+    if (keyword.current && pathName.indexOf("/user") === -1) {
+      setSearchTerm(keyword.current || "")
     }
-  }, [keyword])
+  }, [pathName])
 
   // When users navigate to other routes, clear the 'searchTerm'
   useEffect(() => {
-    if (routeName !== "search") {
+    if (routeName.current !== "search") {
       setSearchTerm("")
     }
-  }, [routeName])
+  }, [pathName])
 
   return (
     <div

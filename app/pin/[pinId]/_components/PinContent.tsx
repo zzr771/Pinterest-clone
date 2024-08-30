@@ -94,43 +94,40 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
     router.refresh()
   }
 
-  const options = useMemo(() => {
-    const arr = [
-      {
-        label: "Download image",
-        callback: () => {
-          handleDownloadImage(imageUrl, pinBasicInfo.title || "Pinterest")
-          setShowDropDownList(false)
-        },
+  const options = [
+    {
+      label: "Download image",
+      callback: () => {
+        handleDownloadImage(imageUrl, pinBasicInfo.title || "Pinterest")
+        setShowDropDownList(false)
       },
-    ]
-    if (user?._id === author._id) {
-      arr.push(
-        ...[
-          {
-            label: "Edit Pin",
-            callback: () => {
-              setShowEditPinForm(true)
-              setShowDropDownList(false)
-            },
+    },
+  ]
+  if (user?._id === author._id) {
+    options.push(
+      ...[
+        {
+          label: "Edit Pin",
+          callback: () => {
+            setShowEditPinForm(true)
+            setShowDropDownList(false)
           },
-          {
-            label: "Delete Pin",
-            callback: () => {
-              setShowDropDownList(false)
-              dialog({
-                title: "Delete your Pin?",
-                confirmText: "Delete",
-                cancelText: "Cancel",
-                confirmCallback: handleDeletePin,
-              })
-            },
+        },
+        {
+          label: "Delete Pin",
+          callback: () => {
+            setShowDropDownList(false)
+            dialog({
+              title: "Delete your Pin?",
+              confirmText: "Delete",
+              cancelText: "Cancel",
+              confirmCallback: handleDeletePin,
+            })
           },
-        ]
-      )
-    }
-    return arr
-  }, [user])
+        },
+      ]
+    )
+  }
 
   useLayoutEffect(() => {
     if (window.innerWidth < 820) {
@@ -141,12 +138,15 @@ export default function PinContent({ pin }: { pin: PinInfoDeep }) {
   // --------------------------------------------------------------------------------- Save & Unsave
   const userSaved = useAppSelector((store) => store.user.saved)
   const { savePin, unsavePin } = useSavePin()
-  const isSaved = useMemo(() => userSaved && userSaved.includes(_id), [userSaved])
+  const isSaved = useMemo(() => userSaved && userSaved.includes(_id), [userSaved, _id])
 
   // --------------------------------------------------------------------------------- Follow & Unfollow
   const { needInvalidate } = useInvalidateRouterCache()
   const following = useAppSelector((store) => store.user.following)
-  const isFollowing = useMemo(() => following && following.includes(author._id), [following, user?._id])
+  const isFollowing = useMemo(
+    () => user?._id && following && following.includes(author._id),
+    [following, user?._id, author._id]
+  )
   const [displayedFollowerNum, setDisplayedFollowerNum] = useState(author?.follower?.length || 0)
 
   async function followHandler() {

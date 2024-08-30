@@ -8,7 +8,7 @@ import { VirtualTextarea } from "@/components/form/VirtualTextarea"
 import { PinInfoBasic } from "@/lib/types"
 import { IoMdClose } from "react-icons/io"
 import Button from "@/components/shared/Button"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useMutation } from "@apollo/client"
 import { UPDATE_PIN } from "@/lib/apolloRequests/pin.request"
 import { handleApolloRequestError } from "@/lib/utils"
@@ -29,17 +29,7 @@ export default function EditForm({ pinInfoBasic, setPinBasicInfo, setShowEditPin
   })
 
   const [title, description, link] = form.watch(["title", "description", "link"])
-  useEffect(() => {
-    form.trigger().then((result) => {
-      if (result && checkValuesChange()) {
-        setAllowSave(true)
-      } else {
-        setAllowSave(false)
-      }
-    })
-  }, [title, description, link])
-
-  function checkValuesChange() {
+  const checkValuesChange = useCallback(() => {
     let haveValuesChanged = false
     Object.entries(pinInfoBasic).forEach(([key, value]) => {
       if (!haveValuesChanged && FORM_FIELDS.includes(key) && form.getValues(key as Keys) !== value) {
@@ -48,7 +38,16 @@ export default function EditForm({ pinInfoBasic, setPinBasicInfo, setShowEditPin
       }
     })
     return haveValuesChanged
-  }
+  }, [pinInfoBasic, form])
+  useEffect(() => {
+    form.trigger().then((result) => {
+      if (result && checkValuesChange()) {
+        setAllowSave(true)
+      } else {
+        setAllowSave(false)
+      }
+    })
+  }, [title, description, link, form, checkValuesChange])
 
   const [updatePinMutation] = useMutation(UPDATE_PIN, {
     onError: (error) => {

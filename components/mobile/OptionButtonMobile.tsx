@@ -5,38 +5,33 @@ import { TfiMoreAlt } from "react-icons/tfi"
 import Button from "../shared/Button"
 import dynamic from "next/dynamic"
 const OptionListMobile = dynamic(() => import("../mobile/OptionListMobile"), { ssr: false })
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook"
+import { useAppSelector } from "@/lib/store/hook"
 import { handleDownloadImage } from "@/lib/utils"
 import { PinInfoDeep } from "@/lib/types"
 
 export default function OptionButtonMobile({ pin }: { pin: PinInfoDeep }) {
-  if (window.innerWidth >= 820) return null
-
   const user = useAppSelector((store) => store.user.user)
   const { imageUrl, title, author } = pin
   const intersectionState = useAppSelector((store) => store.intersection.observers.OptionButtonMobile)
-  const options = useMemo(() => {
-    const arr = [
-      {
-        label: "Download image",
-        callback: () => {
-          handleDownloadImage(imageUrl, title || "Pinterest")
-        },
+  const options = [
+    {
+      label: "Download image",
+      callback: () => {
+        handleDownloadImage(imageUrl, title || "Pinterest")
       },
-    ]
-    if (user?._id === author._id) {
-      arr.push(
-        ...[
-          {
-            label: "Edit Pin",
-            callback: () => {},
-          },
-          { label: "Delete Pin", callback: () => {} },
-        ]
-      )
-    }
-    return arr
-  }, [user])
+    },
+  ]
+  if (user?._id === author._id) {
+    options.push(
+      ...[
+        {
+          label: "Edit Pin",
+          callback: () => {},
+        },
+        { label: "Delete Pin", callback: () => {} },
+      ]
+    )
+  }
 
   let visibilityClass = ""
   if (intersectionState === "enter-top") {
@@ -45,6 +40,7 @@ export default function OptionButtonMobile({ pin }: { pin: PinInfoDeep }) {
     visibilityClass = "invisible"
   }
 
+  if (window.innerWidth >= 820) return null
   return (
     <div className={visibilityClass}>
       <OptionListMobile options={options}>

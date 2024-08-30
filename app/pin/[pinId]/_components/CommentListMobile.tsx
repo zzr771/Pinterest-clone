@@ -3,7 +3,7 @@ import InputModal from "@/components/mobile/InputModal"
 import useLikeComment from "@/lib/hooks/useLikeComment"
 import { CommentInfo } from "@/lib/types"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { IoMdClose } from "react-icons/io"
 
 interface Props {
@@ -13,18 +13,18 @@ interface Props {
 }
 export default function CommentsMobile({ setshowCommentsMobile, comments, setComments }: Props) {
   // --------------------------------------------------------------------------------- Comment Number
-  const [commentNumber, setCommentNumber] = useState(countComments())
-  function countComments() {
+  const countComments = useCallback(() => {
     let count = 0
     comments.forEach((item) => {
       count++
       count += item.replies.length
     })
     return count
-  }
+  }, [comments])
+  const [commentNumber, setCommentNumber] = useState(countComments())
   useEffect(() => {
     setCommentNumber(countComments())
-  }, [comments])
+  }, [comments, countComments])
 
   // --------------------------------------------------------------------------------- Input Modal
   const [showInputModal, setShowInputModal] = useState(false)

@@ -8,15 +8,12 @@ interface Props {
   name: "OptionButtonMobile" | "NavBarBottom"
 }
 export default function IntersectionMonitor({ name }: Props) {
-  // this component is designed to work on mobile devices
-  if (window.innerWidth >= 820) {
-    return null
-  }
-
   const dispatch = useAppDispatch()
   const monitorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (window.innerWidth >= 820) return
+
     const intersectionObserver = new IntersectionObserver((entries) => {
       const screenHeight = window.innerHeight
       const top = entries[0].boundingClientRect.top
@@ -50,7 +47,10 @@ export default function IntersectionMonitor({ name }: Props) {
     return () => {
       intersectionObserver.disconnect()
     }
-  }, [])
+  }, [name])
+
+  // this component is designed to work on mobile devices
+  if (window.innerWidth >= 820) return null
 
   return <div ref={monitorRef} className=""></div>
 }

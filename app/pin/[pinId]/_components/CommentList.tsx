@@ -1,5 +1,5 @@
 import CommentCard from "@/components/cards/CommentCard"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import { CommentInfo } from "@/lib/types"
 import useLikeComment from "@/lib/hooks/useLikeComment"
@@ -10,20 +10,20 @@ interface Props {
 }
 export default function Comments({ comments, setComments }: Props) {
   const [isFolded, setIsFolded] = useState(false)
-  const [commentNumber, setCommentNumber] = useState(countComments())
 
-  function countComments() {
+  // --------------------------------------------------------------------------------- Comment Number
+  const countComments = useCallback(() => {
     let count = 0
     comments.forEach((item) => {
       count++
       count += item.replies.length
     })
     return count
-  }
-
+  }, [comments])
+  const [commentNumber, setCommentNumber] = useState(countComments())
   useEffect(() => {
     setCommentNumber(countComments())
-  }, [comments])
+  }, [comments, countComments])
 
   // --------------------------------------------------------------------------------- Like & Unlike
   const { handleLike, handleUnlike } = useLikeComment()
