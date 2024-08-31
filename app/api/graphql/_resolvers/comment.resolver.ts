@@ -100,23 +100,4 @@ const commentResolver = {
   },
 }
 
-async function fetchComments(pinId: string) {
-  const pin = await Pin.findById(pinId).populate({
-    path: "comments",
-    model: Comment,
-    populate: [
-      { path: "author", model: User },
-      {
-        path: "replies",
-        model: Comment,
-        populate: [
-          { path: "author", model: User },
-          { path: "replyToUser", model: User },
-        ],
-      },
-    ],
-  })
-  return pin.comments
-}
-
 export default commentResolver
