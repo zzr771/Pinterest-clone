@@ -1,6 +1,6 @@
 # Pinterest Clone
 
-A simplified [Pinterest](https://www.pinterest.com/) clone built with Next.js, MongoDB and GraphQL.
+This is a simplified full-stack [Pinterest](https://www.pinterest.com/) clone built with Next.js, MongoDB and GraphQL.
 
 Explore the [live application](https://pinterest-eosin-six.vercel.app/)
 
