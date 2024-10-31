@@ -10,6 +10,7 @@ interface Props {
   className?: string
   click?: (...args: any[]) => void
   disabled?: boolean
+  [key: string]: any
 }
 
 export default function Button({
@@ -24,6 +25,7 @@ export default function Button({
   className = "",
   click,
   disabled = false,
+  ...rest
 }: Props) {
   let sizeClass = ""
   switch (size) {
@@ -104,6 +106,7 @@ export default function Button({
       onClick={click}
       aria-disabled={disabled}
       disabled={disabled}
+      {...rest}
       className={`flex items-center justify-center rounded-full font-semibold cursor-pointer
       ${sizeClass} 
       ${textColorClass}

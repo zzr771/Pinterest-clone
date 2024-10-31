@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-10 flex justify-center bg-white">
+    <div className="fixed inset-0 z-10 flex justify-center bg-white" data-test="loading-spinner">
       <div className="absolute top-[40vh] max-w3:top-[48vh]">
         <svg
           aria-label="Loading Search Results"

@@ -221,7 +221,7 @@ export default function WaterFall({ requestName, param }: Props) {
   return (
     <div className="w-full relative max-w3:pb-[70px]">
       {initialLoading && (
-        <div className="absolute top-[30vh] max-w3:top-[48vh] horizontal-middle">
+        <div className="absolute top-[30vh] max-w3:top-[48vh] horizontal-middle" data-test="loading-spinner">
           <svg
             aria-label="Loading Search Results"
             className="loading-spinner"

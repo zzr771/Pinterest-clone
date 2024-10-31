@@ -34,7 +34,9 @@ export default function SearchSuggestion({ setSearchTerm, hideSearchSuggestion }
   }
 
   return (
-    <div className={"p-8 bg-white rounded-b-2xl max-h-[calc(100vh-80px)] shadow-bottom overflow-y-auto"}>
+    <div
+      className={"p-8 bg-white rounded-b-2xl max-h-[calc(100vh-80px)] shadow-bottom overflow-y-auto"}
+      data-test="search-suggestion-wrapper">
       {recentSearches.length > 0 && (
         <>
           <h3 className="font-medium text-base">Recent searches</h3>

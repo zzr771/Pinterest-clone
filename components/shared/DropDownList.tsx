@@ -164,7 +164,8 @@ export default function DropDownList({
           <div
             ref={containerRef}
             className={`absolute top-0 left-0 z-[120] bg-white p-2 rounded-2xl shadow-small ${className}`}
-            onMouseEnter={handleMouseEnter}>
+            onMouseEnter={handleMouseEnter}
+            data-test="dropdown-list-wrapper">
             {title && <div className="p-2 text-xs font-light">{title}</div>}
             {options.map((item, index) => (
               <div
@@ -178,7 +179,8 @@ export default function DropDownList({
                   event.stopPropagation()
                   handleClick(item)
                   setShowDropDown(false)
-                }}>
+                }}
+                data-test="dropdown-list-item">
                 <span>{item.label}</span>
                 {showCheckMark && item.label === activeOption && <FaCheck />}
               </div>

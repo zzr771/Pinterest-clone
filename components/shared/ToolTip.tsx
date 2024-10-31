@@ -44,7 +44,8 @@ export default function ToolTip({ position = "bottom", text, children, extraGap 
     <div ref={containerRef} className="relative hover-visible-container">
       <div
         ref={boxRef}
-        className="absolute p-2 text-xs bg-black rounded-lg text-white whitespace-nowrap hover-content-visible">
+        className="absolute p-2 text-xs bg-black rounded-lg text-white whitespace-nowrap hover-content-visible"
+        data-test="tooltip">
         {text}
       </div>
       {children}

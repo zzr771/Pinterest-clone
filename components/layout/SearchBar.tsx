@@ -110,7 +110,8 @@ export default function SearchBar() {
       ref={searchBarContainer}
       onClick={handleClick}
       className={`relative flex flex-1 items-center min-w-72 h-[48px] pl-[16px] mx-2 gap-[8px] text-base 
-      rounded-full bg-gray-bg-1 hover:bg-gray-bg-4 ${focusClass}`}>
+      rounded-full bg-gray-bg-1 hover:bg-gray-bg-4 ${focusClass}`}
+      data-test="nav-search">
       {/* This icon should be hidden when clicked.  && expression can't be used here. Otherwise if you 
           click on this icon, it will be removed from searchBarContainer immediately, and the click event 
           can't bubble to searchBarContainer whose handleClick function won't be fired.
@@ -129,7 +130,8 @@ export default function SearchBar() {
       {isFocused && (
         <div
           className="flex justify-center items-center w-12 h-12 rounded-full hover:bg-[#D4D4D4] cursor-pointer"
-          onClick={handleClickClearBtn}>
+          onClick={handleClickClearBtn}
+          data-test="search-suggestion-close">
           <IoMdCloseCircle className="text-black w-5 h-5" />
         </div>
       )}

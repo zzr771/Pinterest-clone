@@ -79,9 +79,9 @@ export default function NavBarTop() {
   if (window.innerWidth < 820) return null
 
   return (
-    <section className="nav-top items-center bg-white h-20 py-1 px-4 flex">
+    <div className="nav-top items-center bg-white h-20 py-1 px-4 flex" data-test="nav-bar">
       {/* Pinterest icon */}
-      <Link href="/">
+      <Link href="/" data-test="nav-logo">
         <Button hover={true} rounded={true}>
           <Image src="/assets/icon.png" alt="icon" height={24} width={24} />
         </Button>
@@ -89,12 +89,16 @@ export default function NavBarTop() {
 
       {/* Button Group: Home Create */}
       <div className="flex items-center max-w4:hidden">
-        <Link href="/">
+        <Link href="/" data-test="nav-home">
           <Button text="Home" bgColor={activeBtn === "Home" ? "black" : "transparent"} />
         </Link>
-        <Link href="/idea-pin-builder">
-          <Button text="Create" bgColor={activeBtn === "Create" ? "black" : "transparent"} />
-        </Link>
+        {user ? (
+          <Link href="/idea-pin-builder" data-test="nav-create">
+            <Button text="Create" bgColor={activeBtn === "Create" ? "black" : "transparent"} />
+          </Link>
+        ) : (
+          <Button text="Create" bgColor="transparent" click={handleSignIn} data-test="nav-create" />
+        )}
       </div>
 
       <DropDownList
@@ -123,12 +127,12 @@ export default function NavBarTop() {
       {/* Button Group: Notification Message Profile */}
       <div className="flex items-center">
         <ToolTip text="Notifications" position="bottom">
-          <Button hover rounded className="!cursor-not-allowed">
+          <Button hover rounded className="!cursor-not-allowed" data-test="nav-notifications">
             <FaBell className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
         <ToolTip text="Messages" position="bottom">
-          <Button hover rounded className="!cursor-not-allowed">
+          <Button hover rounded className="!cursor-not-allowed" data-test="nav-messages">
             <AiFillMessage className="text-gray-font-3 w-6 h-6" />
           </Button>
         </ToolTip>
@@ -136,7 +140,7 @@ export default function NavBarTop() {
         {user && (
           <ToolTip text="Your profile" position="bottom">
             <Link href={`/user/${user?._id}`}>
-              <Button hover rounded>
+              <Button hover rounded data-test="nav-profile">
                 {user.imageUrl ? (
                   <Image
                     src={user?.imageUrl}
@@ -156,7 +160,7 @@ export default function NavBarTop() {
         {/* button for signing in */}
         {!user && (
           <ToolTip text="Sign in & sign up" position="left">
-            <Button hover rounded click={handleSignIn}>
+            <Button hover rounded click={handleSignIn} data-test="nav-sign-in">
               <FaUser className="text-gray-font-3 w-6 h-6" />
             </Button>
           </ToolTip>
@@ -165,18 +169,24 @@ export default function NavBarTop() {
         {/* dropdown button for signed in users */}
         {user && (
           <DropDownList options={userOptions.current} position={{ offsetX: -80, offsetY: 40 }}>
-            <Button hover rounded clickEffect size="small" className="!h-6 !w-6">
+            <Button
+              hover
+              rounded
+              clickEffect
+              size="small"
+              className="!h-6 !w-6"
+              data-test="nav-profile-dropdown-arrow">
               <FaChevronDown />
             </Button>
           </DropDownList>
         )}
 
         {/* Clerk components. Not displayed. Their click events will be manually invoked when a user signs in or signs out  */}
-        <div ref={hiddenClerkButtonsRef} className="hidden">
+        <div ref={hiddenClerkButtonsRef} className="hidden" data-test="nav-clerk-buttons">
           <SignInButton mode="modal" />
           <SignOutButton />
         </div>
       </div>
-    </section>
+    </div>
   )
 }
