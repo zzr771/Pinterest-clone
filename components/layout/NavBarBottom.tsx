@@ -31,7 +31,7 @@ export default function NavBarBottom() {
           </div>
         </Link>
 
-        <Link href="/searchMobile">
+        <Link href="/search-mobile">
           <div className={`${pathname === "Search" ? "text-black" : "text-gray-font-3"}`}>
             <FaSearch className="w-6 h-6" />
           </div>

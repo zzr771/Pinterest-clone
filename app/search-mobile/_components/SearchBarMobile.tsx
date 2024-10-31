@@ -38,7 +38,7 @@ export default function SearchBarMobile() {
 
     setIsFocused(false)
     setSearchTerm(searchTermTrimed)
-    router.replace(`/searchMobile/${searchTermTrimed}`)
+    router.replace(`/search-mobile/${searchTermTrimed}`)
   }
 
   function deleteSearchTerm(searchTerm: string) {
@@ -57,7 +57,7 @@ export default function SearchBarMobile() {
     recentResearches.unshift(term)
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
 
-    router.replace(`/searchMobile/${term}`)
+    router.replace(`/search-mobile/${term}`)
   }
   return (
     <div className="fixed z-[1] top-0 left-0 right-0">
