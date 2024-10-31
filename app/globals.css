@@ -50,7 +50,7 @@
     left: 50%;
     transform: translateX(-50%);
     height: 3.75rem;
-    padding: 0 0.5rem;
+    padding: 0 2rem;
     border-radius: 9999px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
   }

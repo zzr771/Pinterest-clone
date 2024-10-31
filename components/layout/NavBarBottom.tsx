@@ -23,15 +23,15 @@ export default function NavBarBottom() {
   if (window.innerWidth >= 820) return null
 
   return (
-    <section className="sm:nav-float-bottom max-w3:nav-bottom bg-white">
-      <div className="w-full h-full flex justify-around items-center max-w3:p-0">
-        <Link href="/">
+    <div className="max-sm:nav-bottom sm:nav-float-bottom bg-white" data-test="nav-bar">
+      <div className="h-full flex justify-around items-center sm:max-w3:gap-24">
+        <Link href="/" data-test="nav-home">
           <div className={`${pathname === "Home" ? "text-black" : "text-gray-font-3"}`}>
             <AiFillHome className="w-6 h-6" />
           </div>
         </Link>
 
-        <Link href="/search-mobile">
+        <Link href="/search-mobile" data-test="nav-search">
           <div className={`${pathname === "Search" ? "text-black" : "text-gray-font-3"}`}>
             <FaSearch className="w-6 h-6" />
           </div>
@@ -39,7 +39,7 @@ export default function NavBarBottom() {
 
         {/* avatar */}
         {user && (
-          <Link href={`/user/${user?._id}`}>
+          <Link href={`/user/${user?._id}`} className="w-[30px]" data-test="nav-profile">
             {user.imageUrl ? (
               <Image
                 src={user?.imageUrl}
@@ -55,15 +55,15 @@ export default function NavBarBottom() {
           </Link>
         )}
         {!user && (
-          <div onClick={handleSignIn}>
+          <div onClick={handleSignIn} data-test="nav-sign-in">
             <FaUser className="w-6 h-6 text-gray-font-3" />
           </div>
         )}
 
-        <div ref={hiddenClerkButtonsRef} className="hidden">
+        <div ref={hiddenClerkButtonsRef} className="hidden" data-test="nav-clerk-buttons">
           <SignInButton mode="modal" />
         </div>
       </div>
-    </section>
+    </div>
   )
 }
