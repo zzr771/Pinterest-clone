@@ -17,7 +17,7 @@ export default function Page({ params }: { params: { keyword: string } }) {
 
   return (
     <main className="w3:mt-20">
-      <WaterFall requestName={"SEARCH_PINS"} param={{ keyword }} />
+      <WaterFall requestName={"SEARCH_PINS"} param={{ keyword: decodeURIComponent(keyword) }} />
     </main>
   )
 }

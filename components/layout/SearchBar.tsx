@@ -18,10 +18,10 @@ export default function SearchBar() {
   const searchBarContainer = useRef<HTMLDivElement>(null)
 
   const pathName = usePathname()
-  const keyword = useRef(pathName.split("/").pop())
+  const keyword = useRef(decodeURIComponent(pathName.split("/").pop() || ""))
   const routeName = useRef(pathName.split("/")[1])
   useEffect(() => {
-    keyword.current = pathName.split("/").pop()
+    keyword.current = decodeURIComponent(pathName.split("/").pop() || "")
     routeName.current = pathName.split("/")[1]
   }, [pathName])
 
@@ -87,7 +87,7 @@ export default function SearchBar() {
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
 
     hideSearchSuggestion()
-    router.push(`/search/${searchTermTrimed}`)
+    router.push(`/search/${encodeURIComponent(searchTermTrimed)}`)
   }
 
   // If users type the search keyword in the address bar to initiate a search, the 'searchTerm' should change accordingly
@@ -125,6 +125,7 @@ export default function SearchBar() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleEnterDown}
+        data-test="nav-search-input"
       />
 
       {isFocused && (

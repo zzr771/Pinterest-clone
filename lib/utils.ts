@@ -154,3 +154,7 @@ export function calculateTimefromNow(timestamp: number | string) {
   }
   return "just now"
 }
+
+export function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}

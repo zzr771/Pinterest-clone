@@ -3,6 +3,7 @@ import User from "@/lib/models/user.model"
 import Comment from "@/lib/models/comment.model"
 import { PinCardInfo, PinInfoBasic, ReactionInfo } from "@/lib/types"
 import { revalidatePath } from "next/cache"
+import { escapeRegExp } from "@/lib/utils"
 
 interface CommentInfoShallow {
   _id: string
@@ -110,7 +111,7 @@ const pinResolver = {
       { keyword, currentNumber, limit }: { keyword: string; currentNumber: number; limit: number }
     ) {
       const pins = await Pin.find({
-        title: { $regex: keyword, $options: "i" },
+        title: { $regex: escapeRegExp(keyword), $options: "i" },
       })
         .sort({ createdAt: "desc" })
         .skip(currentNumber)

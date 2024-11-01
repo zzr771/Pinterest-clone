@@ -30,7 +30,7 @@ export default function SearchSuggestion({ setSearchTerm, hideSearchSuggestion }
     recentResearches.unshift(term)
     localStorage.setItem("pinterest_recentSearches", JSON.stringify(recentResearches))
 
-    router.push(`/search/${term}`)
+    router.push(`/search/${encodeURIComponent(term)}`)
   }
 
   return (
