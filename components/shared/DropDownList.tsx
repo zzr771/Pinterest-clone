@@ -1,4 +1,5 @@
-// this component will add a dropdown list directly to document.body
+// This component will add a dropdown list directly to document.body
+// This component's parent should be a flex container or have a non-static position attribute
 "use client"
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
@@ -150,6 +151,7 @@ export default function DropDownList({
   return (
     <>
       <div
+        data-test="dropdown-list-button-wrapper"
         ref={originRef}
         onClick={(event: React.MouseEvent) => {
           event.stopPropagation()
