@@ -1,5 +1,4 @@
 import SlideBannerMobile from "./_components/SlideBannerMobile"
-import SearchBarMobile from "./_components/SearchBarMobile"
 import { ideasArray, popularArray } from "@/constants/index"
 import { FiChevronRight } from "react-icons/fi"
 import Image from "next/image"

@@ -77,17 +77,18 @@ export default function SearchBarMobile() {
               className="flex-1 h-full font-light text-[15px]  text-black no-focus outline-none  focus-visible:!outline-none"
               type="text"
               placeholder="Search"
+              data-test="search-input"
             />
           </div>
           {isFocused && (
-            <div
+            <button
               className="p-3 text-sm text-gray-font-4"
               onClick={() => {
                 setIsFocused(false)
                 setSearchTerm("")
               }}>
               Cancel
-            </div>
+            </button>
           )}
         </div>
       </div>
@@ -95,12 +96,15 @@ export default function SearchBarMobile() {
       {/* recent searches list */}
       {/* 4.5rem: the height of search input */}
       {isFocused && (
-        <div className="fixed bg-white top-[4.5rem] w-screen h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-gray-bg-1">
+        <div
+          className="fixed bg-white top-[4.5rem] w-screen h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-gray-bg-1"
+          data-test="search-history-list">
           {recentSearches.map((item: string) => (
             <div
               key={item}
               onClick={() => searchClickedTerm(item)}
-              className="flex items-center justify-between ml-4 py-1">
+              className="flex items-center justify-between ml-4 py-1"
+              data-test="search-history-item">
               <div className="flex items-center">
                 <FaSearch className="m-3 mr-6 w-3 h-3 text-black" />
                 <span className="font-medium">{item}</span>

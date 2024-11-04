@@ -80,7 +80,8 @@ export default function PinCard({ pin, isSaved }: Props) {
     <div
       ref={cardContainer}
       className="absolute m-1 mb-2 w3:mx-2 w3:mb-4 w3:mt-0"
-      style={{ width: imageSize.width }}>
+      style={{ width: imageSize.width }}
+      data-test="pin-card">
       <div ref={cardBody} className="relative rounded-2xl" onClick={() => router.push(`/pin/${_id}`)}>
         <Image
           src={imageUrl}

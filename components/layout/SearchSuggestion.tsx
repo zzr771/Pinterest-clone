@@ -45,7 +45,8 @@ export default function SearchSuggestion({ setSearchTerm, hideSearchSuggestion }
               <div
                 className="flex gap-2 items-center bg-gray-bg-4 rounded-full py-1 px-3 cursor-pointer hover:bg-[#DADADA] whitespace-nowrap"
                 key={item}
-                onClick={() => searchClickedTerm(item)}>
+                onClick={() => searchClickedTerm(item)}
+                data-test="search-history-item">
                 <span>{item}</span>
                 <div
                   className="flex justify-center items-center w-6 h-6 rounded-full hover:bg-[#CDCDCD] text-black"

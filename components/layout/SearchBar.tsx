@@ -125,7 +125,7 @@ export default function SearchBar() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleEnterDown}
-        data-test="nav-search-input"
+        data-test="search-input"
       />
 
       {isFocused && (
