@@ -32,6 +32,7 @@ Explore the [live application](https://pinterest-eosin-six.vercel.app/)
 - [Storybook](https://storybook.js.org/) - UI component development
 - [Clerk](https://clerk.dev/) - Authentication
 - [React-Hook-Form](https://react-hook-form.com/) - Form handling
+- [Cypress](https://www.cypress.io/) - Testing
 
 ## Screenshots
 
