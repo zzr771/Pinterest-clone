@@ -161,8 +161,10 @@ export default function Page() {
       }
     } else if ("isDuplicate" in res) {
       setIsDuplicateUsername(true)
+      setIsLoading(false)
     } else if ("errorMessage" in res) {
       toast.error(res.errorMessage)
+      setIsLoading(false)
     }
   }
   async function deleteImage(imageUrl: string) {
@@ -268,10 +270,15 @@ export default function Page() {
                   control={form.control}
                   name="firstName"
                   render={({ field }) => (
-                    <FormItem className="flex-1 space-y-1 mt-5">
+                    <FormItem className="flex-1 space-y-1 mt-5" data-test="first-name">
                       <FormLabel className="label-default">First name</FormLabel>
                       <FormControl>
-                        <Input type="text" className="input-default h-[49px] px-4 py-3" {...field} />
+                        <Input
+                          type="text"
+                          className="input-default h-[49px] px-4 py-3"
+                          {...field}
+                          data-test="first-name-input"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -281,10 +288,15 @@ export default function Page() {
                   control={form.control}
                   name="lastName"
                   render={({ field }) => (
-                    <FormItem className="flex-1 space-y-1 mt-5 max-w3:mt-3">
+                    <FormItem className="flex-1 space-y-1 mt-5 max-w3:mt-3" data-test="last-name">
                       <FormLabel className="label-default">Last name</FormLabel>
                       <FormControl>
-                        <Input type="text" className="input-default h-[49px] px-4 py-3" {...field} />
+                        <Input
+                          type="text"
+                          className="input-default h-[49px] px-4 py-3"
+                          {...field}
+                          data-test="last-name-input"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -297,7 +309,7 @@ export default function Page() {
                 control={form.control}
                 name="about"
                 render={({ field }) => (
-                  <FormItem className="space-y-1 mt-5 max-w3:mt-3">
+                  <FormItem className="space-y-1 mt-5 max-w3:mt-3" data-test="about">
                     <FormLabel className="label-default">About</FormLabel>
                     <FormControl>
                       <VirtualTextarea
@@ -318,7 +330,7 @@ export default function Page() {
                 control={form.control}
                 name="website"
                 render={({ field }) => (
-                  <FormItem className="space-y-1 mt-5 max-w3:mt-3">
+                  <FormItem className="space-y-1 mt-5 max-w3:mt-3" data-test="website">
                     <FormLabel className="label-default">Website</FormLabel>
                     <FormControl>
                       <Input
@@ -326,6 +338,7 @@ export default function Page() {
                         className="input-default h-[49px] px-4 py-3"
                         placeholder="Add a link to drive traffic to your site"
                         {...field}
+                        data-test="website-input"
                       />
                     </FormControl>
                     <FormMessage />
@@ -338,7 +351,7 @@ export default function Page() {
                 control={form.control}
                 name="username"
                 render={({ field }) => (
-                  <FormItem className="space-y-1 mt-5 max-w3:mt-3">
+                  <FormItem className="space-y-1 mt-5 max-w3:mt-3" data-test="username">
                     <FormLabel className="label-default">Username</FormLabel>
                     <FormControl>
                       <Input
@@ -346,6 +359,7 @@ export default function Page() {
                         className="input-default h-[49px] px-4 py-3"
                         placeholder="Choose wisely so others can find you"
                         {...field}
+                        data-test="username-input"
                       />
                     </FormControl>
                     <FormMessage />
@@ -368,6 +382,7 @@ export default function Page() {
               disabled={!isValidationPassed}
               className={isValidationPassed ? "text-black" : "text-gray-font-4"}
               click={resetForm}
+              data-test="reset-button"
             />
             <Button
               text="Save"
@@ -377,6 +392,7 @@ export default function Page() {
               bgColor={isValidationPassed ? "red" : "gray"}
               disabled={!isValidationPassed}
               className={isValidationPassed ? "text-white" : "text-gray-font-4"}
+              data-test="save-button"
             />
           </div>
         </div>

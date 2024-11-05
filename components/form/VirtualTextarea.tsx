@@ -103,7 +103,8 @@ export const VirtualTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={virtualTextAreaRef}
           onInput={handleChange}
           contentEditable
-          className="break-word overflow-y-auto focus:outline-none"></div>
+          className="break-word overflow-y-auto focus:outline-none"
+          data-test="virtual-textarea"></div>
 
         <textarea className="hidden" value={input} ref={ref} {...props} />
       </div>

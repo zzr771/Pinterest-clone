@@ -19,7 +19,7 @@ export const ProfileValidation = z.object({
     .string()
     .trim()
     .refine((value) => urlRegExp.test(value), {
-      message: "Oops! That URL isn't valid—please try again!",
+      message: "Oops! That URL isn't valid. Please try again!",
     })
     .optional()
     .or(z.literal("")),
