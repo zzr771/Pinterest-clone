@@ -83,7 +83,7 @@ export default function NavBarTop() {
       {/* Pinterest icon */}
       <Link href="/" data-test="nav-logo">
         <Button hover={true} rounded={true}>
-          <Image src="/assets/icon.png" alt="icon" height={24} width={24} />
+          <Image src="/assets/React-icon.png" alt="icon" height={24} width={24} />
         </Button>
       </Link>
 
