@@ -61,15 +61,15 @@ To start the development server:
 npm run dev
 ```
 
-Please note that secrets are not included. If you want to run the app locally, you need to create a `.env.local` file and add secrets as follows:
+Please note that secrets are not included. If you want to run the app locally, you need to create a `.env.local` file and add your secrets as follows:
 
 ```sh
 # uploadthing
-UPLOADTHING_SECRET=
-UPLOADTHING_APP_ID=
+UPLOADTHING_SECRET=YOUR_SECRET
+UPLOADTHING_APP_ID=YOUR_SECRET
 # clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR_SECRET
+CLERK_SECRET_KEY=YOUR_SECRET
 # mongodb
-MONGODB_URI=
+MONGODB_URI=YOUR_SECRET
 ```
